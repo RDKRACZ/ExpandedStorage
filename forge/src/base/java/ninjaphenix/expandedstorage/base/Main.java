@@ -48,6 +48,7 @@ public final class Main {
             MenuScreens.register(BaseCommon.SINGLE_MENU_TYPE.get(), SingleScreen::new);
             MenuScreens.register(BaseCommon.PAGE_MENU_TYPE.get(), PagedScreen::new);
             MenuScreens.register(BaseCommon.SCROLL_MENU_TYPE.get(), ScrollableScreen::new);
+            PlatformUtils.getInstance().getConfigScreenKeyMapping(); // Ensure key bind is registered, probably doesn't need to be done before in-game but just in case.
         });
         if (PlatformUtils.getInstance().isClient()) {
             this.registerConfigGuiHandler();

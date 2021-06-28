@@ -1,5 +1,6 @@
 package ninjaphenix.expandedstorage.base.wrappers;
 
+import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.ResourceLocation;
@@ -8,9 +9,11 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.network.IContainerFactory;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
@@ -21,12 +24,15 @@ import java.util.function.Supplier;
 
 final class PlatformUtilsImpl implements PlatformUtils {
     private static PlatformUtilsImpl INSTANCE;
-    private final KeyMapping configKeyMapping;
+    private final Supplier<Object> configKeyMapping = Suppliers.memoize(() -> {
+        KeyMapping binding = new KeyMapping("key.expandedstorage.config", KeyConflictContext.GUI, KeyModifier.SHIFT, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_W, "key.categories.inventory");
+        ClientRegistry.registerKeyBinding(binding);
+        return binding;
+    });
     private final boolean isClient;
 
     private PlatformUtilsImpl() {
         isClient = FMLLoader.getDist() == Dist.CLIENT;
-        configKeyMapping = new KeyMapping("key.expandedstorage.config", KeyConflictContext.GUI, KeyModifier.SHIFT, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_E, "key.categories.inventory");
     }
 
     public static PlatformUtilsImpl getInstance() {
@@ -64,7 +70,8 @@ final class PlatformUtilsImpl implements PlatformUtils {
     }
 
     @Override
+    @OnlyIn(Dist.CLIENT)
     public KeyMapping getConfigScreenKeyMapping() {
-        return configKeyMapping;
+        return (KeyMapping) configKeyMapping.get();
     }
 }

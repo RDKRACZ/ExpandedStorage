@@ -23,6 +23,7 @@ public final class Main implements ModInitializer {
             ScreenRegistry.register(BaseCommon.SCROLL_MENU_TYPE.get(), ScrollableScreen::new);
             ScreenRegistry.register(BaseCommon.PAGE_MENU_TYPE.get(), PagedScreen::new);
             ScreenRegistry.register(BaseCommon.SINGLE_MENU_TYPE.get(), SingleScreen::new);
+            PlatformUtils.getInstance().getConfigScreenKeyMapping(); // Ensure key bind is registered, probably doesn't need to be done before in-game but just in case.
         }
         BaseApi.getInstance().getAndClearItems().forEach((id, item) -> Registry.register(Registry.ITEM, id, item));
 

@@ -1,7 +1,9 @@
 package ninjaphenix.expandedstorage.base.wrappers;
 
+import com.google.common.base.Suppliers;
 import com.mojang.datafixers.types.Type;
 import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
@@ -27,12 +29,11 @@ import java.util.function.Supplier;
 
 final class PlatformUtilsImpl implements PlatformUtils {
     private static PlatformUtilsImpl INSTANCE;
-    private final KeyMapping configKeyMapping;
+    private final Supplier<Object> configKeyMapping = Suppliers.memoize(() -> KeyBindingHelper.registerKeyBinding(new KeyMapping("key.expandedstorage.config", GLFW.GLFW_KEY_W, "key.categories.inventory")));
     private final boolean isClient;
 
     private PlatformUtilsImpl() {
         isClient = FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
-        configKeyMapping = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.expandedstorage.config", GLFW.GLFW_KEY_E, "key.categories.inventory"));
     }
 
     public static PlatformUtilsImpl getInstance() {
@@ -74,7 +75,8 @@ final class PlatformUtilsImpl implements PlatformUtils {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public KeyMapping getConfigScreenKeyMapping() {
-        return configKeyMapping;
+        return (KeyMapping) configKeyMapping.get();
     }
 }

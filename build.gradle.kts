@@ -1,5 +1,3 @@
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import ninjaphenix.gradle.task.MinifyJsonTask
 import org.gradle.jvm.tasks.Jar
 

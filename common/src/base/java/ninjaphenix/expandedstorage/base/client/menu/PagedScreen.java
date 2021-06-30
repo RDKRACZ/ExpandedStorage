@@ -154,25 +154,6 @@ public final class PagedScreen extends AbstractScreen<PagedContainerMenu, PagedS
         return Collections.emptyList();
     }
 
-    private void createPageButtons(boolean isDefault, int x, int y) {
-        page = 1;
-        this.setPageText();
-        // Honestly this is dumb.
-        if (isDefault && PlatformUtils.getInstance().isModLoaded("inventoryprofiles")) {
-            x -= 14;
-        }
-        leftPageButton = new PageButton(x, y, 0,
-                new TranslatableComponent("screen.expandedstorage.prev_page"), button -> this.setPage(page, page - 1),
-                this::renderButtonTooltip);
-        leftPageButton.active = false;
-        this.addButton(leftPageButton);
-        rightPageButton = new PageButton(x + 42, y, 1,
-                new TranslatableComponent("screen.expandedstorage.next_page"), button -> this.setPage(page, page + 1),
-                this::renderButtonTooltip);
-        this.addButton(rightPageButton);
-        pageTextX = (1 + leftPageButton.x + rightPageButton.x - rightPageButton.getWidth() / 2F) / 2F;
-    }
-
     private boolean hasPages() {
         return screenMeta.pages != 1;
     }
@@ -190,7 +171,23 @@ public final class PagedScreen extends AbstractScreen<PagedContainerMenu, PagedS
                     x = widget.x - width - 2;
                 }
             }
-            this.createPageButtons(x == originalX, x, y);
+            page = 1;
+            this.setPageText();
+            // Honestly this is dumb.
+            if (x == originalX && PlatformUtils.getInstance().isModLoaded("inventoryprofiles")) {
+                x -= 14;
+            }
+            leftPageButton = new PageButton(x, y, 0,
+                    new TranslatableComponent("screen.expandedstorage.prev_page"), button -> this.setPage(page, page - 1),
+                    this::renderButtonTooltip);
+            leftPageButton.active = false;
+            this.addButton(leftPageButton);
+            rightPageButton = new PageButton(x + 42, y, 1,
+                    new TranslatableComponent("screen.expandedstorage.next_page"), button -> this.setPage(page, page + 1),
+                    this::renderButtonTooltip);
+            this.addButton(rightPageButton);
+            pageTextX = (1 + leftPageButton.x + rightPageButton.x - rightPageButton.getWidth() / 2F) / 2F;
+
         }
     }
 }

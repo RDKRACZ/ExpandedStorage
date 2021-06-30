@@ -89,7 +89,7 @@ final class NetworkWrapperImpl implements NetworkWrapper {
 
     public void c2s_removeTypeSelectCallback() {
         ClientPacketListener listener = Minecraft.getInstance().getConnection();
-        if (listener != null && channel.isRemotePresent(listener.getConnection())) {
+        if (listener != null) {
             //noinspection InstantiationOfUtilityClass
             channel.sendToServer(new RemovePlayerPreferenceCallbackMessage());
         }
@@ -97,7 +97,7 @@ final class NetworkWrapperImpl implements NetworkWrapper {
 
     public void c2s_openTypeSelectScreen() {
         ClientPacketListener listener = Minecraft.getInstance().getConnection();
-        if (listener != null && channel.isRemotePresent(listener.getConnection())) {
+        if (listener != null) {
             //noinspection InstantiationOfUtilityClass
             channel.sendToServer(new RequestOpenSelectScreenMessage());
         }
@@ -134,7 +134,7 @@ final class NetworkWrapperImpl implements NetworkWrapper {
             preferenceCallbacks.put(player.getUUID(), playerPreferenceCallback);
         }
         ServerGamePacketListenerImpl listener = player.connection;
-        if (listener != null && channel.isRemotePresent(listener.getConnection())) {
+        if (listener != null) {
             channel.send(PacketDistributor.PLAYER.with(() -> player), new OpenSelectScreenMessage(containerFactories.keySet()));
         }
     }
@@ -155,7 +155,7 @@ final class NetworkWrapperImpl implements NetworkWrapper {
     @Override
     public void c2s_sendTypePreference(ResourceLocation selection) {
         ClientPacketListener listener = Minecraft.getInstance().getConnection();
-        if (listener != null && channel.isRemotePresent(listener.getConnection())) {
+        if (listener != null) {
             channel.sendToServer(new ContainerTypeUpdateMessage(selection));
         }
     }

@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "accessWidener": "expandedstorage_base.accessWidener",
   "depends": {
-    "fabric": "*",
+    "fabric": ">=0.29.3",
     "fabricloader": ">=0.7.4",
-    "minecraft": "~1.16.2"
+    "minecraft": "~1.16.4"
   },
   "entrypoints": {
     "main": [

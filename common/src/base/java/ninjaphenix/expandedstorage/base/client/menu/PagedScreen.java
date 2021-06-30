@@ -2,6 +2,7 @@ package ninjaphenix.expandedstorage.base.client.menu;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -15,7 +16,9 @@ import ninjaphenix.expandedstorage.base.inventory.screen.PagedScreenMeta;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +35,11 @@ public final class PagedScreen extends AbstractScreen<PagedContainerMenu, PagedS
         super(screenHandler, playerInventory, title, (screenMeta) -> (screenMeta.width * 18 + 14) / 2 - 80);
         imageWidth = 14 + 18 * screenMeta.width;
         imageHeight = 17 + 97 + 18 * screenMeta.height;
+    }
+
+    private static boolean regionIntersects(AbstractWidget widget, int x, int y, int width, int height) {
+        return widget.x <= x + width && y <= widget.y + widget.getHeight() ||
+                x <= widget.x + widget.getWidth() && widget.y <= y + height;
     }
 
     private void setPage(int oldPage, int newPage) {
@@ -146,23 +154,7 @@ public final class PagedScreen extends AbstractScreen<PagedContainerMenu, PagedS
         return Collections.emptyList();
     }
 
-    public int getTopPos() {
-        return topPos;
-    }
-
-    public int getLeftPos() {
-        return leftPos;
-    }
-
-    public int getImageWidth() {
-        return imageWidth;
-    }
-
-    public int getImageHeight() {
-        return imageHeight;
-    }
-
-    public void createPageButtons(boolean isDefault, int x, int y) {
+    private void createPageButtons(boolean isDefault, int x, int y) {
         page = 1;
         this.setPageText();
         // Honestly this is dumb.
@@ -181,7 +173,24 @@ public final class PagedScreen extends AbstractScreen<PagedContainerMenu, PagedS
         pageTextX = (1 + leftPageButton.x + rightPageButton.x - rightPageButton.getWidth() / 2F) / 2F;
     }
 
-    public boolean hasPages() {
+    private boolean hasPages() {
         return screenMeta.pages != 1;
+    }
+
+    public void addPageButtons() {
+        if (this.hasPages()) {
+            int width = 54;
+            int x = leftPos + imageWidth - 61;
+            int originalX = x;
+            int y = topPos + imageHeight - 96;
+            var renderableChildren = new ArrayList<>(buttons);
+            renderableChildren.sort(Comparator.comparingInt(a -> -a.x));
+            for (var widget : renderableChildren) {
+                if (PagedScreen.regionIntersects(widget, x, y, width, 12)) {
+                    x = widget.x - width - 2;
+                }
+            }
+            this.createPageButtons(x == originalX, x, y);
+        }
     }
 }

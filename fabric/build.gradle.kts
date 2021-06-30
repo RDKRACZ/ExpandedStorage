@@ -56,8 +56,8 @@ dependencies {
     modCompileOnly("me.shedaniel:RoughlyEnoughItems:${properties["rei_version"]}", excludeFabric)
     modRuntime("me.shedaniel:RoughlyEnoughItems:${properties["rei_version"]}")
 
-    modCompileOnly("com.terraformersmc:modmenu:${properties["modmenu_version"]}", excludeFabric)
-    modRuntime("com.terraformersmc:modmenu:${properties["modmenu_version"]}")
+    modCompileOnly("io.github.prospector:modmenu:${properties["modmenu_version"]}", excludeFabric)
+    modRuntime("io.github.prospector:modmenu:${properties["modmenu_version"]}")
 }
 
 tasks.withType<ProcessResources>() {

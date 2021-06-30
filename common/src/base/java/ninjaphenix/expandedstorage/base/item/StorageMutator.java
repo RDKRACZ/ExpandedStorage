@@ -197,91 +197,87 @@ public class StorageMutator extends Item {
         Player player = context.getPlayer();
         ItemStack stack = context.getItemInHand();
         Block block = state.getBlock();
-        switch (StorageMutator.getMode(context.getItemInHand())) {
-            case MERGE -> {
-                if (block instanceof AbstractChestBlock<?> chestBlock && state.getValue(ChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
-                    CompoundTag tag = stack.getOrCreateTag();
-                    if (tag.contains("pos")) {
-                        BlockPos otherPos = NbtUtils.readBlockPos(tag.getCompound("pos"));
-                        BlockState otherState = level.getBlockState(otherPos);
-                        Direction facing = state.getValue(HORIZONTAL_FACING);
-                        if (block == otherState.getBlock()
-                                && facing == otherState.getValue(HORIZONTAL_FACING)
-                                && otherState.getValue(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
-                            if (!level.isClientSide()) {
-                                BlockPos offset = otherPos.subtract(pos);
-                                Direction direction = Direction.fromNormal(offset.getX(), offset.getY(), offset.getZ());
-                                if (direction != null) {
-                                    CursedChestType chestType = AbstractChestBlock.getChestType(state.getValue(HORIZONTAL_FACING), direction);
-                                    Predicate<BlockEntity> isStorage = b -> b instanceof AbstractOpenableStorageBlockEntity;
-                                    this.convertContainer(level, state, pos, block, chestBlock.getSlotCount(), chestType, isStorage);
-                                    this.convertContainer(level, otherState, otherPos, block, chestBlock.getSlotCount(), chestType.getOpposite(), isStorage);
-                                    tag.remove("pos");
-                                    //noinspection ConstantConditions
-                                    player.displayClientMessage(new TranslatableComponent("tooltip.expandedstorage.storage_mutator.merge_end"), true);
-                                }
-                            }
-                            //noinspection ConstantConditions
-                            player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
-                            return InteractionResult.SUCCESS;
-                        }
-                    } else {
+        MutationMode mode = StorageMutator.getMode(context.getItemInHand());
+        if (mode == MutationMode.MERGE) {
+            if (block instanceof AbstractChestBlock<?> chestBlock && state.getValue(ChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
+                CompoundTag tag = stack.getOrCreateTag();
+                if (tag.contains("pos")) {
+                    BlockPos otherPos = NbtUtils.readBlockPos(tag.getCompound("pos"));
+                    BlockState otherState = level.getBlockState(otherPos);
+                    Direction facing = state.getValue(HORIZONTAL_FACING);
+                    if (block == otherState.getBlock()
+                            && facing == otherState.getValue(HORIZONTAL_FACING)
+                            && otherState.getValue(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
                         if (!level.isClientSide()) {
-                            tag.put("pos", NbtUtils.writeBlockPos(pos));
-                            //noinspection ConstantConditions
-                            player.displayClientMessage(new TranslatableComponent("tooltip.expandedstorage.storage_mutator.merge_start"), true);
-                        }
-                        //noinspection ConstantConditions
-                        player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
-                        return InteractionResult.SUCCESS;
-                    }
-                }
-            }
-            case SPLIT -> {
-                if (block instanceof AbstractChestBlock && state.getValue(AbstractChestBlock.CURSED_CHEST_TYPE) != CursedChestType.SINGLE) {
-                    if (!level.isClientSide()) {
-                        BlockPos otherPos = pos.relative(AbstractChestBlock.getDirectionToAttached(state));
-                        BlockState otherState = level.getBlockState(otherPos);
-                        level.setBlockAndUpdate(pos, state.setValue(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE));
-                        level.setBlockAndUpdate(otherPos, otherState.setValue(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE));
-                    }
-                    //noinspection ConstantConditions
-                    player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
-                    return InteractionResult.SUCCESS;
-                }
-            }
-            case ROTATE -> {
-                if (state.hasProperty(FACING)) {
-                    if (!level.isClientSide()) {
-                        Direction direction = state.getValue(FACING);
-                        level.setBlockAndUpdate(pos, state.setValue(FACING, Direction.from3DDataValue(direction.get3DDataValue() + 1)));
-                    }
-                    //noinspection ConstantConditions
-                    player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
-                    return InteractionResult.SUCCESS;
-                } else if (state.hasProperty(HORIZONTAL_FACING)) {
-                    if (block instanceof AbstractChestBlock) {
-                        if (!level.isClientSide()) {
-                            switch (state.getValue(AbstractChestBlock.CURSED_CHEST_TYPE)) {
-                                case SINGLE -> level.setBlockAndUpdate(pos, state.rotate(CLOCKWISE_90));
-                                case TOP, BOTTOM -> {
-                                    level.setBlockAndUpdate(pos, state.rotate(CLOCKWISE_90));
-                                    BlockPos otherPos = pos.relative(AbstractChestBlock.getDirectionToAttached(state));
-                                    BlockState otherState = level.getBlockState(otherPos);
-                                    level.setBlockAndUpdate(otherPos, otherState.rotate(CLOCKWISE_90));
-                                }
-                                case FRONT, BACK, LEFT, RIGHT -> {
-                                    level.setBlockAndUpdate(pos, state.rotate(CLOCKWISE_180).setValue(AbstractChestBlock.CURSED_CHEST_TYPE, state.getValue(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
-                                    BlockPos otherPos = pos.relative(AbstractChestBlock.getDirectionToAttached(state));
-                                    BlockState otherState = level.getBlockState(otherPos);
-                                    level.setBlockAndUpdate(otherPos, otherState.rotate(CLOCKWISE_180).setValue(AbstractChestBlock.CURSED_CHEST_TYPE, otherState.getValue(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
-                                }
+                            BlockPos offset = otherPos.subtract(pos);
+                            Direction direction = Direction.fromNormal(offset.getX(), offset.getY(), offset.getZ());
+                            if (direction != null) {
+                                CursedChestType chestType = AbstractChestBlock.getChestType(state.getValue(HORIZONTAL_FACING), direction);
+                                Predicate<BlockEntity> isStorage = b -> b instanceof AbstractOpenableStorageBlockEntity;
+                                this.convertContainer(level, state, pos, block, chestBlock.getSlotCount(), chestType, isStorage);
+                                this.convertContainer(level, otherState, otherPos, block, chestBlock.getSlotCount(), chestType.getOpposite(), isStorage);
+                                tag.remove("pos");
+                                //noinspection ConstantConditions
+                                player.displayClientMessage(new TranslatableComponent("tooltip.expandedstorage.storage_mutator.merge_end"), true);
                             }
                         }
                         //noinspection ConstantConditions
                         player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
                         return InteractionResult.SUCCESS;
                     }
+                } else {
+                    if (!level.isClientSide()) {
+                        tag.put("pos", NbtUtils.writeBlockPos(pos));
+                        //noinspection ConstantConditions
+                        player.displayClientMessage(new TranslatableComponent("tooltip.expandedstorage.storage_mutator.merge_start"), true);
+                    }
+                    //noinspection ConstantConditions
+                    player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
+                    return InteractionResult.SUCCESS;
+                }
+            }
+        } else if (mode == MutationMode.SPLIT) {
+            if (block instanceof AbstractChestBlock && state.getValue(AbstractChestBlock.CURSED_CHEST_TYPE) != CursedChestType.SINGLE) {
+                if (!level.isClientSide()) {
+                    BlockPos otherPos = pos.relative(AbstractChestBlock.getDirectionToAttached(state));
+                    BlockState otherState = level.getBlockState(otherPos);
+                    level.setBlockAndUpdate(pos, state.setValue(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE));
+                    level.setBlockAndUpdate(otherPos, otherState.setValue(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE));
+                }
+                //noinspection ConstantConditions
+                player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
+                return InteractionResult.SUCCESS;
+            }
+        } else if (mode == MutationMode.ROTATE) {
+            if (state.hasProperty(FACING)) {
+                if (!level.isClientSide()) {
+                    Direction direction = state.getValue(FACING);
+                    level.setBlockAndUpdate(pos, state.setValue(FACING, Direction.from3DDataValue(direction.get3DDataValue() + 1)));
+                }
+                //noinspection ConstantConditions
+                player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
+                return InteractionResult.SUCCESS;
+            } else if (state.hasProperty(HORIZONTAL_FACING)) {
+                if (block instanceof AbstractChestBlock) {
+                    if (!level.isClientSide()) {
+                        CursedChestType value = state.getValue(AbstractChestBlock.CURSED_CHEST_TYPE);
+                        if (value == CursedChestType.SINGLE) {
+                            level.setBlockAndUpdate(pos, state.rotate(CLOCKWISE_90));
+                        } else if (value == CursedChestType.TOP || value == CursedChestType.BOTTOM) {
+                            level.setBlockAndUpdate(pos, state.rotate(CLOCKWISE_90));
+                            BlockPos otherPos = pos.relative(AbstractChestBlock.getDirectionToAttached(state));
+                            BlockState otherState = level.getBlockState(otherPos);
+                            level.setBlockAndUpdate(otherPos, otherState.rotate(CLOCKWISE_90));
+                        } else if (value == CursedChestType.FRONT || value == CursedChestType.BACK || value == CursedChestType.LEFT || value == CursedChestType.RIGHT) {
+                            level.setBlockAndUpdate(pos, state.rotate(CLOCKWISE_180).setValue(AbstractChestBlock.CURSED_CHEST_TYPE, state.getValue(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
+                            BlockPos otherPos = pos.relative(AbstractChestBlock.getDirectionToAttached(state));
+                            BlockState otherState = level.getBlockState(otherPos);
+                            level.setBlockAndUpdate(otherPos, otherState.rotate(CLOCKWISE_180).setValue(AbstractChestBlock.CURSED_CHEST_TYPE, otherState.getValue(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
+                        }
+                    }
+                    //noinspection ConstantConditions
+                    player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
+                    return InteractionResult.SUCCESS;
                 }
             }
         }

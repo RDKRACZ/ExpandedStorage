@@ -53,19 +53,8 @@ public final class Main {
         if (PlatformUtils.getInstance().isClient()) {
             this.registerConfigGuiHandler();
             MinecraftForge.EVENT_BUS.addListener(EventPriority.LOW, (GuiScreenEvent.InitGuiEvent.Post event) -> {
-                if (event.getGui() instanceof PagedScreen screen && screen.hasPages()) {
-                    int width = 54;
-                    int x = screen.getLeftPos() + screen.getImageWidth() - 61;
-                    int originalX = x;
-                    int y = screen.getTopPos() + screen.getImageHeight() - 96;
-                    var renderableChildren = new ArrayList<>(event.getWidgetList());
-                    renderableChildren.sort(Comparator.comparingInt(a -> -a.x));
-                    for (var widget : renderableChildren) {
-                        if (this.regionIntersects(widget, x, y, width, 12)) {
-                            x = widget.x - width - 2;
-                        }
-                    }
-                    screen.createPageButtons(x == originalX, x, y);
+                if (event.getGui() instanceof PagedScreen screen) {
+                    screen.addPageButtons();
                 }
             });
         }

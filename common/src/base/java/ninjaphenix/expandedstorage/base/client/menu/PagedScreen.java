@@ -2,6 +2,8 @@ package ninjaphenix.expandedstorage.base.client.menu;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -15,7 +17,9 @@ import ninjaphenix.expandedstorage.base.inventory.screen.PagedScreenMeta;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +36,11 @@ public final class PagedScreen extends AbstractScreen<PagedContainerMenu, PagedS
         super(screenHandler, playerInventory, title, (screenMeta) -> (screenMeta.width * 18 + 14) / 2 - 80);
         imageWidth = 14 + 18 * screenMeta.width;
         imageHeight = 17 + 97 + 18 * screenMeta.height;
+    }
+
+    private static boolean regionIntersects(AbstractWidget widget, int x, int y, int width, int height) {
+        return widget.x <= x + width && y <= widget.y + widget.getHeight() ||
+                x <= widget.x + widget.getWidth() && widget.y <= y + height;
     }
 
     private void setPage(int oldPage, int newPage) {
@@ -93,7 +102,7 @@ public final class PagedScreen extends AbstractScreen<PagedContainerMenu, PagedS
             return;
         } // Not sure why this can be null, but don't render in case it is.
         super.render(stack, mouseX, mouseY, delta);
-        if (screenMeta.pages != 1) {
+        if (this.hasPages()) {
             leftPageButton.renderTooltip(stack, mouseX, mouseY);
             rightPageButton.renderTooltip(stack, mouseX, mouseY);
         }
@@ -107,7 +116,7 @@ public final class PagedScreen extends AbstractScreen<PagedContainerMenu, PagedS
 
     @Override
     public void resize(Minecraft client, int width, int height) {
-        if (screenMeta.pages != 1) {
+        if (this.hasPages()) {
             int currentPage = page;
             if (currentPage != 1) {
                 menu.resetSlotPositions(false);
@@ -130,7 +139,7 @@ public final class PagedScreen extends AbstractScreen<PagedContainerMenu, PagedS
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (screenMeta.pages != 1) {
+        if (this.hasPages()) {
             if (keyCode == GLFW.GLFW_KEY_RIGHT || keyCode == GLFW.GLFW_KEY_PAGE_DOWN) {
                 this.setPage(page, Screen.hasShiftDown() ? screenMeta.pages : page + 1);
                 return true;
@@ -146,42 +155,44 @@ public final class PagedScreen extends AbstractScreen<PagedContainerMenu, PagedS
         return Collections.emptyList();
     }
 
-    public int getTopPos() {
-        return topPos;
+    private boolean hasPages() {
+        return screenMeta.pages != 1;
     }
 
-    public int getLeftPos() {
-        return leftPos;
-    }
-
-    public int getImageWidth() {
-        return imageWidth;
-    }
-
-    public int getImageHeight() {
-        return imageHeight;
-    }
-
-    public void createPageButtons(boolean isDefault, int x, int y) {
-        page = 1;
-        this.setPageText();
-        // Honestly this is dumb.
-        if (isDefault && PlatformUtils.getInstance().isModLoaded("inventoryprofiles")) {
-            x -= 14;
+    public void addPageButtons() {
+        if (this.hasPages()) {
+            int width = 54;
+            int x = leftPos + imageWidth - 61;
+            int originalX = x;
+            int y = topPos + imageHeight - 96;
+            var renderableChildren = new ArrayList<AbstractWidget>();
+            for (var child : this.children()) {
+                if (child instanceof AbstractWidget widget) {
+                    renderableChildren.add(widget);
+                }
+            }
+            renderableChildren.sort(Comparator.comparingInt(a -> -a.x));
+            for (var widget : renderableChildren) {
+                if (PagedScreen.regionIntersects(widget, x, y, width, 12)) {
+                    x = widget.x - width - 2;
+                }
+            }
+            page = 1;
+            this.setPageText();
+            // Honestly this is dumb.
+            if (x == originalX && PlatformUtils.getInstance().isModLoaded("inventoryprofiles")) {
+                x -= 14;
+            }
+            leftPageButton = new PageButton(x, y, 0,
+                    new TranslatableComponent("screen.expandedstorage.prev_page"), button -> this.setPage(page, page - 1),
+                    this::renderButtonTooltip);
+            leftPageButton.active = false;
+            this.addRenderableWidget(leftPageButton);
+            rightPageButton = new PageButton(x + 42, y, 1,
+                    new TranslatableComponent("screen.expandedstorage.next_page"), button -> this.setPage(page, page + 1),
+                    this::renderButtonTooltip);
+            this.addRenderableWidget(rightPageButton);
+            pageTextX = (1 + leftPageButton.x + rightPageButton.x - rightPageButton.getWidth() / 2F) / 2F;
         }
-        leftPageButton = new PageButton(x, y, 0,
-                new TranslatableComponent("screen.expandedstorage.prev_page"), button -> this.setPage(page, page - 1),
-                this::renderButtonTooltip);
-        leftPageButton.active = false;
-        this.addRenderableWidget(leftPageButton);
-        rightPageButton = new PageButton(x + 42, y, 1,
-                new TranslatableComponent("screen.expandedstorage.next_page"), button -> this.setPage(page, page + 1),
-                this::renderButtonTooltip);
-        this.addRenderableWidget(rightPageButton);
-        pageTextX = (1 + leftPageButton.x + rightPageButton.x - rightPageButton.getWidth() / 2F) / 2F;
-    }
-
-    public boolean hasPages() {
-        return screenMeta.pages > 1;
     }
 }

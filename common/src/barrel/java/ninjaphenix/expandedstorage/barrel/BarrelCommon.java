@@ -4,7 +4,9 @@ import com.google.common.collect.ImmutableSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.item.BlockItem;
@@ -102,8 +104,8 @@ public final class BarrelCommon {
         blockEntityTypeConsumer.accept(blockEntityType);
         // Register chest module icon & upgrade behaviours
         BaseApi.getInstance().offerTabIcon(netheriteBarrelItem, BarrelCommon.ICON_SUITABILITY);
-        Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof BarrelBlock || woodenBarrelTag.contains(block);
-        BaseApi.getInstance().defineBlockUpgradeBehaviour(isUpgradableChestBlock, BarrelCommon::tryUpgradeBlock);
+        Predicate<Block> isUpgradableBarrelBlock = (block) -> block instanceof BarrelBlock || block instanceof net.minecraft.world.level.block.BarrelBlock || woodenBarrelTag.contains(block);
+        BaseApi.getInstance().defineBlockUpgradeBehaviour(isUpgradableBarrelBlock, BarrelCommon::tryUpgradeBlock);
     }
 
     private static BarrelBlock barrelBlock(ResourceLocation blockId, ResourceLocation stat, OpenableTier tier, BlockBehaviour.Properties properties) {
@@ -121,23 +123,36 @@ public final class BarrelCommon {
         BlockPos pos = context.getClickedPos();
         BlockState state = level.getBlockState(pos);
         Block block = state.getBlock();
-        boolean condition = block instanceof BarrelBlock;
-        if ((condition && ((BarrelBlock) block).blockTier() == from) || !condition && from == Utils.WOOD_TIER.key()) {
-            var toBlock = (AbstractOpenableStorageBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, to);
-            var inventory = NonNullList.withSize(toBlock.getSlotCount(), ItemStack.EMPTY);
-            var tag = level.getBlockEntity(pos).save(new CompoundTag());
-            var code = LockCode.fromTag(tag);
-            ContainerHelper.loadAllItems(tag, inventory);
-            level.removeBlockEntity(pos);
-            var newState = toBlock.defaultBlockState().setValue(BlockStateProperties.FACING, state.getValue(BlockStateProperties.FACING));
-            if (level.setBlockAndUpdate(pos, newState)) {
-                var newEntity = (AbstractOpenableStorageBlockEntity) level.getBlockEntity(pos);
-                var newTag = newEntity.save(new CompoundTag());
-                ContainerHelper.saveAllItems(newTag, inventory);
-                code.addToTag(newTag);
-                newEntity.load(newTag);
-                context.getItemInHand().shrink(1);
-                return true;
+        boolean isExpandedStorageBarrel = block instanceof BarrelBlock;
+        var containerSize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : ((BarrelBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, ((BarrelBlock) block).blockTier())).getSlotCount();
+        if (isExpandedStorageBarrel && ((BarrelBlock) block).blockTier() == from || !isExpandedStorageBarrel && from == Utils.WOOD_TIER.key()) {
+            var blockEntity = level.getBlockEntity(pos);
+            var tag = blockEntity.save(new CompoundTag());
+            boolean verifiedSize = blockEntity instanceof Container container && container.getContainerSize() == containerSize;
+            if (!verifiedSize) { // Cannot verify container size, we'll let it upgrade if it has or has less than 27 items
+                if (tag.contains("Items", Tag.TAG_LIST)) {
+                    var items = tag.getList("Items", Tag.TAG_COMPOUND);
+                    if (items.size() <= containerSize) {
+                        verifiedSize = true;
+                    }
+                }
+            }
+            if (verifiedSize) {
+                var toBlock = (AbstractOpenableStorageBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, to);
+                var inventory = NonNullList.withSize(toBlock.getSlotCount(), ItemStack.EMPTY);
+                var code = LockCode.fromTag(tag);
+                ContainerHelper.loadAllItems(tag, inventory);
+                level.removeBlockEntity(pos);
+                var newState = toBlock.defaultBlockState().setValue(BlockStateProperties.FACING, state.getValue(BlockStateProperties.FACING));
+                if (level.setBlockAndUpdate(pos, newState)) {
+                    var newEntity = (AbstractOpenableStorageBlockEntity) level.getBlockEntity(pos);
+                    var newTag = newEntity.save(new CompoundTag());
+                    ContainerHelper.saveAllItems(newTag, inventory);
+                    code.addToTag(newTag);
+                    newEntity.load(newTag);
+                    context.getItemInHand().shrink(1);
+                    return true;
+                }
             }
         }
         return false;

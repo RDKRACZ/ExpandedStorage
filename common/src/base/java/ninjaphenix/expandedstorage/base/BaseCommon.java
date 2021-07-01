@@ -34,13 +34,8 @@ public final class BaseCommon {
     }
 
     static void initialize() {
-        ConfigWrapper.getInstance().initialise();
-        NetworkWrapper.getInstance().initialise();
-        BaseApi.getInstance().offerTabIcon(Items.CHEST, ICON_SUITABILITY);
-        BaseApi.getInstance().defineTierUpgradePath(Utils.translation("itemGroup.expandedstorage"), Utils.WOOD_TIER, Utils.IRON_TIER,
-                Utils.GOLD_TIER, Utils.DIAMOND_TIER, Utils.OBSIDIAN_TIER, Utils.NETHERITE_TIER);
-        BaseApi.getInstance().register(Utils.resloc("chest_mutator"), new StorageMutator(new Item.Properties().stacksTo(1).tab(Utils.TAB)));
         if (PlatformUtils.getInstance().isClient()) {
+            ConfigWrapper.getInstance().initialise();
             BaseApi.getInstance().registerContainerButtonSettings(Utils.SINGLE_CONTAINER_TYPE,
                     Utils.resloc("textures/gui/single_button.png"),
                     Utils.translation("screen.expandedstorage.single_screen"));
@@ -51,6 +46,11 @@ public final class BaseCommon {
                     Utils.resloc("textures/gui/paged_button.png"),
                     Utils.translation("screen.expandedstorage.paged_screen"));
         }
+        NetworkWrapper.getInstance().initialise();
+        BaseApi.getInstance().offerTabIcon(Items.CHEST, ICON_SUITABILITY);
+        BaseApi.getInstance().defineTierUpgradePath(Utils.translation("itemGroup.expandedstorage"), Utils.WOOD_TIER, Utils.IRON_TIER,
+                Utils.GOLD_TIER, Utils.DIAMOND_TIER, Utils.OBSIDIAN_TIER, Utils.NETHERITE_TIER);
+        BaseApi.getInstance().register(Utils.resloc("chest_mutator"), new StorageMutator(new Item.Properties().stacksTo(1).tab(Utils.TAB)));
     }
 
     public static ResourceLocation registerStat(ResourceLocation stat) {

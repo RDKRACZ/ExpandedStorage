@@ -42,7 +42,7 @@ dependencies {
 }
 
 tasks.withType<ProcessResources>() {
-    val props = mutableMapOf("version" to project.version) // Needs to be mutable
+    val props = mutableMapOf("version" to properties["mod_version"]) // Needs to be mutable
     inputs.properties(props)
     filesMatching("META-INF/mods.toml") {
         expand(props)

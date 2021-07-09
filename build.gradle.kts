@@ -85,11 +85,20 @@ subprojects {
         archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}-dev.jar")
     }
 
-    tasks.register<MinifyJsonTask>("minJar") {
+    val minifyJarTask = tasks.register<MinifyJsonTask>("minJar") {
         parent.set(remapJarTask.outputs.files.singleFile)
         filePatterns.set(listOf("**/*.json", "**/*.mcmeta"))
         archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}.jar")
-
         dependsOn(remapJarTask)
+    }
+
+    tasks.getByName("build") {
+        dependsOn(minifyJarTask)
+    }
+}
+
+tasks.register("buildMod") {
+    subprojects.forEach {
+        dependsOn(it.tasks["build"])
     }
 }

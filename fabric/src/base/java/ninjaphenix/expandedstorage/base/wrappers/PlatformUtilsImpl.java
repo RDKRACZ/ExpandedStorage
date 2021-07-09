@@ -46,7 +46,7 @@ final class PlatformUtilsImpl implements PlatformUtils {
         return INSTANCE;
     }
 
-    private KeyMapping createConfigKey() {
+    private Object createConfigKey() {
         if (FabricLoader.getInstance().isModLoaded("amecs")) {
             var classLoader = PlatformUtilsImpl.class.getClassLoader();
             try {

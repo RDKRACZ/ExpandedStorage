@@ -1,6 +1,5 @@
 package ninjaphenix.expandedstorage.base;
 
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
@@ -26,8 +25,6 @@ import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -61,11 +58,6 @@ public final class Main {
         new ninjaphenix.expandedstorage.barrel.Main();
         new ninjaphenix.expandedstorage.chest.Main();
         new ninjaphenix.expandedstorage.old_chest.Main();
-    }
-
-    private boolean regionIntersects(AbstractWidget widget, int x, int y, int width, int height) {
-        return widget.x <= x + width && y <= widget.y + widget.getHeight() ||
-                x <= widget.x + widget.getWidth() && widget.y <= y + height;
     }
 
     @OnlyIn(Dist.CLIENT)

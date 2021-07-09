@@ -52,11 +52,12 @@ public abstract class AbstractScreen<T extends AbstractContainerMenu_<R>, R exte
     @Override
     @SuppressWarnings("ConstantConditions")
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (PlatformUtils.getInstance().getConfigScreenKeyMapping().matches(keyCode, scanCode) && Screen.hasShiftDown()) {
+        boolean keyRequiresShift = PlatformUtils.getInstance().configKeyRequiresShift();
+        if (PlatformUtils.getInstance().getConfigScreenKeyMapping().matches(keyCode, scanCode) &&
+                (!keyRequiresShift || keyRequiresShift && Screen.hasShiftDown())) {
             NetworkWrapper.getInstance().c2s_openTypeSelectScreen();
             return true;
-        }
-        else if (keyCode == GLFW.GLFW_KEY_ESCAPE || minecraft.options.keyInventory.matches(keyCode, scanCode)) {
+        } else if (keyCode == GLFW.GLFW_KEY_ESCAPE || minecraft.options.keyInventory.matches(keyCode, scanCode)) {
             minecraft.player.closeContainer();
             return true;
         }
@@ -80,7 +81,7 @@ public abstract class AbstractScreen<T extends AbstractContainerMenu_<R>, R exte
         private final int textureWidth;
         private final int textureHeight;
 
-        protected Image(int x, int y, int width, int height, int textureX, int textureY, int textureWidth, int textureHeight) {
+        Image(int x, int y, int width, int height, int textureX, int textureY, int textureWidth, int textureHeight) {
             this.x = x;
             this.y = y;
             this.width = width;

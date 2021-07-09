@@ -66,7 +66,7 @@ subprojects {
 
     tasks.withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
-        if ("I_HATE_INTELLIJ_AND_GRADLE" in System.getenv()) {
+        if ("INTELLIJ_IMPORT_HACK" in System.getenv()) {
             options.release.set(minecraft_java_version.toInt())
         }
     }

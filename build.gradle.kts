@@ -63,11 +63,11 @@ subprojects {
     }
 
     val minecraft_java_version : String by project
-    val isIdeaSync = System.getProperty("idea.sync.active", "false") == "false";
+    val isNotIdeaSync = System.getProperty("idea.sync.active", "false").toBoolean().not();
 
     tasks.withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
-        if (isIdeaSync) {
+        if (isNotIdeaSync) {
             options.release.set(minecraft_java_version.toInt())
         }
     }

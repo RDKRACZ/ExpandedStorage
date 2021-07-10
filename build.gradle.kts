@@ -53,13 +53,9 @@ subprojects {
         }
     }
 
-    repositories {
-        mavenLocal()
-    }
-
     dependencies {
-        annotationProcessor("com.github.bsideup.jabel:jabel-javac-plugin:0.4.0")
-        compileOnly("com.github.bsideup.jabel:jabel-javac-plugin:0.4.0")
+        annotationProcessor("com.github.bsideup.jabel:jabel-javac-plugin:0.4.1")
+        compileOnly("com.github.bsideup.jabel:jabel-javac-plugin:0.4.1")
     }
 
     val minecraft_java_version : String by project

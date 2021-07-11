@@ -1,8 +1,10 @@
 name: Release Mod
 on:
-  push:
-    branches:
-    - release/*
+  workflow_dispatch:
+
+  #push:
+  #  branches:
+  #  - release/*
 jobs:
   build:
     runs-on: ubuntu-latest

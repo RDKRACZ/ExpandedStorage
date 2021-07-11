@@ -6,7 +6,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -23,11 +23,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraftforge.items.IItemHandler;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractStorageBlockEntity;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.CompoundWorldlyContainer;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.CombinedIItemHandler;
 import ninjaphenix.expandedstorage.base.internal_api.inventory.ContainerMenuFactory;
 import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 import org.jetbrains.annotations.ApiStatus.Experimental;
@@ -41,31 +42,32 @@ import java.util.function.BiPredicate;
 @Experimental
 public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockEntity> extends AbstractOpenableStorageBlock {
     public static final EnumProperty<CursedChestType> CURSED_CHEST_TYPE = EnumProperty.create("type", CursedChestType.class);
-    private final DoubleBlockCombiner.Combiner<T, Optional<WorldlyContainer>> containerGetter = new DoubleBlockCombiner.Combiner<T, Optional<WorldlyContainer>>() {
+    private static final DoubleBlockCombiner.Combiner<AbstractOpenableStorageBlockEntity, Optional<IItemHandler>> inventoryGetter = new DoubleBlockCombiner.Combiner<>() {
         @Override
-        public Optional<WorldlyContainer> acceptDouble(T first, T second) {
-            return Optional.of(new CompoundWorldlyContainer(first, second));
+        public Optional<IItemHandler> acceptDouble(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
+            return Optional.of(new CombinedIItemHandler(
+                    AbstractOpenableStorageBlockEntity.createGenericItemHandler(first),
+                    AbstractOpenableStorageBlockEntity.createGenericItemHandler(second)
+            ));
         }
 
         @Override
-        public Optional<WorldlyContainer> acceptSingle(T single) {
-            return Optional.of(single);
+        public Optional<IItemHandler> acceptSingle(AbstractOpenableStorageBlockEntity single) {
+            return Optional.of(AbstractOpenableStorageBlockEntity.createGenericItemHandler(single));
         }
 
         @Override
-        public Optional<WorldlyContainer> acceptNone() {
+        public Optional<IItemHandler> acceptNone() {
             return Optional.empty();
         }
     };
-
-    private final DoubleBlockCombiner.Combiner<T, Optional<ContainerMenuFactory>> menuGetter = new DoubleBlockCombiner.Combiner<T, Optional<ContainerMenuFactory>>() {
+    private final DoubleBlockCombiner.Combiner<T, Optional<ContainerMenuFactory>> menuGetter = new DoubleBlockCombiner.Combiner<>() {
         @Override
         public Optional<ContainerMenuFactory> acceptDouble(T first, T second) {
             return Optional.of(new ContainerMenuFactory() {
                 @Override
                 public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
-                    CompoundWorldlyContainer container = new CompoundWorldlyContainer(first, second);
-                    buffer.writeBlockPos(first.getBlockPos()).writeInt(container.getContainerSize());
+                    buffer.writeBlockPos(first.getBlockPos()).writeInt(first.getItemCount() + second.getItemCount());
                 }
 
                 @Override
@@ -84,8 +86,8 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
 
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
-                    if (first.stillValid(player) && second.stillValid(player)) {
-                        CompoundWorldlyContainer container = new CompoundWorldlyContainer(first, second);
+                    if (first.canContinueUse(player) && second.canContinueUse(player)) {
+                        CompoundContainer container = new CompoundContainer(first.getContainerWrapper(), second.getContainerWrapper());
                         return NetworkWrapper.getInstance().createMenu(windowId, first.getBlockPos(), container, playerInventory, this.displayName());
                     }
                     return null;
@@ -98,7 +100,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
             return Optional.of(new ContainerMenuFactory() {
                 @Override
                 public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
-                    buffer.writeBlockPos(single.getBlockPos()).writeInt(single.getContainerSize());
+                    buffer.writeBlockPos(single.getBlockPos()).writeInt(single.getItemCount());
                 }
 
                 @Override
@@ -117,8 +119,8 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
 
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
-                    if (single.stillValid(player)) {
-                        return NetworkWrapper.getInstance().createMenu(windowId, single.getBlockPos(), single, playerInventory, this.displayName());
+                    if (single.canContinueUse(player)) {
+                        return NetworkWrapper.getInstance().createMenu(windowId, single.getBlockPos(), single.getContainerWrapper(), playerInventory, this.displayName());
                     }
                     return null;
                 }
@@ -283,7 +285,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
 
     public final NeighborCombineResult<? extends T> combine(BlockState state, LevelAccessor level, BlockPos pos, boolean alwaysOpen) {
         BiPredicate<LevelAccessor, BlockPos> isChestBlocked = alwaysOpen ? (_level, _pos) -> false : this::isBlocked;
-        return DoubleBlockCombiner.combineWithNeigbour(blockEntityType(), AbstractChestBlock::getBlockType,
+        return DoubleBlockCombiner.combineWithNeigbour(this.blockEntityType(), AbstractChestBlock::getBlockType,
                 AbstractChestBlock::getDirectionToAttached, BlockStateProperties.HORIZONTAL_FACING, state, level, pos,
                 isChestBlocked);
     }
@@ -299,8 +301,10 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         return this.combine(state, level, pos, false).apply(menuGetter).orElse(null);
     }
 
-    @Override // Keep for hoppers.
-    public WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
-        return this.combine(state, level, pos, true).apply(containerGetter).orElse(null);
+    public static Optional<IItemHandler> createItemHandler(Level level, BlockState state, BlockPos pos) {
+        if (state.getBlock() instanceof AbstractChestBlock<?> block) {
+            return block.combine(state, level, pos, false).apply(AbstractChestBlock.inventoryGetter);
+        }
+        return Optional.empty();
     }
 }

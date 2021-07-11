@@ -1,10 +1,10 @@
-import ninjaphenix.gradle.task.MinifyJsonTask
+import com.gitlab.ninjaphenix.gradle.task.MinifyJsonTask
 import org.gradle.jvm.tasks.Jar
 
 plugins {
     java
     id("dev.architectury.loom").version("0.8.0-SNAPSHOT").apply(false)
-    id("ninjaphenix.gradle.gradle-utils").version("0.0.16")
+    id("com.gitlab.ninjaphenix.gradle-utils").version("0.0.20")
 }
 
 subprojects {

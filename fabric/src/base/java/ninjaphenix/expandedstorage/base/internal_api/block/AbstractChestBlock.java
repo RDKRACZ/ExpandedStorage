@@ -41,7 +41,7 @@ import java.util.function.BiPredicate;
 @Experimental
 public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockEntity> extends AbstractOpenableStorageBlock {
     public static final EnumProperty<CursedChestType> CURSED_CHEST_TYPE = EnumProperty.create("type", CursedChestType.class);
-    private final DoubleBlockCombiner.Combiner<T, Optional<WorldlyContainer>> containerGetter = new DoubleBlockCombiner.Combiner<T, Optional<WorldlyContainer>>() {
+    private final DoubleBlockCombiner.Combiner<T, Optional<WorldlyContainer>> containerGetter = new DoubleBlockCombiner.Combiner<>() {
         @Override
         public Optional<WorldlyContainer> acceptDouble(T first, T second) {
             return Optional.of(new CompoundWorldlyContainer(first, second));
@@ -58,7 +58,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         }
     };
 
-    private final DoubleBlockCombiner.Combiner<T, Optional<ContainerMenuFactory>> menuGetter = new DoubleBlockCombiner.Combiner<T, Optional<ContainerMenuFactory>>() {
+    private final DoubleBlockCombiner.Combiner<T, Optional<ContainerMenuFactory>> menuGetter = new DoubleBlockCombiner.Combiner<>() {
         @Override
         public Optional<ContainerMenuFactory> acceptDouble(T first, T second) {
             return Optional.of(new ContainerMenuFactory() {

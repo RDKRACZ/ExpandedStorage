@@ -51,7 +51,6 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
             @Override
             protected void openerCountChanged(Level level, BlockPos pos, BlockState state, int i, int j) {
-                // Does this respect method overriding?
                 AbstractOpenableStorageBlockEntity.this.openerCountChanged(level, pos, state, i, j);
             }
 
@@ -194,6 +193,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
     @Override
     public boolean stillValid(Player player) {
+        //noinspection ConstantConditions
         return level.getBlockEntity(worldPosition) == this && player.distanceToSqr(Vec3.atCenterOf(worldPosition)) <= 64;
     }
 

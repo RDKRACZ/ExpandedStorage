@@ -4,7 +4,6 @@ import com.google.common.base.Suppliers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -24,6 +23,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractContainerMenu_;
 import org.jetbrains.annotations.ApiStatus.Experimental;
@@ -191,7 +191,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
                                 stackInSlot.setCount(limit);
                                 entity.setChanged();
                             }
-                            return stack.split(diff);
+                            return simulate ? stack.copy().split(stack.getCount() - diff) : stack.split(stack.getCount() - diff);
                         } else {
                             if (!simulate) {
                                 stackInSlot.setCount(stackInSlot.getCount() + stack.getCount());
@@ -237,7 +237,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     }
 
     private void initialise(ResourceLocation blockId) {
-        if (Registry.BLOCK.get(blockId) instanceof AbstractOpenableStorageBlock block) {
+        if (ForgeRegistries.BLOCKS.getValue(blockId) instanceof AbstractOpenableStorageBlock block) {
             slots = block.getSlotCount();
             inventory = NonNullList.withSize(slots, ItemStack.EMPTY);
             containerName = block.getContainerName();
@@ -280,6 +280,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     }
 
     public boolean canContinueUse(Player player) {
+        //noinspection ConstantConditions
         return level.getBlockEntity(worldPosition) == this && player.distanceToSqr(Vec3.atCenterOf(worldPosition)) <= 64;
     }
 }

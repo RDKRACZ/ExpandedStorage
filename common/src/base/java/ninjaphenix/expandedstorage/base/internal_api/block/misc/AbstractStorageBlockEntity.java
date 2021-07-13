@@ -17,9 +17,6 @@ import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * todo: look into how block state updating occurs.
- */
 @Internal
 @Experimental
 public abstract class AbstractStorageBlockEntity extends BlockEntity implements Nameable {

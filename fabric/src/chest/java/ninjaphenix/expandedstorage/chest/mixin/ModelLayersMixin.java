@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Map;
 
-// todo: hopefully remove this before 1.17
+// todo: hopefully remove this before 1.18
 @Mixin(LayerDefinitions.class)
 public class ModelLayersMixin {
     @Inject(method = "createRoots()Ljava/util/Map;",

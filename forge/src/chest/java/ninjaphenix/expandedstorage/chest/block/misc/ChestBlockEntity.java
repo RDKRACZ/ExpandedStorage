@@ -1,6 +1,5 @@
 package ninjaphenix.expandedstorage.chest.block.misc;
 
-// todo: missing some imports
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvent;
@@ -62,7 +61,7 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
 
     @Override
     protected boolean isOwnContainer(Container container) {
-        // todo: rewrite
+        // todo: rewrite, we don't use double containers on forge...
         //return container == this || container instanceof CompoundWorldlyContainer compoundContainer && compoundContainer.consistsPartlyOf(this);
         return suuper.isOwnContainer(container);
     }

@@ -35,7 +35,7 @@ import ninjaphenix.expandedstorage.chest.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.chest.internal_api.ChestApi;
 
 public final class ChestBlockEntityRenderer implements BlockEntityRenderer<ChestBlockEntity> {
-    // todo: hopefully we can remove this mess once *hopefully* this is all json
+    // todo: hopefully we can remove this mess once *hopefully* this is all json, 1.18
     public static final ModelLayerLocation SINGLE_LAYER = new ModelLayerLocation(Utils.resloc("single_chest"), "main");
     public static final ModelLayerLocation VANILLA_LEFT_LAYER = new ModelLayerLocation(Utils.resloc("vanilla_left_chest"), "main");
     public static final ModelLayerLocation VANILLA_RIGHT_LAYER = new ModelLayerLocation(Utils.resloc("vanilla_right_chest"), "main");

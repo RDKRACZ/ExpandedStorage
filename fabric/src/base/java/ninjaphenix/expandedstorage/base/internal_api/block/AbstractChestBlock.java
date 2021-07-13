@@ -283,7 +283,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
 
     public final NeighborCombineResult<? extends T> combine(BlockState state, LevelAccessor level, BlockPos pos, boolean alwaysOpen) {
         BiPredicate<LevelAccessor, BlockPos> isChestBlocked = alwaysOpen ? (_level, _pos) -> false : this::isBlocked;
-        return DoubleBlockCombiner.combineWithNeigbour(blockEntityType(), AbstractChestBlock::getBlockType,
+        return DoubleBlockCombiner.combineWithNeigbour(this.blockEntityType(), AbstractChestBlock::getBlockType,
                 AbstractChestBlock::getDirectionToAttached, BlockStateProperties.HORIZONTAL_FACING, state, level, pos,
                 isChestBlocked);
     }

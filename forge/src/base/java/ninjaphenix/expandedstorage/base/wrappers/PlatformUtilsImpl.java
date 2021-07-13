@@ -65,6 +65,11 @@ final class PlatformUtilsImpl implements PlatformUtils {
     }
 
     @Override
+    public <T extends BlockEntity> BlockEntityType<T> createBlockEntityType(BiFunction<BlockPos, BlockState, T> blockEntitySupplier, Set<Block> blocks, Type<?> type) {
+        return new BlockEntityType<>(blockEntitySupplier::apply, blocks, type);
+    }
+
+    @Override
     public boolean isModLoaded(String modId) {
         return ModList.get().isLoaded(modId);
     }

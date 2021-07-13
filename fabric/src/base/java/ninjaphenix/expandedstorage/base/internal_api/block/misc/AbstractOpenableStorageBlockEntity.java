@@ -69,6 +69,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         }
     }
 
+    // todo: might need to rewrite so children can't overwrite this.
     @Override
     public void startOpen(Player player) {
         if (!player.isSpectator()) {

@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -37,6 +38,7 @@ import java.util.function.Supplier;
 @Experimental
 public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements ICapabilityProvider {
     private final ResourceLocation blockId;
+    private final ContainerOpenersCounter openersCounter;
     protected Component containerName;
     private int slots;
     private NonNullList<ItemStack> inventory;
@@ -111,29 +113,70 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         }
     });
 
-    public AbstractOpenableStorageBlockEntity(BlockEntityType<?> blockEntityType, ResourceLocation blockId) {
-        super(blockEntityType);
+    public AbstractOpenableStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, ResourceLocation blockId) {
+        super(blockEntityType, pos, state);
+        this.openersCounter = new ContainerOpenersCounter() {
+            @Override
+            protected void onOpen(Level level, BlockPos pos, BlockState state) {
+                AbstractOpenableStorageBlockEntity.this.onOpen(level, pos, state);
+            }
+
+            @Override
+            protected void onClose(Level level, BlockPos pos, BlockState state) {
+                AbstractOpenableStorageBlockEntity.this.onClose(level, pos, state);
+            }
+
+            @Override
+            protected void openerCountChanged(Level level, BlockPos pos, BlockState state, int i, int j) {
+                AbstractOpenableStorageBlockEntity.this.openerCountChanged(level, pos, state, i, j);
+            }
+
+            @Override
+            protected boolean isOwnContainer(Player player) {
+                if (player.containerMenu instanceof AbstractContainerMenu_<?>) {
+                    return AbstractOpenableStorageBlockEntity.this.isOwnContainer(((AbstractContainerMenu_<?>) player.containerMenu).getContainer());
+                } else {
+                    return false;
+                }
+            }
+        };
         this.blockId = blockId;
         if (blockId != null) {
             this.initialise(blockId);
         }
     }
 
+    // todo: might need to rewrite so children can't overwrite this.
     protected void startOpen(Player player) {
-
+        if (!player.isSpectator()) {
+            openersCounter.incrementOpeners(player, getLevel(), getBlockPos(), getBlockState());
+        }
     }
 
     protected void stopOpen(Player player) {
+        if (!player.isSpectator()) {
+            openersCounter.decrementOpeners(player, getLevel(), getBlockPos(), getBlockState());
+        }
+    }
+
+    protected boolean isOwnContainer(Container container) {
+        return container == this.container.get();
+    }
+
+    protected void openerCountChanged(Level level, BlockPos pos, BlockState state, int i, int j) {
 
     }
 
-    protected static int countViewers(Level level, Container container, int x, int y, int z) {
-        return level.getEntitiesOfClass(Player.class, new AABB(x - 5, y - 5, z - 5, x + 6, y + 6, z + 6)).stream()
-                    .filter(player -> player.containerMenu instanceof AbstractContainerMenu_<?>)
-                    .map(player -> ((AbstractContainerMenu_<?>) player.containerMenu).getContainer())
-                    .filter(openContainer -> openContainer == container ||
-                            openContainer instanceof CompoundContainer compoundContainer && compoundContainer.contains(container))
-                    .mapToInt(inv -> 1).sum();
+    protected void onOpen(Level level, BlockPos pos, BlockState state) {
+
+    }
+
+    protected void onClose(Level level, BlockPos pos, BlockState state) {
+
+    }
+
+    public final void recheckOpen() {
+        openersCounter.recheckOpeners(getLevel(), getBlockPos(), getBlockState());
     }
 
     public Container getContainerWrapper() {
@@ -254,9 +297,9 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     }
 
     @Override
-    public void load(BlockState state, CompoundTag tag) {
-        super.load(state, tag);
-        if (state.getBlock() instanceof AbstractOpenableStorageBlock block) {
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        if (this.getBlockState().getBlock() instanceof AbstractOpenableStorageBlock block) {
             this.initialise(block.blockId());
             ContainerHelper.loadAllItems(tag, inventory);
         } else {

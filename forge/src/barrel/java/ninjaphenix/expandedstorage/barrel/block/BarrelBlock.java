@@ -45,17 +45,16 @@ public final class BarrelBlock extends AbstractOpenableStorageBlock {
         return BarrelCommon.BLOCK_TYPE;
     }
 
-    @NotNull
     @Override
-    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return new BarrelBlockEntity(BarrelCommon.getBlockEntityType(), this.blockId());
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new BarrelBlockEntity(BarrelCommon.getBlockEntityType(), pos, state);
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public void tick(BlockState state, ServerLevel level, BlockPos pos, Random random) {
         if (level.getBlockEntity(pos) instanceof BarrelBlockEntity entity) {
-            entity.checkViewerCount();
+            entity.recheckOpen();
         }
     }
 }

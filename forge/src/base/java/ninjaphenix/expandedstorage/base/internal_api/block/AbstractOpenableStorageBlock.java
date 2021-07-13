@@ -33,10 +33,10 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-
+//todo: Might not be implementing EntityBlock in 1.17.1, sounded like it though
 @Internal
 @Experimental
-public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock {
+public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock implements EntityBlock {
     private final ResourceLocation openStat;
     private final int slots;
 
@@ -53,11 +53,6 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
 
     public final Component getContainerName() {
         return new TranslatableComponent(this.getDescriptionId());
-    }
-
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
     }
 
     @Override

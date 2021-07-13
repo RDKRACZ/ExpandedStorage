@@ -90,11 +90,9 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     @Override
     @SuppressWarnings("deprecation")
     public void tick(BlockState state, ServerLevel level, BlockPos pos, Random random) {
-        final BlockEntity temp = level.getBlockEntity(pos);
-        if (temp instanceof ChestBlockEntity) {
-            ((ChestBlockEntity) temp).recheckOpen();
+        if (level.getBlockEntity(pos) instanceof ChestBlockEntity entity) {
+            entity.recheckOpen();
         }
-
     }
 
     @Override

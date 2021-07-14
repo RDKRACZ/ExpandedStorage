@@ -8,9 +8,11 @@ loom {
     runs {
         named("client") {
             vmArgs("-XX:+IgnoreUnrecognizedVMOptions")
+            ideConfigGenerated(false)
         }
         named("server") {
             vmArgs("-XX:+IgnoreUnrecognizedVMOptions")
+            ideConfigGenerated(false)
         }
     }
 

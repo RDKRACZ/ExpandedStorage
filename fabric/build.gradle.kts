@@ -5,6 +5,14 @@ plugins {
 loom {
     silentMojangMappingsLicense()
     useFabricMixin = true
+    runs {
+        named("client") {
+            ideConfigGenerated(false)
+        }
+        named("server") {
+            ideConfigGenerated(false)
+        }
+    }
 
     accessWidener = file("src/common/resources/expandedstorage.accessWidener")
 }

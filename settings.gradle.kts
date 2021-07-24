@@ -1,4 +1,11 @@
 pluginManagement {
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.toString() == "net.minecraftforge.gradle") {
+                useModule("net.minecraftforge.gradle:ForgeGradle:${requested.version}")
+            }
+        }
+    }
     repositories {
         maven {
             name = "Architectury"
@@ -36,4 +43,4 @@ pluginManagement {
 rootProject.name = "expandedstorage"
 
 include("fabric")
-//include('forge')
+include("forge")

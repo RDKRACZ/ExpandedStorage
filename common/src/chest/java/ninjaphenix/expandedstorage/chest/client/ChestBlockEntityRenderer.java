@@ -1,12 +1,10 @@
 package ninjaphenix.expandedstorage.chest.client;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -154,26 +152,6 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
         partDefinition.addOrReplaceChild("bottom", CubeListBuilder.create().texOffs(0, 20).addBox(1, 0, 1, 14, 10, 15), PartPose.ZERO);
         partDefinition.addOrReplaceChild("lid", CubeListBuilder.create().texOffs(0, 0).addBox(1, 0, 0, 14, 5, 15), PartPose.offset(0, 9, 1));
         return LayerDefinition.create(meshDefinition, 48, 48);
-    }
-
-    public static void registerModelLayers() {
-        ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.SINGLE_LAYER);
-        ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.VANILLA_LEFT_LAYER);
-        ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.VANILLA_RIGHT_LAYER);
-        ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.TALL_TOP_LAYER);
-        ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.TALL_BOTTOM_LAYER);
-        ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.LONG_FRONT_LAYER);
-        ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.LONG_BACK_LAYER);
-    }
-
-    public static void registerModelLayersDefinitions(ImmutableMap.Builder<ModelLayerLocation, LayerDefinition> builder) {
-        builder.put(ChestBlockEntityRenderer.SINGLE_LAYER, createSingleBodyLayer());
-        builder.put(ChestBlockEntityRenderer.VANILLA_LEFT_LAYER, createVanillaLeftBodyLayer());
-        builder.put(ChestBlockEntityRenderer.VANILLA_RIGHT_LAYER, createVanillaRightBodyLayer());
-        builder.put(ChestBlockEntityRenderer.TALL_TOP_LAYER, createTallTopBodyLayer());
-        builder.put(ChestBlockEntityRenderer.TALL_BOTTOM_LAYER, createTallBottomBodyLayer());
-        builder.put(ChestBlockEntityRenderer.LONG_FRONT_LAYER, createLongFrontBodyLayer());
-        builder.put(ChestBlockEntityRenderer.LONG_BACK_LAYER, createLongBackBodyLayer());
     }
 
     @Override

@@ -2,7 +2,7 @@ package ninjaphenix.expandedstorage.base.network;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 
 import java.util.function.Supplier;

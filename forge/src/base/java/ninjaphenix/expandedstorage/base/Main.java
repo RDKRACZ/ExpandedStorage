@@ -11,11 +11,11 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fmlclient.ConfigGuiHandler;
 import net.minecraftforge.registries.IForgeRegistry;
 import ninjaphenix.expandedstorage.base.client.menu.PagedScreen;
 import ninjaphenix.expandedstorage.base.client.menu.PickScreen;
@@ -62,12 +62,14 @@ public final class Main {
 
     @OnlyIn(Dist.CLIENT)
     private void registerConfigGuiHandler() {
-        ModLoadingContext.get().getActiveContainer().registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (minecraft, screen) -> {
-            Set<ResourceLocation> values = new HashSet<>();
-            values.add(Utils.SINGLE_CONTAINER_TYPE);
-            values.add(Utils.PAGE_CONTAINER_TYPE);
-            values.add(Utils.SCROLL_CONTAINER_TYPE);
-            return new PickScreen(values, screen);
-        });
+
+        ModLoadingContext.get().getActiveContainer().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class,
+                () -> new ConfigGuiHandler.ConfigGuiFactory((minecraft, screen) -> {
+                    Set<ResourceLocation> values = new HashSet<>();
+                    values.add(Utils.SINGLE_CONTAINER_TYPE);
+                    values.add(Utils.PAGE_CONTAINER_TYPE);
+                    values.add(Utils.SCROLL_CONTAINER_TYPE);
+                    return new PickScreen(values, screen);
+                }));
     }
 }

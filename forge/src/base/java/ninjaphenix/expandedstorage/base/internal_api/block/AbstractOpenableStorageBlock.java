@@ -10,8 +10,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -34,7 +32,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-//todo: Might not be implementing EntityBlock in 1.17.1, sounded like it though
 @Internal
 @Experimental
 public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock implements EntityBlock {

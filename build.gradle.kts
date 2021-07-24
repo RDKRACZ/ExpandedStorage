@@ -9,7 +9,10 @@ plugins {
 
 subprojects {
     apply(plugin = "java")
-    apply(plugin = "dev.architectury.loom")
+    val isFabricProject = project.name == "fabric"
+    if (isFabricProject) {
+        apply(plugin = "dev.architectury.loom")
+    }
 
     group = properties["maven_group"] as String
     version = properties["mod_version"] as String
@@ -57,23 +60,25 @@ subprojects {
         options.encoding = "UTF-8"
     }
 
-    val remapJarTask : Jar = tasks.getByName<Jar>("remapJar") {
-        archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}-fat.jar")
-    }
+    if (isFabricProject) {
+        val remapJarTask : Jar = tasks.getByName<Jar>("remapJar") {
+            archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}-fat.jar")
+        }
 
-    tasks.getByName<Jar>("jar") {
-        archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}-dev.jar")
-    }
+        tasks.getByName<Jar>("jar") {
+            archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}-dev.jar")
+        }
 
-    val minifyJarTask = tasks.register<MinifyJsonTask>("minJar") {
-        parent.set(remapJarTask.outputs.files.singleFile)
-        filePatterns.set(listOf("**/*.json", "**/*.mcmeta"))
-        archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}.jar")
-        dependsOn(remapJarTask)
-    }
+        val minifyJarTask = tasks.register<MinifyJsonTask>("minJar") {
+            parent.set(remapJarTask.outputs.files.singleFile)
+            filePatterns.set(listOf("**/*.json", "**/*.mcmeta"))
+            archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}.jar")
+            dependsOn(remapJarTask)
+        }
 
-    tasks.getByName("build") {
-        dependsOn(minifyJarTask)
+        tasks.getByName("build") {
+            dependsOn(minifyJarTask)
+        }
     }
 }
 

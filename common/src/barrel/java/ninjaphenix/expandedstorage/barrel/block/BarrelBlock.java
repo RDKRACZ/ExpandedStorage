@@ -4,9 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -46,12 +44,6 @@ public final class BarrelBlock extends AbstractOpenableStorageBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new BarrelBlockEntity(BarrelCommon.getBlockEntityType(), pos, state);
-    }
-
-    @Override
-    public WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
-        BlockEntity entity = level.getBlockEntity(pos);
-        return entity == null || entity.getType() != BarrelCommon.getBlockEntityType() ? null : (WorldlyContainer) entity;
     }
 
     @Override

@@ -8,7 +8,6 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
@@ -84,7 +83,8 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? BaseEntityBlock.createTickerHelper(blockEntityType, ChestCommon.getBlockEntityType(), ChestBlockEntity::lidAnimateTick) : null;
+        boolean correctBET = blockEntityType == ChestCommon.getBlockEntityType();
+        return level.isClientSide() && correctBET ? (level1, pos, state1, entity) -> ChestBlockEntity.lidAnimateTick(level1, pos, state1, (ChestBlockEntity) entity) : null;
     }
 
     @Override

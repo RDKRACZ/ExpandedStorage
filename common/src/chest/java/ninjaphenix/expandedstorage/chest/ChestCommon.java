@@ -40,6 +40,7 @@ import ninjaphenix.expandedstorage.chest.internal_api.ChestApi;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -55,7 +56,8 @@ public final class ChestCommon {
     static void registerContent(Consumer<Set<ChestBlock>> blockReg,
                                 Consumer<Set<BlockItem>> itemReg,
                                 Consumer<BlockEntityType<ChestBlockEntity>> blockEntityTypeConsumer,
-                                net.minecraft.tags.Tag<Block> woodenChestTag) {
+                                net.minecraft.tags.Tag<Block> woodenChestTag,
+                                BiFunction<Block, Item.Properties, BlockItem> blockItemMaker) {
         // Init tiers
         OpenableTier woodTier = new OpenableTier(Utils.WOOD_TIER, ChestCommon.BLOCK_TYPE, Utils.WOOD_STACK_COUNT);
         OpenableTier pumpkinTier = woodTier;
@@ -110,14 +112,14 @@ public final class ChestCommon {
         Set<ChestBlock> blocks = ImmutableSet.copyOf(new ChestBlock[]{woodChestBlock, pumpkinChestBlock, christmasChestBlock, ironChestBlock, goldChestBlock, diamondChestBlock, obsidianChestBlock, netheriteChestBlock});
         blockReg.accept(blocks);
         // Init and register items
-        BlockItem woodChestItem = ChestCommon.chestItem(woodTier, woodChestBlock);
-        BlockItem pumpkinChestItem = ChestCommon.chestItem(pumpkinTier, pumpkinChestBlock);
-        BlockItem christmasChestItem = ChestCommon.chestItem(christmasTier, christmasChestBlock);
-        BlockItem ironChestItem = ChestCommon.chestItem(ironTier, ironChestBlock);
-        BlockItem goldChestItem = ChestCommon.chestItem(goldTier, goldChestBlock);
-        BlockItem diamondChestItem = ChestCommon.chestItem(diamondTier, diamondChestBlock);
-        BlockItem obsidianChestItem = ChestCommon.chestItem(obsidianTier, obsidianChestBlock);
-        BlockItem netheriteChestItem = ChestCommon.chestItem(netheriteTier, netheriteChestBlock);
+        BlockItem woodChestItem = ChestCommon.chestItem(woodTier, woodChestBlock, blockItemMaker);
+        BlockItem pumpkinChestItem = ChestCommon.chestItem(pumpkinTier, pumpkinChestBlock, blockItemMaker);
+        BlockItem christmasChestItem = ChestCommon.chestItem(christmasTier, christmasChestBlock, blockItemMaker);
+        BlockItem ironChestItem = ChestCommon.chestItem(ironTier, ironChestBlock, blockItemMaker);
+        BlockItem goldChestItem = ChestCommon.chestItem(goldTier, goldChestBlock, blockItemMaker);
+        BlockItem diamondChestItem = ChestCommon.chestItem(diamondTier, diamondChestBlock, blockItemMaker);
+        BlockItem obsidianChestItem = ChestCommon.chestItem(obsidianTier, obsidianChestBlock, blockItemMaker);
+        BlockItem netheriteChestItem = ChestCommon.chestItem(netheriteTier, netheriteChestBlock, blockItemMaker);
         Set<BlockItem> items = ImmutableSet.copyOf(new BlockItem[]{woodChestItem, pumpkinChestItem, christmasChestItem, ironChestItem, goldChestItem, diamondChestItem, obsidianChestItem, netheriteChestItem});
         itemReg.accept(items);
         // Init and register block entity type
@@ -140,8 +142,8 @@ public final class ChestCommon {
         return block;
     }
 
-    private static BlockItem chestItem(OpenableTier tier, ChestBlock block) {
-        return new BlockItem(block, tier.itemProperties().apply(new Item.Properties().tab(Utils.TAB)));
+    private static BlockItem chestItem(OpenableTier tier, ChestBlock block, BiFunction<Block, Item.Properties, BlockItem> blockItemMaker) {
+        return blockItemMaker.apply(block, tier.itemProperties().apply(new Item.Properties().tab(Utils.TAB)));
     }
 
     static Set<ResourceLocation> getChestTextures(Set<ChestBlock> blocks) {

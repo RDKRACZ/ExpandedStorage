@@ -131,7 +131,7 @@ public final class Main implements ModuleInitializer {
 
     private BlockItem chestItem(OpenableTier tier, ChestBlock block) {
         Item.Properties itemProperties = tier.itemProperties().apply(new Item.Properties().tab(Utils.TAB));
-        return Registry.register(Registry.ITEM, block.blockId(), new BlockItem(block, itemProperties));
+        return Registry.register(Registry.ITEM, block.getBlockId(), new BlockItem(block, itemProperties));
     }
 
     private static class Client {
@@ -142,7 +142,7 @@ public final class Main implements ModuleInitializer {
             BlockEntityRendererRegistry.INSTANCE.register(ChestCommon.getBlockEntityType(), ChestBlockEntityRenderer::new);
 
             items.forEach(item -> {
-                ChestBlockEntity renderEntity = new ChestBlockEntity(ChestCommon.getBlockEntityType(), ((ChestBlock) item.getBlock()).blockId());
+                ChestBlockEntity renderEntity = new ChestBlockEntity(ChestCommon.getBlockEntityType(), ((ChestBlock) item.getBlock()).getBlockId());
                 BuiltinItemRendererRegistry.INSTANCE.register(item, (itemStack, transform, stack, source, light, overlay) ->
                         BlockEntityRenderDispatcher.instance.renderItem(renderEntity, stack, source, light, overlay));
             });

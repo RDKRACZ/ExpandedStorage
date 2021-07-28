@@ -17,7 +17,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractContainerMenu_;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.CompoundWorldlyContainer;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.CombinedInventory;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +47,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
                     .filter(player -> player.containerMenu instanceof AbstractContainerMenu_<?>)
                     .map(player -> ((AbstractContainerMenu_<?>) player.containerMenu).getContainer())
                     .filter(openContainer -> openContainer == container ||
-                            openContainer instanceof CompoundWorldlyContainer compoundContainer && compoundContainer.consistsPartlyOf(container))
+                            openContainer instanceof CombinedInventory compoundContainer && compoundContainer.consistsPartlyOf(container))
                     .mapToInt(inv -> 1).sum();
     }
 
@@ -74,7 +74,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     public void load(BlockState state, CompoundTag tag) {
         super.load(state, tag);
         if (state.getBlock() instanceof AbstractOpenableStorageBlock block) {
-            this.initialise(block.blockId());
+            this.initialise(block.getBlockId());
             ContainerHelper.loadAllItems(tag, inventory);
         } else {
             throw new IllegalStateException("Block Entity attached to wrong block.");
@@ -141,6 +141,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
     @Override
     public boolean stillValid(Player player) {
+        //noinspection ConstantConditions
         return level.getBlockEntity(worldPosition) == this && player.distanceToSqr(Vec3.atCenterOf(worldPosition)) <= 64;
     }
 

@@ -176,7 +176,7 @@ public class Main {
             this.addItemBlockEntityRenderer(itemProperties, block);
         }
         BlockItem item = new BlockItem(block, itemProperties);
-        item.setRegistryName(block.blockId());
+        item.setRegistryName(block.getBlockId());
         return item;
     }
 
@@ -192,7 +192,7 @@ public class Main {
 
             private ChestBlockEntity getOrCreateBlockEntity() {
                 if (renderEntity == null) {
-                    renderEntity = new ChestBlockEntity(ChestCommon.getBlockEntityType(), block.blockId());
+                    renderEntity = new ChestBlockEntity(ChestCommon.getBlockEntityType(), block.getBlockId());
                 }
                 return renderEntity;
             }

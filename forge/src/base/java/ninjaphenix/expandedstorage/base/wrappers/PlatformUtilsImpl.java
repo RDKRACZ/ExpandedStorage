@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 
 final class PlatformUtilsImpl implements PlatformUtils {
     private static PlatformUtilsImpl INSTANCE;
-    private final Supplier<Object> configKeyMapping = Suppliers.memoize(() -> {
+    private final Supplier<Object> configKey = Suppliers.memoize(() -> {
         KeyMapping binding = new KeyMapping("key.expandedstorage.config", KeyConflictContext.GUI, KeyModifier.SHIFT, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_W, "key.categories.inventory");
         ClientRegistry.registerKeyBinding(binding);
         return binding;
@@ -71,12 +71,12 @@ final class PlatformUtilsImpl implements PlatformUtils {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public KeyMapping getConfigScreenKeyMapping() {
-        return (KeyMapping) configKeyMapping.get();
+    public KeyMapping getConfigKey() {
+        return (KeyMapping) configKey.get();
     }
 
     @Override
-    public boolean configKeyRequiresShift() {
-        return false;
+    public boolean isConfigKeyPressed(int keyCode, int scanCode, int modifiers) {
+        return getConfigKey().isActiveAndMatches(InputConstants.getKey(keyCode, scanCode));
     }
 }

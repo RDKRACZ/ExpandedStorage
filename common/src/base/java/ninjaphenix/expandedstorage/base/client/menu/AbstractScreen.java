@@ -52,9 +52,7 @@ public abstract class AbstractScreen<T extends AbstractContainerMenu_<R>, R exte
     @Override
     @SuppressWarnings("ConstantConditions")
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        boolean keyRequiresShift = PlatformUtils.getInstance().configKeyRequiresShift();
-        if (PlatformUtils.getInstance().getConfigScreenKeyMapping().matches(keyCode, scanCode) &&
-                (!keyRequiresShift || keyRequiresShift && Screen.hasShiftDown())) {
+        if (PlatformUtils.getInstance().isConfigKeyPressed(keyCode, scanCode, modifiers)) {
             NetworkWrapper.getInstance().c2s_openTypeSelectScreen();
             return true;
         } else if (keyCode == GLFW.GLFW_KEY_ESCAPE || minecraft.options.keyInventory.matches(keyCode, scanCode)) {

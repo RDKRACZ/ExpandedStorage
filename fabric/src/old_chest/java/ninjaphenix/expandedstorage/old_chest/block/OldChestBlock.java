@@ -15,17 +15,17 @@ public final class OldChestBlock extends AbstractChestBlock<OldChestBlockEntity>
     }
 
     @Override
-    protected BlockEntityType<OldChestBlockEntity> blockEntityType() {
+    protected BlockEntityType<OldChestBlockEntity> getBlockEntityType() {
         return OldChestCommon.getBlockEntityType();
     }
 
     @Override
-    public ResourceLocation blockType() {
+    public ResourceLocation getBlockType() {
         return OldChestCommon.BLOCK_TYPE;
     }
 
     @Override
     public BlockEntity newBlockEntity(BlockGetter getter) {
-        return new OldChestBlockEntity(OldChestCommon.getBlockEntityType(), this.blockId());
+        return new OldChestBlockEntity(OldChestCommon.getBlockEntityType(), this.getBlockId());
     }
 }

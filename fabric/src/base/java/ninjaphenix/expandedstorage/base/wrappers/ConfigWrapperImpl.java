@@ -49,15 +49,15 @@ final class ConfigWrapperImpl implements ConfigWrapper {
         }
     }
 
-    public ResourceLocation getPreferredContainerType() {
-        return config.getContainerType();
+    public ResourceLocation getPreferredScreenType() {
+        return config.getScreenType();
     }
 
-    public boolean setPreferredContainerType(ResourceLocation containerType) {
-        if ((Utils.UNSET_CONTAINER_TYPE.equals(containerType) || Utils.PAGE_CONTAINER_TYPE.equals(containerType)
-                || Utils.SCROLL_CONTAINER_TYPE.equals(containerType) || Utils.SINGLE_CONTAINER_TYPE.equals(containerType))
-                && containerType != config.getContainerType()) {
-            config.setContainerType(containerType);
+    public boolean setPreferredScreenType(ResourceLocation screenType) {
+        if ((Utils.UNSET_SCREEN_TYPE.equals(screenType) || Utils.PAGED_SCREEN_TYPE.equals(screenType)
+                || Utils.SCROLLABLE_SCREEN_TYPE.equals(screenType) || Utils.SINGLE_SCREEN_TYPE.equals(screenType))
+                && screenType != config.getScreenType()) {
+            config.setScreenType(screenType);
             this.saveConfig(config);
             return true;
         }

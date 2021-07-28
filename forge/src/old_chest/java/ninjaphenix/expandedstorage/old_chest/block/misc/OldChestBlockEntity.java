@@ -17,7 +17,6 @@ public final class OldChestBlockEntity extends AbstractOpenableStorageBlockEntit
         super(blockEntityType, blockId);
     }
 
-    @NotNull
     @Override
     protected IItemHandlerModifiable createItemHandler(Level level, BlockState state, BlockPos pos, @Nullable Direction side) {
         return AbstractChestBlock.createItemHandler(level, state, pos).orElse(AbstractOpenableStorageBlockEntity.createGenericItemHandler(this));

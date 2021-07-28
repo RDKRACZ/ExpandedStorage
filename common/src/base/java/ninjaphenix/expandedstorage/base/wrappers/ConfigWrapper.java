@@ -13,7 +13,7 @@ public interface ConfigWrapper {
 
     void setScrollingRestricted(boolean value);
 
-    ResourceLocation getPreferredContainerType();
+    ResourceLocation getPreferredScreenType();
 
-    boolean setPreferredContainerType(ResourceLocation containerType);
+    boolean setPreferredScreenType(ResourceLocation screenType);
 }

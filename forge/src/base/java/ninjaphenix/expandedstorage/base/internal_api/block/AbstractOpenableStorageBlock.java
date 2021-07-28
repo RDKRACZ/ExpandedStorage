@@ -26,7 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractStorageBlockEntity;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.ContainerMenuFactory;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerMenuFactory;
 import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -64,7 +64,7 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
     @SuppressWarnings("deprecation")
     public final InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (player instanceof ServerPlayer serverPlayer) {
-            ContainerMenuFactory menuFactory = this.createContainerFactory(state, level, pos);
+            ServerMenuFactory menuFactory = this.createMenuFactory(state, level, pos);
             if (menuFactory != null) {
                 if (menuFactory.canPlayerOpen(serverPlayer)) {
                     NetworkWrapper.getInstance().s2c_openMenu(serverPlayer, menuFactory);
@@ -95,18 +95,19 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
         }
     }
 
-    protected ContainerMenuFactory createContainerFactory(BlockState state, LevelAccessor level, BlockPos pos) {
+    @Nullable
+    protected ServerMenuFactory createMenuFactory(BlockState state, LevelAccessor level, BlockPos pos) {
         if (!(level.getBlockEntity(pos) instanceof AbstractOpenableStorageBlockEntity container)) {
             return null;
         }
-        return new ContainerMenuFactory() {
+        return new ServerMenuFactory() {
             @Override
             public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
                 buffer.writeBlockPos(pos).writeInt(container.getItemCount());
             }
 
             @Override
-            public Component displayName() {
+            public Component getMenuTitle() {
                 return container.getDisplayName();
             }
 
@@ -115,14 +116,15 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
                 if (container.canPlayerInteractWith(player)) {
                     return true;
                 }
-                AbstractStorageBlockEntity.alertBlockLocked(player, this.displayName());
+                AbstractStorageBlockEntity.alertBlockLocked(player, this.getMenuTitle());
                 return false;
             }
 
+            @Nullable
             @Override
-            public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
+            public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, ServerPlayer player) {
                 if (container.canPlayerInteractWith(player) && container.canContinueUse(player)) {
-                    return NetworkWrapper.getInstance().createMenu(windowId, container.getBlockPos(), container.getContainerWrapper(), playerInventory, this.displayName());
+                    return NetworkWrapper.getInstance().createMenu(windowId, container.getBlockPos(), container.getContainerWrapper(), playerInventory, this.getMenuTitle());
                 }
                 return null;
             }

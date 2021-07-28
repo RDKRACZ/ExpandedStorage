@@ -13,25 +13,25 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class OpenSelectScreenMessage {
-    private final Set<ResourceLocation> containerTypeOptions;
+public final class OpenSelectScreenMessage {
+    private final Set<ResourceLocation> screenTypeOptions;
 
-    public OpenSelectScreenMessage(Set<ResourceLocation> containerTypeOptions) {
-        this.containerTypeOptions = containerTypeOptions;
+    public OpenSelectScreenMessage(Set<ResourceLocation> screenTypeOptions) {
+        this.screenTypeOptions = screenTypeOptions;
     }
 
     public static void encode(OpenSelectScreenMessage message, FriendlyByteBuf buffer) {
-        buffer.writeInt(message.containerTypeOptions.size());
-        message.containerTypeOptions.forEach(buffer::writeResourceLocation);
+        buffer.writeInt(message.screenTypeOptions.size());
+        message.screenTypeOptions.forEach(buffer::writeResourceLocation);
     }
 
     public static OpenSelectScreenMessage decode(FriendlyByteBuf buffer) {
-        Set<ResourceLocation> containerTypeOptions = new HashSet<>();
+        Set<ResourceLocation> screenTypeOptions = new HashSet<>();
         int options = buffer.readInt();
         for (int i = 0; i < options; i++) {
-            containerTypeOptions.add(buffer.readResourceLocation());
+            screenTypeOptions.add(buffer.readResourceLocation());
         }
-        return new OpenSelectScreenMessage(containerTypeOptions);
+        return new OpenSelectScreenMessage(screenTypeOptions);
     }
 
     public static void handle(OpenSelectScreenMessage message, Supplier<NetworkEvent.Context> wrappedContext) {
@@ -40,8 +40,8 @@ public class OpenSelectScreenMessage {
         context.setPacketHandled(true);
     }
 
-    @OnlyIn(Dist.CLIENT) // Required otherwise PickScreen will be classloaded always, even when wrapped in DistExecutor
+    @OnlyIn(Dist.CLIENT)
     private void openScreen(NetworkEvent.Context context) {
-        context.enqueueWork(() -> Minecraft.getInstance().setScreen(new PickScreen(containerTypeOptions, null)));
+        context.enqueueWork(() -> Minecraft.getInstance().setScreen(new PickScreen(screenTypeOptions, null)));
     }
 }

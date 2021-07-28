@@ -97,9 +97,6 @@ public final class PagedScreen extends AbstractScreen<PagedContainerMenu, PagedS
 
     @Override
     public void render(PoseStack stack, int mouseX, int mouseY, float delta) {
-        if (stack == null) {
-            return;
-        } // Not sure why this can be null, but don't render in case it is.
         super.render(stack, mouseX, mouseY, delta);
         if (this.hasPages()) {
             leftPageButton.renderTooltip(stack, mouseX, mouseY);
@@ -187,7 +184,6 @@ public final class PagedScreen extends AbstractScreen<PagedContainerMenu, PagedS
                     this::renderButtonTooltip);
             this.addButton(rightPageButton);
             pageTextX = (1 + leftPageButton.x + rightPageButton.x - rightPageButton.getWidth() / 2F) / 2F;
-
         }
     }
 }

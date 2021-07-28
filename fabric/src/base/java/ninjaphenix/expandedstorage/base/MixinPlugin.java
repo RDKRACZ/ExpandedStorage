@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.chest;
+package ninjaphenix.expandedstorage.base;
 
 import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
@@ -11,10 +11,12 @@ import java.util.Set;
 public final class MixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassPath, String mixinClassPath) {
-        if ("ninjaphenix.expandedstorage.chest.mixin.ToweletteSupport".equals(mixinClassPath)) {
-            return FabricLoader.getInstance().isModLoaded("towelette");
-        }
-        return true;
+        String className = mixinClassPath.substring(34);
+        return switch (className) {
+            case "base.AmecsCompatMixin" -> FabricLoader.getInstance().isModLoaded("amecs");
+            case "chest.ToweletteSupport" -> FabricLoader.getInstance().isModLoaded("towelette");
+            default -> true;
+        };
     }
 
     @Override

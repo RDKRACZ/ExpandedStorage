@@ -21,11 +21,10 @@ import org.lwjgl.glfw.GLFW;
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.Supplier;
 
-final class PlatformUtilsImpl implements PlatformUtils {
+public final class PlatformUtilsImpl implements PlatformUtils {
     private static PlatformUtilsImpl INSTANCE;
     private final boolean isClient;
-    private boolean configKeyRequiresShift = true;
-    private final Supplier<Object> configKeyMapping = Suppliers.memoize(this::createConfigKey);
+    private final Supplier<Object> configKey = Suppliers.memoize(this::createConfigKey);
 
     private PlatformUtilsImpl() {
         isClient = FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
@@ -39,21 +38,6 @@ final class PlatformUtilsImpl implements PlatformUtils {
     }
 
     private Object createConfigKey() {
-        if (FabricLoader.getInstance().isModLoaded("amecs")) {
-            var classLoader = PlatformUtilsImpl.class.getClassLoader();
-            try {
-                var modifiersClass = classLoader.loadClass("de.siphalor.amecs.api.KeyModifiers");
-                var modifiers = modifiersClass.getConstructor().newInstance();
-                modifiersClass.getDeclaredMethod("setShift", boolean.class).invoke(modifiers, true);
-                var keybindClass = classLoader.loadClass("de.siphalor.amecs.api.AmecsKeyBinding");
-                var keybind = KeyBindingHelper.registerKeyBinding((KeyMapping) keybindClass.getConstructor(ResourceLocation.class, InputConstants.Type.class, int.class, String.class, modifiersClass)
-                                                                                           .newInstance(Utils.resloc("config"), InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_W, "key.categories.inventory", modifiers));
-                configKeyRequiresShift = false;
-                return keybind;
-            } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-                System.err.println("Amecs loaded, but failed to use api, please report this.");
-            }
-        }
         return KeyBindingHelper.registerKeyBinding(new KeyMapping("key.expandedstorage.config", GLFW.GLFW_KEY_W, "key.categories.inventory"));
     }
 
@@ -84,13 +68,12 @@ final class PlatformUtilsImpl implements PlatformUtils {
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
-    public KeyMapping getConfigScreenKeyMapping() {
-        return (KeyMapping) configKeyMapping.get();
+    public boolean isConfigKeyPressed(int keyCode, int scanCode, int modifiers) {
+        return this.getConfigKey().matches(keyCode, scanCode) && (modifiers & 1) > 0;
     }
 
-    @Override
-    public boolean configKeyRequiresShift() {
-        return configKeyRequiresShift;
+    @Environment(EnvType.CLIENT)
+    public KeyMapping getConfigKey() {
+        return (KeyMapping) configKey.get();
     }
 }

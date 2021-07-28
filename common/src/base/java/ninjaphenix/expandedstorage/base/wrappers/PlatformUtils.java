@@ -23,7 +23,7 @@ public interface PlatformUtils {
 
     boolean isModLoaded(String modId);
 
-    KeyMapping getConfigScreenKeyMapping();
+    KeyMapping getConfigKey();
 
-    boolean configKeyRequiresShift();
+    boolean isConfigKeyPressed(int keyCode, int scanCode, int modifiers);
 }

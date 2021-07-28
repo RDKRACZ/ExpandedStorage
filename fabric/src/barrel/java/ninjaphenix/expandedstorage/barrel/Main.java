@@ -104,6 +104,6 @@ public final class Main implements ModuleInitializer {
 
     private BlockItem barrelItem(OpenableTier tier, BarrelBlock block) {
         Item.Properties itemProperties = tier.itemProperties().apply(new Item.Properties().tab(Utils.TAB));
-        return Registry.register(Registry.ITEM, block.blockId(), new BlockItem(block, itemProperties));
+        return Registry.register(Registry.ITEM, block.getBlockId(), new BlockItem(block, itemProperties));
     }
 }

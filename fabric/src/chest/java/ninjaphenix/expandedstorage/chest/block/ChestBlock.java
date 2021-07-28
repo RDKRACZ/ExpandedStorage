@@ -71,7 +71,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     }
 
     @Override
-    public ResourceLocation blockType() {
+    public ResourceLocation getBlockType() {
         return ChestCommon.BLOCK_TYPE;
     }
 
@@ -94,7 +94,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     @NotNull
     @Override
     public BlockEntity newBlockEntity(BlockGetter getter) {
-        return new ChestBlockEntity(ChestCommon.getBlockEntityType(), blockId());
+        return new ChestBlockEntity(ChestCommon.getBlockEntityType(), this.getBlockId());
     }
 
     @Override
@@ -104,7 +104,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     }
 
     @Override
-    protected BlockEntityType<ChestBlockEntity> blockEntityType() {
+    protected BlockEntityType<ChestBlockEntity> getBlockEntityType() {
         return ChestCommon.getBlockEntityType();
     }
 
@@ -117,7 +117,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     }
 
     @Override
-    protected boolean isBlocked(LevelAccessor level, BlockPos pos) {
+    protected boolean isAccessBlocked(LevelAccessor level, BlockPos pos) {
         return net.minecraft.world.level.block.ChestBlock.isChestBlockedAt(level, pos);
     }
 }

@@ -23,7 +23,6 @@ public class ExpandedStorageJeiPlugin implements IModPlugin {
     @Override
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addGenericGuiContainerHandler(AbstractScreen.class, new IGuiContainerHandler<AbstractScreen<?, ?>>() {
-            @NotNull
             @Override
             public List<Rect2i> getGuiExtraAreas(AbstractScreen<?, ?> screen) {
                 return screen.getExclusionZones();

@@ -41,14 +41,14 @@ public final class BarrelBlock extends AbstractOpenableStorageBlock {
     }
 
     @Override
-    public ResourceLocation blockType() {
+    public ResourceLocation getBlockType() {
         return BarrelCommon.BLOCK_TYPE;
     }
 
     @NotNull
     @Override
     public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return new BarrelBlockEntity(BarrelCommon.getBlockEntityType(), this.blockId());
+        return new BarrelBlockEntity(BarrelCommon.getBlockEntityType(), this.getBlockId());
     }
 
     @Override

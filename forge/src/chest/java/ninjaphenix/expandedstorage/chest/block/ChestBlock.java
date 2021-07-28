@@ -24,7 +24,6 @@ import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.chest.ChestCommon;
 import ninjaphenix.expandedstorage.chest.block.misc.ChestBlockEntity;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements SimpleWaterloggedBlock {
     public static final int SET_OPEN_COUNT_EVENT = 1;
@@ -72,7 +71,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     }
 
     @Override
-    public ResourceLocation blockType() {
+    public ResourceLocation getBlockType() {
         return ChestCommon.BLOCK_TYPE;
     }
 
@@ -95,7 +94,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     @NotNull
     @Override
     public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return new ChestBlockEntity(ChestCommon.getBlockEntityType(), blockId());
+        return new ChestBlockEntity(ChestCommon.getBlockEntityType(), this.getBlockId());
     }
 
     @Override
@@ -105,7 +104,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     }
 
     @Override
-    protected BlockEntityType<ChestBlockEntity> blockEntityType() {
+    protected BlockEntityType<ChestBlockEntity> getBlockEntityType() {
         return ChestCommon.getBlockEntityType();
     }
 
@@ -118,7 +117,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     }
 
     @Override
-    protected boolean isBlocked(LevelAccessor level, BlockPos pos) {
+    protected boolean isAccessBlocked(LevelAccessor level, BlockPos pos) {
         return net.minecraft.world.level.block.ChestBlock.isChestBlockedAt(level, pos);
     }
 }

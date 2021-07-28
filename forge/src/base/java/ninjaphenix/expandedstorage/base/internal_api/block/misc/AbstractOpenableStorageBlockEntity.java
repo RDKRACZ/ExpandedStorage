@@ -164,7 +164,6 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         this.itemHandler = null;
     }
 
-    @NotNull
     protected IItemHandlerModifiable createItemHandler(Level level, BlockState state, BlockPos pos, @Nullable Direction side) {
         return AbstractOpenableStorageBlockEntity.createGenericItemHandler(this);
     }
@@ -172,7 +171,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     public static IItemHandlerModifiable createGenericItemHandler(AbstractOpenableStorageBlockEntity entity) {
         return new IItemHandlerModifiable() {
             @Override
-            public void setStackInSlot(int slot, @NotNull ItemStack stack) {
+            public void setStackInSlot(int slot, ItemStack stack) {
                 entity.inventory.set(slot, stack);
                 if (stack.getCount() > this.getSlotLimit(slot)) {
                     stack.setCount(this.getSlotLimit(slot));
@@ -185,15 +184,13 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
                 return entity.slots;
             }
 
-            @NotNull
             @Override
             public ItemStack getStackInSlot(int slot) {
                 return entity.inventory.get(slot);
             }
 
-            @NotNull
             @Override
-            public ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
+            public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
                 if (stack.isEmpty()) {
                     return ItemStack.EMPTY;
                 }
@@ -203,7 +200,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
                         entity.inventory.set(slot, stack);
                         entity.setChanged();
                     }
-                } else if(ItemHandlerHelper.canItemStacksStack(stackInSlot, stack)) {
+                } else if (ItemHandlerHelper.canItemStacksStack(stackInSlot, stack)) {
                     var limit = Math.min(stackInSlot.getMaxStackSize(), 64);
                     var diff = limit - stackInSlot.getCount();
                     if (diff != 0) {
@@ -228,7 +225,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
                 return ItemStack.EMPTY;
             }
 
-            @NotNull
+
             @Override
             public ItemStack extractItem(int slot, int amount, boolean simulate) {
                 var stackInSlot = entity.inventory.get(slot);
@@ -251,7 +248,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
             }
 
             @Override
-            public boolean isItemValid(int slot, @NotNull ItemStack stack) {
+            public boolean isItemValid(int slot, ItemStack stack) {
                 return true;
             }
         };
@@ -278,7 +275,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     public void load(BlockState state, CompoundTag tag) {
         super.load(state, tag);
         if (state.getBlock() instanceof AbstractOpenableStorageBlock block) {
-            this.initialise(block.blockId());
+            this.initialise(block.getBlockId());
             ContainerHelper.loadAllItems(tag, inventory);
         } else {
             throw new IllegalStateException("Block Entity attached to wrong block.");

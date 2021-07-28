@@ -93,7 +93,7 @@ public final class BaseImpl implements BaseApi {
 
     @Override
     public void registerTieredBlock(AbstractStorageBlock block) {
-        BLOCKS.putIfAbsent(new Pair<>(block.blockType(), block.blockTier()), block);
+        BLOCKS.putIfAbsent(new Pair<>(block.getBlockType(), block.getBlockTier()), block);
     }
 
     @Override

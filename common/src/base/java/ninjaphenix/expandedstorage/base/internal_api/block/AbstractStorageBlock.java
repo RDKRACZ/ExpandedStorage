@@ -24,13 +24,13 @@ public abstract class AbstractStorageBlock extends Block {
         this.blockTier = blockTier;
     }
 
-    public abstract ResourceLocation blockType();
+    public abstract ResourceLocation getBlockType();
 
-    public final ResourceLocation blockId() {
+    public final ResourceLocation getBlockId() {
         return blockId;
     }
 
-    public final ResourceLocation blockTier() {
+    public final ResourceLocation getBlockTier() {
         return blockTier;
     }
 

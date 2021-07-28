@@ -118,7 +118,7 @@ public class Main {
     private BlockItem oldChestItem(OpenableTier tier, OldChestBlock block) {
         Item.Properties itemProperties = tier.itemProperties().apply(new Item.Properties().tab(Utils.TAB));
         BlockItem item = new BlockItem(block, itemProperties);
-        item.setRegistryName(block.blockId());
+        item.setRegistryName(block.getBlockId());
         return item;
     }
 

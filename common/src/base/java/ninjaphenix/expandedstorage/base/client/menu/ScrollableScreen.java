@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class ScrollableScreen extends AbstractScreen<ScrollableContainerMenu, ScrollableScreenMeta> {
-    protected final boolean hasScrollbar;
+    private final boolean hasScrollbar;
     private final boolean scrollingUnrestricted;
     private boolean isDragging;
     private int topRow;

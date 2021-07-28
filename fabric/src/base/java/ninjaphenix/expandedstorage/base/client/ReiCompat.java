@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class ReiCompat implements REIPluginV0 {
-    private static Rectangle toReiRect(Rect2i rect) {
+    private static Rectangle asReiRectangle(Rect2i rect) {
         return new Rectangle(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
     }
 
@@ -27,7 +27,7 @@ public class ReiCompat implements REIPluginV0 {
     public void registerBounds(DisplayHelper displayHelper) {
         BaseBoundsHandler.getInstance().registerExclusionZones(AbstractScreen.class, () -> {
             if (Minecraft.getInstance().screen instanceof AbstractScreen<?, ?> screen) {
-                return screen.getExclusionZones().stream().map(ReiCompat::toReiRect).collect(Collectors.toList());
+                return screen.getExclusionZones().stream().map(ReiCompat::asReiRectangle).collect(Collectors.toList());
             }
             return Collections.emptyList();
         });

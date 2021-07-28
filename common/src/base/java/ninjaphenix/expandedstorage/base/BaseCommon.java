@@ -24,9 +24,9 @@ import java.util.function.Supplier;
 
 public final class BaseCommon {
     public static final Logger LOGGER = LogManager.getLogger();
-    public static final Supplier<MenuType<SingleContainerMenu>> SINGLE_MENU_TYPE = Suppliers.memoize(() -> PlatformUtils.getInstance().createMenuType(Utils.SINGLE_CONTAINER_TYPE, new SingleContainerMenu.Factory()));
-    public static final Supplier<MenuType<PagedContainerMenu>> PAGE_MENU_TYPE = Suppliers.memoize(() -> PlatformUtils.getInstance().createMenuType(Utils.PAGE_CONTAINER_TYPE, new PagedContainerMenu.Factory()));
-    public static final Supplier<MenuType<ScrollableContainerMenu>> SCROLL_MENU_TYPE = Suppliers.memoize(() -> PlatformUtils.getInstance().createMenuType(Utils.SCROLL_CONTAINER_TYPE, new ScrollableContainerMenu.Factory()));
+    public static final Supplier<MenuType<SingleContainerMenu>> SINGLE_MENU_TYPE = Suppliers.memoize(() -> PlatformUtils.getInstance().createMenuType(Utils.SINGLE_SCREEN_TYPE, new SingleContainerMenu.Factory()));
+    public static final Supplier<MenuType<PagedContainerMenu>> PAGE_MENU_TYPE = Suppliers.memoize(() -> PlatformUtils.getInstance().createMenuType(Utils.PAGED_SCREEN_TYPE, new PagedContainerMenu.Factory()));
+    public static final Supplier<MenuType<ScrollableContainerMenu>> SCROLL_MENU_TYPE = Suppliers.memoize(() -> PlatformUtils.getInstance().createMenuType(Utils.SCROLLABLE_SCREEN_TYPE, new ScrollableContainerMenu.Factory()));
     private static final int ICON_SUITABILITY = 0;
 
     private BaseCommon() {
@@ -36,13 +36,13 @@ public final class BaseCommon {
     static void initialize() {
         if (PlatformUtils.getInstance().isClient()) {
             ConfigWrapper.getInstance().initialise();
-            BaseApi.getInstance().registerContainerButtonSettings(Utils.SINGLE_CONTAINER_TYPE,
+            BaseApi.getInstance().registerContainerButtonSettings(Utils.SINGLE_SCREEN_TYPE,
                     Utils.resloc("textures/gui/single_button.png"),
                     Utils.translation("screen.expandedstorage.single_screen"));
-            BaseApi.getInstance().registerContainerButtonSettings(Utils.SCROLL_CONTAINER_TYPE,
+            BaseApi.getInstance().registerContainerButtonSettings(Utils.SCROLLABLE_SCREEN_TYPE,
                     Utils.resloc("textures/gui/scrollable_button.png"),
                     Utils.translation("screen.expandedstorage.scrollable_screen"));
-            BaseApi.getInstance().registerContainerButtonSettings(Utils.PAGE_CONTAINER_TYPE,
+            BaseApi.getInstance().registerContainerButtonSettings(Utils.PAGED_SCREEN_TYPE,
                     Utils.resloc("textures/gui/paged_button.png"),
                     Utils.translation("screen.expandedstorage.paged_screen"));
         }

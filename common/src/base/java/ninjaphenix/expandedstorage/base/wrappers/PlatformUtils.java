@@ -33,7 +33,7 @@ public interface PlatformUtils {
 
     boolean isModLoaded(String modId);
 
-    KeyMapping getConfigScreenKeyMapping();
+    boolean isKeyMappingPressed(int keyCode, int scanCode, int modifiers);
 
-    boolean configKeyRequiresShift();
+    KeyMapping getConfigScreenKeyMapping();
 }

@@ -89,7 +89,7 @@ final class PlatformUtilsImpl implements PlatformUtils {
     }
 
     @Override
-    public boolean configKeyRequiresShift() {
-        return false;
+    public boolean isKeyMappingPressed(int keyCode, int scanCode, int modifiers) {
+        return getConfigScreenKeyMapping().isActiveAndMatches(InputConstants.getKey(keyCode, scanCode));
     }
 }

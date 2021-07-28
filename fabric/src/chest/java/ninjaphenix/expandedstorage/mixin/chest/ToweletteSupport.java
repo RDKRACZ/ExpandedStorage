@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.chest.mixin;
+package ninjaphenix.expandedstorage.mixin.chest;
 
 import ninjaphenix.expandedstorage.chest.block.ChestBlock;
 import org.spongepowered.asm.mixin.Mixin;

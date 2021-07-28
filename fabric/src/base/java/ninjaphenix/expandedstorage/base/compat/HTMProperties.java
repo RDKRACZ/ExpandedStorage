@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.chest.compat;
+package ninjaphenix.expandedstorage.base.compat;
 
 import com.github.fabricservertools.htm.HTMContainerLock;
 import com.github.fabricservertools.htm.api.LockableObject;
@@ -8,10 +8,6 @@ import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenable
 
 import java.util.Optional;
 
-/**
- * Makes use of Hey That's Mine's API which is licensed MIT
- * https://www.curseforge.com/minecraft/mc-mods/htm
- */
 public final class HTMProperties {
     public static final String LOCK_TAG_KEY = "HTM_Lock";
     public static final DoubleBlockCombiner.Combiner<AbstractOpenableStorageBlockEntity, HTMContainerLock> LOCK_GETTER = new DoubleBlockCombiner.Combiner<>() {
@@ -35,7 +31,7 @@ public final class HTMProperties {
             return null;
         }
     };
-    public static final DoubleBlockCombiner.Combiner<AbstractOpenableStorageBlockEntity,Optional<BlockEntity>> UNLOCKED_BE_GETTER = new DoubleBlockCombiner.Combiner<AbstractOpenableStorageBlockEntity, Optional<BlockEntity>>() {
+    public static final DoubleBlockCombiner.Combiner<AbstractOpenableStorageBlockEntity,Optional<BlockEntity>> UNLOCKED_BE_GETTER = new DoubleBlockCombiner.Combiner<>() {
         @Override
         public Optional<BlockEntity> acceptDouble(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
             LockableObject firstLockable = (LockableObject) first;

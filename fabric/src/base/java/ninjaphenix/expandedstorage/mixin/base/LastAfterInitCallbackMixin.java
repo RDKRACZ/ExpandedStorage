@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.base.mixin;
+package ninjaphenix.expandedstorage.mixin.base;
 
 import net.minecraft.client.gui.screens.Screen;
 import ninjaphenix.expandedstorage.base.client.menu.PagedScreen;

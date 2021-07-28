@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.chest.mixin;
+package ninjaphenix.expandedstorage.mixin.chest;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.model.geom.LayerDefinitions;

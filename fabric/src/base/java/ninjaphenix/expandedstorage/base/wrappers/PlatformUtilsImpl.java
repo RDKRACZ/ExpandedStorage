@@ -29,10 +29,9 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-final class PlatformUtilsImpl implements PlatformUtils {
+public final class PlatformUtilsImpl implements PlatformUtils {
     private static PlatformUtilsImpl INSTANCE;
     private final boolean isClient;
-    private boolean configKeyRequiresShift = true;
     private final Supplier<Object> configKey = Suppliers.memoize(this::createConfigKey);
 
     private PlatformUtilsImpl() {
@@ -47,21 +46,6 @@ final class PlatformUtilsImpl implements PlatformUtils {
     }
 
     private Object createConfigKey() {
-        if (FabricLoader.getInstance().isModLoaded("amecs")) {
-            var classLoader = PlatformUtilsImpl.class.getClassLoader();
-            try {
-                var modifiersClass = classLoader.loadClass("de.siphalor.amecs.api.KeyModifiers");
-                var modifiers = modifiersClass.getConstructor().newInstance();
-                modifiersClass.getDeclaredMethod("setShift", boolean.class).invoke(modifiers, true);
-                var keybindClass = classLoader.loadClass("de.siphalor.amecs.api.AmecsKeyBinding");
-                var keybind = KeyBindingHelper.registerKeyBinding((KeyMapping) keybindClass.getConstructor(ResourceLocation.class, InputConstants.Type.class, int.class, String.class, modifiersClass)
-                                                                                           .newInstance(Utils.resloc("config"), InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_W, "key.categories.inventory", modifiers));
-                configKeyRequiresShift = false;
-                return keybind;
-            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                System.err.println("Amecs loaded, but failed to use api, please report this.");
-            }
-        }
         return KeyBindingHelper.registerKeyBinding(new KeyMapping("key.expandedstorage.config", GLFW.GLFW_KEY_W, "key.categories.inventory"));
     }
 
@@ -98,7 +82,7 @@ final class PlatformUtilsImpl implements PlatformUtils {
 
     @Override
     public boolean isConfigKeyPressed(int keyCode, int scanCode, int modifiers) {
-        return this.getConfigKey().matches(keyCode, scanCode) && (!configKeyRequiresShift || (modifiers & 1) > 0);
+        return this.getConfigKey().matches(keyCode, scanCode) && (modifiers & 1) > 0;
     }
 
     @Environment(EnvType.CLIENT)

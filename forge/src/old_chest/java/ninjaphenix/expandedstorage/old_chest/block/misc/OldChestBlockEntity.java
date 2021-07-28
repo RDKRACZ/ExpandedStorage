@@ -9,7 +9,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractChestBlock;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class OldChestBlockEntity extends AbstractOpenableStorageBlockEntity {

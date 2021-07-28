@@ -119,14 +119,6 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         }
     }
 
-    protected void startOpen(Player player) {
-
-    }
-
-    protected void stopOpen(Player player) {
-
-    }
-
     protected static int countViewers(Level level, Container container, int x, int y, int z) {
         return level.getEntitiesOfClass(Player.class, new AABB(x - 5, y - 5, z - 5, x + 6, y + 6, z + 6)).stream()
                     .filter(player -> player.containerMenu instanceof AbstractContainerMenu_<?>)
@@ -134,38 +126,6 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
                     .filter(openContainer -> openContainer == container ||
                             openContainer instanceof CompoundContainer compoundContainer && compoundContainer.contains(container))
                     .mapToInt(inv -> 1).sum();
-    }
-
-    public Container getContainerWrapper() {
-        return container.get();
-    }
-
-    @NotNull
-    @Override
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction side) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            if (itemHandler == null) {
-                itemHandler = LazyOptional.of(() -> this.createItemHandler(this.getLevel(), this.getBlockState(), this.getBlockPos(), side));
-            }
-            return itemHandler.cast();
-        }
-        return super.getCapability(capability, side);
-    }
-
-    @Override
-    public void clearCache() {
-        super.clearCache();
-        this.itemHandler = null;
-    }
-
-    @Override
-    public void setChanged() {
-        super.setChanged();
-        this.itemHandler = null;
-    }
-
-    protected IItemHandlerModifiable createItemHandler(Level level, BlockState state, BlockPos pos, @Nullable Direction side) {
-        return AbstractOpenableStorageBlockEntity.createGenericItemHandler(this);
     }
 
     public static IItemHandlerModifiable createGenericItemHandler(AbstractOpenableStorageBlockEntity entity) {
@@ -252,6 +212,46 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
                 return true;
             }
         };
+    }
+
+    protected void startOpen(Player player) {
+
+    }
+
+    protected void stopOpen(Player player) {
+
+    }
+
+    public Container getContainerWrapper() {
+        return container.get();
+    }
+
+    @NotNull
+    @Override
+    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction side) {
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            if (itemHandler == null) {
+                itemHandler = LazyOptional.of(() -> this.createItemHandler(this.getLevel(), this.getBlockState(), this.getBlockPos(), side));
+            }
+            return itemHandler.cast();
+        }
+        return super.getCapability(capability, side);
+    }
+
+    @Override
+    public void clearCache() {
+        super.clearCache();
+        this.itemHandler = null;
+    }
+
+    @Override
+    public void setChanged() {
+        super.setChanged();
+        this.itemHandler = null;
+    }
+
+    protected IItemHandlerModifiable createItemHandler(Level level, BlockState state, BlockPos pos, @Nullable Direction side) {
+        return AbstractOpenableStorageBlockEntity.createGenericItemHandler(this);
     }
 
     private void initialise(ResourceLocation blockId) {

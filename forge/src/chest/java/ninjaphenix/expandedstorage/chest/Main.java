@@ -36,7 +36,7 @@ public final class Main {
 
     private void registerBlocks(Set<ChestBlock> blocks) {
         for (ChestBlock block : blocks) {
-            block.setRegistryName(block.blockId());
+            block.setRegistryName(block.getBlockId());
         }
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addGenericListener(Block.class, (RegistryEvent.Register<Block> event) -> {
@@ -59,7 +59,7 @@ public final class Main {
 
     private void registerItems(Set<BlockItem> items) {
         for (BlockItem item : items) {
-            item.setRegistryName(((ChestBlock) item.getBlock()).blockId());
+            item.setRegistryName(((ChestBlock) item.getBlock()).getBlockId());
         }
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addGenericListener(Item.class, (RegistryEvent.Register<Item> event) -> {

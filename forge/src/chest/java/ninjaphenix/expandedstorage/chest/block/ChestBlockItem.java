@@ -25,9 +25,9 @@ public final class ChestBlockItem extends BlockItem {
     @Override
     public void initializeClient(Consumer<IItemRenderProperties> consumer) {
         consumer.accept(new IItemRenderProperties() {
-            final Supplier<BlockEntityWithoutLevelRenderer> renderer = Suppliers.memoize(this::createItemStackRenderer);
+            final Supplier<BlockEntityWithoutLevelRenderer> renderer = Suppliers.memoize(this::createItemRenderer);
 
-            private BlockEntityWithoutLevelRenderer createItemStackRenderer() {
+            private BlockEntityWithoutLevelRenderer createItemRenderer() {
                 ChestBlockEntity renderEntity = new ChestBlockEntity(ChestCommon.getBlockEntityType(), BlockPos.ZERO, ChestBlockItem.this.getBlock().defaultBlockState());
                 var minecraft = Minecraft.getInstance();
                 return new BlockEntityWithoutLevelRenderer(minecraft.getBlockEntityRenderDispatcher(), minecraft.getEntityModels()) {

@@ -29,7 +29,7 @@ import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenable
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractStorageBlockEntity;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.base.internal_api.inventory.CombinedIItemHandlerModifiable;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.ContainerMenuFactory;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerMenuFactory;
 import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -42,6 +42,7 @@ import java.util.function.BiPredicate;
 @Experimental
 public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockEntity> extends AbstractOpenableStorageBlock {
     public static final EnumProperty<CursedChestType> CURSED_CHEST_TYPE = EnumProperty.create("type", CursedChestType.class);
+
     private static final DoubleBlockCombiner.Combiner<AbstractOpenableStorageBlockEntity, Optional<IItemHandlerModifiable>> inventoryGetter = new DoubleBlockCombiner.Combiner<>() {
         @Override
         public Optional<IItemHandlerModifiable> acceptDouble(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
@@ -61,17 +62,17 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
             return Optional.empty();
         }
     };
-    private final DoubleBlockCombiner.Combiner<T, Optional<ContainerMenuFactory>> menuGetter = new DoubleBlockCombiner.Combiner<>() {
+    private final DoubleBlockCombiner.Combiner<T, Optional<ServerMenuFactory>> menuGetter = new DoubleBlockCombiner.Combiner<>() {
         @Override
-        public Optional<ContainerMenuFactory> acceptDouble(T first, T second) {
-            return Optional.of(new ContainerMenuFactory() {
+        public Optional<ServerMenuFactory> acceptDouble(T first, T second) {
+            return Optional.of(new ServerMenuFactory() {
                 @Override
                 public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
                     buffer.writeBlockPos(first.getBlockPos()).writeInt(first.getItemCount() + second.getItemCount());
                 }
 
                 @Override
-                public Component displayName() {
+                public Component getMenuTitle() {
                     return first.hasCustomName() ? first.getName() : second.hasCustomName() ? second.getName() : Utils.translation("container.expandedstorage.generic_double", first.getName());
                 }
 
@@ -80,7 +81,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                     if (first.canPlayerInteractWith(player) && second.canPlayerInteractWith(player)) {
                         return true;
                     }
-                    AbstractStorageBlockEntity.alertBlockLocked(player, this.displayName());
+                    AbstractStorageBlockEntity.alertBlockLocked(player, this.getMenuTitle());
                     return false;
                 }
 
@@ -89,7 +90,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
                     if (first.canContinueUse(player) && second.canContinueUse(player)) {
                         CompoundContainer container = new CompoundContainer(first.getContainerWrapper(), second.getContainerWrapper());
-                        return NetworkWrapper.getInstance().createMenu(windowId, first.getBlockPos(), container, playerInventory, this.displayName());
+                        return NetworkWrapper.getInstance().createMenu(windowId, first.getBlockPos(), container, playerInventory, this.getMenuTitle());
                     }
                     return null;
                 }
@@ -97,15 +98,15 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         }
 
         @Override
-        public Optional<ContainerMenuFactory> acceptSingle(T single) {
-            return Optional.of(new ContainerMenuFactory() {
+        public Optional<ServerMenuFactory> acceptSingle(T single) {
+            return Optional.of(new ServerMenuFactory() {
                 @Override
                 public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
                     buffer.writeBlockPos(single.getBlockPos()).writeInt(single.getItemCount());
                 }
 
                 @Override
-                public Component displayName() {
+                public Component getMenuTitle() {
                     return single.getName();
                 }
 
@@ -114,7 +115,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                     if (single.canPlayerInteractWith(player)) {
                         return true;
                     }
-                    AbstractStorageBlockEntity.alertBlockLocked(player, this.displayName());
+                    AbstractStorageBlockEntity.alertBlockLocked(player, this.getMenuTitle());
                     return false;
                 }
 
@@ -122,7 +123,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
                     if (single.canContinueUse(player)) {
-                        return NetworkWrapper.getInstance().createMenu(windowId, single.getBlockPos(), single.getContainerWrapper(), playerInventory, this.displayName());
+                        return NetworkWrapper.getInstance().createMenu(windowId, single.getBlockPos(), single.getContainerWrapper(), playerInventory, this.getMenuTitle());
                     }
                     return null;
                 }
@@ -130,7 +131,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         }
 
         @Override
-        public Optional<ContainerMenuFactory> acceptNone() {
+        public Optional<ServerMenuFactory> acceptNone() {
             return Optional.empty();
         }
     };
@@ -284,7 +285,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         return state.setValue(BlockStateProperties.HORIZONTAL_FACING, rotation.rotate(state.getValue(BlockStateProperties.HORIZONTAL_FACING)));
     }
 
-    public final NeighborCombineResult<? extends T> combine(BlockState state, LevelAccessor level, BlockPos pos, boolean alwaysOpen) {
+    public final NeighborCombineResult<? extends T> createCombinedPropertyGetter(BlockState state, LevelAccessor level, BlockPos pos, boolean alwaysOpen) {
         BiPredicate<LevelAccessor, BlockPos> isChestBlocked = alwaysOpen ? (_level, _pos) -> false : this::isBlocked;
         return DoubleBlockCombiner.combineWithNeigbour(this.blockEntityType(), AbstractChestBlock::getBlockType,
                 AbstractChestBlock::getDirectionToAttached, BlockStateProperties.HORIZONTAL_FACING, state, level, pos,
@@ -299,13 +300,13 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
 
     @Nullable
     @Override
-    protected ContainerMenuFactory createContainerFactory(BlockState state, LevelAccessor level, BlockPos pos) {
-        return this.combine(state, level, pos, false).apply(menuGetter).orElse(null);
+    protected ServerMenuFactory createMenuFactory(BlockState state, LevelAccessor level, BlockPos pos) {
+        return this.createCombinedPropertyGetter(state, level, pos, false).apply(menuGetter).orElse(null);
     }
 
     public static Optional<IItemHandlerModifiable> createItemHandler(Level level, BlockState state, BlockPos pos) {
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
-            return block.combine(state, level, pos, false).apply(AbstractChestBlock.inventoryGetter);
+            return block.createCombinedPropertyGetter(state, level, pos, false).apply(AbstractChestBlock.inventoryGetter);
         }
         return Optional.empty();
     }

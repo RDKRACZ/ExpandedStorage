@@ -24,11 +24,11 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
     private final ChestLidController chestLidController;
 
     public ChestBlockEntity(BlockEntityType<ChestBlockEntity> blockEntityType, BlockPos pos, BlockState state) {
-        super(blockEntityType, pos, state, ((ChestBlock) state.getBlock()).blockId());
+        super(blockEntityType, pos, state, ((ChestBlock) state.getBlock()).getBlockId());
         chestLidController = new ChestLidController();
     }
 
-    public static void lidAnimateTick(Level level, BlockPos pos, BlockState state, ChestBlockEntity blockEntity) {
+    public static void progressLidAnimation(Level level, BlockPos pos, BlockState state, ChestBlockEntity blockEntity) {
         blockEntity.chestLidController.tickLid();
     }
 
@@ -56,13 +56,13 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
     }
 
     @Override
-    protected void openerCountChanged(Level level, BlockPos pos, BlockState state, int oldCount, int newCount) {
+    protected void onObserverCountChanged(Level level, BlockPos pos, BlockState state, int oldCount, int newCount) {
         level.blockEvent(pos, state.getBlock(), ChestBlock.SET_OPEN_COUNT_EVENT, newCount);
     }
 
     @Override
-    protected boolean isOwnContainer(Container container) {
-        return super.isOwnContainer(container) || container instanceof CompoundContainer compoundContainer && compoundContainer.contains(this.getContainerWrapper());
+    protected boolean isThis(Container container) {
+        return super.isThis(container) || container instanceof CompoundContainer compoundContainer && compoundContainer.contains(this.getContainerWrapper());
     }
 
     @Override

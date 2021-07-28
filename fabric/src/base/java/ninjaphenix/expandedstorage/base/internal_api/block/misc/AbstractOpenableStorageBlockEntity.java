@@ -30,7 +30,7 @@ import java.util.function.IntUnaryOperator;
 @Experimental
 public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements WorldlyContainer {
     private final ResourceLocation blockId;
-    private final ContainerOpenersCounter openersCounter;
+    private final ContainerOpenersCounter observerCounter;
     protected Component containerName;
     private int slots;
     private NonNullList<ItemStack> inventory;
@@ -38,7 +38,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
     public AbstractOpenableStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, ResourceLocation blockId) {
         super(blockEntityType, pos, state);
-        this.openersCounter = new ContainerOpenersCounter() {
+        this.observerCounter = new ContainerOpenersCounter() {
             @Override
             protected void onOpen(Level level, BlockPos pos, BlockState state) {
                 AbstractOpenableStorageBlockEntity.this.onOpen(level, pos, state);
@@ -72,14 +72,14 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     @Override
     public final void startOpen(Player player) {
         if (!player.isSpectator()) {
-            openersCounter.incrementOpeners(player, getLevel(), getBlockPos(), getBlockState());
+            observerCounter.incrementOpeners(player, getLevel(), getBlockPos(), getBlockState());
         }
     }
 
     @Override
     public final void stopOpen(Player player) {
         if (!player.isSpectator()) {
-            openersCounter.decrementOpeners(player, getLevel(), getBlockPos(), getBlockState());
+            observerCounter.decrementOpeners(player, getLevel(), getBlockPos(), getBlockState());
         }
     }
 
@@ -99,8 +99,8 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
     }
 
-    public final void recheckObserverCount() {
-        openersCounter.recheckOpeners(getLevel(), getBlockPos(), getBlockState());
+    public final void recountObservers() {
+        observerCounter.recheckOpeners(getLevel(), getBlockPos(), getBlockState());
     }
 
     private void initialise(ResourceLocation blockId) {

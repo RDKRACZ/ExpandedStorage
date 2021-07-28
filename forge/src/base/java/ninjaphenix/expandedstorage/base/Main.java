@@ -45,7 +45,7 @@ public final class Main {
             MenuScreens.register(BaseCommon.SINGLE_MENU_TYPE.get(), SingleScreen::new);
             MenuScreens.register(BaseCommon.PAGE_MENU_TYPE.get(), PagedScreen::new);
             MenuScreens.register(BaseCommon.SCROLL_MENU_TYPE.get(), ScrollableScreen::new);
-            PlatformUtils.getInstance().getConfigScreenKeyMapping();
+            PlatformUtils.getInstance().getConfigKey();
         });
         if (PlatformUtils.getInstance().isClient()) {
             this.registerConfigGuiHandler();
@@ -66,9 +66,9 @@ public final class Main {
         ModLoadingContext.get().getActiveContainer().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class,
                 () -> new ConfigGuiHandler.ConfigGuiFactory((minecraft, screen) -> {
                     Set<ResourceLocation> values = new HashSet<>();
-                    values.add(Utils.SINGLE_CONTAINER_TYPE);
-                    values.add(Utils.PAGE_CONTAINER_TYPE);
-                    values.add(Utils.SCROLL_CONTAINER_TYPE);
+                    values.add(Utils.SINGLE_SCREEN_TYPE);
+                    values.add(Utils.PAGED_SCREEN_TYPE);
+                    values.add(Utils.SCROLLABLE_SCREEN_TYPE);
                     return new PickScreen(values, screen);
                 }));
     }

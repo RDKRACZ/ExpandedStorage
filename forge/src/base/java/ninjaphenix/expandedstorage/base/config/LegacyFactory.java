@@ -19,9 +19,9 @@ public final class LegacyFactory implements Converter<Config, ConfigV0> {
             if (source.get("client.preferred_container_type") instanceof String containerType &&
                     source.get("client.restrictive_scrolling") instanceof Boolean restrictiveScrolling) {
                 if ("expandedstorage:paged".equals(containerType)) {
-                    containerType = Utils.PAGE_CONTAINER_TYPE.toString();
+                    containerType = Utils.PAGED_SCREEN_TYPE.toString();
                 } else if ("expandedstorage:scrollable".equals(containerType)) {
-                    containerType = Utils.SCROLL_CONTAINER_TYPE.toString();
+                    containerType = Utils.SCROLLABLE_SCREEN_TYPE.toString();
                 }
                 return new ConfigV0(ResourceLocation.tryParse(containerType), restrictiveScrolling);
             }

@@ -91,7 +91,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     @SuppressWarnings("deprecation")
     public void tick(BlockState state, ServerLevel level, BlockPos pos, Random random) {
         if (level.getBlockEntity(pos) instanceof ChestBlockEntity entity) {
-            entity.recheckObserverCount();
+            entity.recountObservers();
         }
     }
 

@@ -60,11 +60,12 @@ repositories {
         url = uri("https://modmaven.k-4u.nl")
     }
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
     minecraft("net.minecraftforge:forge:${properties["minecraft_version"]}-${properties["forge_version"]}")
-    //compileOnly fg.deobf("mezz.jei:jei-1.16.5:${jei_version}:api")
+    compileOnly(fg.deobf("mezz.jei:jei-1.17.1:${properties["jei_version"]}:api"))
     implementation("org.jetbrains:annotations:21.0.1")
 }
 

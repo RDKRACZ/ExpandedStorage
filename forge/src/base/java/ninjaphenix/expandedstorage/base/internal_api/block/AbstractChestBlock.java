@@ -192,6 +192,13 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         return CursedChestType.SINGLE;
     }
 
+    public static Optional<IItemHandlerModifiable> createItemHandler(Level level, BlockState state, BlockPos pos) {
+        if (state.getBlock() instanceof AbstractChestBlock<?> block) {
+            return block.createCombinedPropertyGetter(state, level, pos, false).apply(AbstractChestBlock.inventoryGetter);
+        }
+        return Optional.empty();
+    }
+
     @Override
     protected final void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(AbstractChestBlock.CURSED_CHEST_TYPE);
@@ -302,12 +309,5 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     @Override
     protected ServerMenuFactory createMenuFactory(BlockState state, LevelAccessor level, BlockPos pos) {
         return this.createCombinedPropertyGetter(state, level, pos, false).apply(menuGetter).orElse(null);
-    }
-
-    public static Optional<IItemHandlerModifiable> createItemHandler(Level level, BlockState state, BlockPos pos) {
-        if (state.getBlock() instanceof AbstractChestBlock<?> block) {
-            return block.createCombinedPropertyGetter(state, level, pos, false).apply(AbstractChestBlock.inventoryGetter);
-        }
-        return Optional.empty();
     }
 }

@@ -1,8 +1,8 @@
 package ninjaphenix.expandedstorage.base.wrappers;
 
 import com.mojang.datafixers.types.Type;
-import net.minecraft.core.BlockPos;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;

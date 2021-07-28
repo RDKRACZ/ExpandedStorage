@@ -141,74 +141,6 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         this.initialise(blockId);
     }
 
-    private void playerStartUsing(Player player) {
-        if (!player.isSpectator()) {
-            //noinspection ConstantConditions
-            observerCounter.incrementOpeners(player, this.getLevel(), this.getBlockPos(), this.getBlockState());
-        }
-    }
-
-    private void playerStopUsing(Player player) {
-        if (!player.isSpectator()) {
-            //noinspection ConstantConditions
-            observerCounter.decrementOpeners(player, this.getLevel(), this.getBlockPos(), this.getBlockState());
-        }
-    }
-
-    protected boolean isThis(Container container) {
-        return container == this.container.get();
-    }
-
-    protected void onObserverCountChanged(Level level, BlockPos pos, BlockState state, int i, int j) {
-
-    }
-
-    protected void onOpen(Level level, BlockPos pos, BlockState state) {
-
-    }
-
-    protected void onClose(Level level, BlockPos pos, BlockState state) {
-
-    }
-
-    public final void recountObservers() {
-        //noinspection ConstantConditions
-        observerCounter.recheckOpeners(this.getLevel(), this.getBlockPos(), this.getBlockState());
-    }
-
-    public Container getContainerWrapper() {
-        return container.get();
-    }
-
-
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction side) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            if (itemHandler == null) {
-                itemHandler = LazyOptional.of(() -> this.createItemHandler(this.getLevel(), this.getBlockState(), this.getBlockPos(), side));
-            }
-            return itemHandler.cast();
-        }
-        return super.getCapability(capability, side);
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public void setBlockState(BlockState state) {
-        super.setBlockState(state);
-        this.itemHandler = null;
-    }
-
-    @Override
-    public void setChanged() {
-        super.setChanged();
-        this.itemHandler = null;
-    }
-
-    protected IItemHandlerModifiable createItemHandler(Level level, BlockState state, BlockPos pos, @Nullable Direction side) {
-        return AbstractOpenableStorageBlockEntity.createGenericItemHandler(this);
-    }
-
     public static IItemHandlerModifiable createGenericItemHandler(AbstractOpenableStorageBlockEntity entity) {
         return new IItemHandlerModifiable() {
             @Override
@@ -241,7 +173,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
                         entity.inventory.set(slot, stack);
                         entity.setChanged();
                     }
-                } else if(ItemHandlerHelper.canItemStacksStack(stackInSlot, stack)) {
+                } else if (ItemHandlerHelper.canItemStacksStack(stackInSlot, stack)) {
                     var limit = Math.min(stackInSlot.getMaxStackSize(), 64);
                     var diff = limit - stackInSlot.getCount();
                     if (diff != 0) {
@@ -293,6 +225,73 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
                 return true;
             }
         };
+    }
+
+    private void playerStartUsing(Player player) {
+        if (!player.isSpectator()) {
+            //noinspection ConstantConditions
+            observerCounter.incrementOpeners(player, this.getLevel(), this.getBlockPos(), this.getBlockState());
+        }
+    }
+
+    private void playerStopUsing(Player player) {
+        if (!player.isSpectator()) {
+            //noinspection ConstantConditions
+            observerCounter.decrementOpeners(player, this.getLevel(), this.getBlockPos(), this.getBlockState());
+        }
+    }
+
+    protected boolean isThis(Container container) {
+        return container == this.container.get();
+    }
+
+    protected void onObserverCountChanged(Level level, BlockPos pos, BlockState state, int i, int j) {
+
+    }
+
+    protected void onOpen(Level level, BlockPos pos, BlockState state) {
+
+    }
+
+    protected void onClose(Level level, BlockPos pos, BlockState state) {
+
+    }
+
+    public final void recountObservers() {
+        //noinspection ConstantConditions
+        observerCounter.recheckOpeners(this.getLevel(), this.getBlockPos(), this.getBlockState());
+    }
+
+    public Container getContainerWrapper() {
+        return container.get();
+    }
+
+    @Override
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction side) {
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            if (itemHandler == null) {
+                itemHandler = LazyOptional.of(() -> this.createItemHandler(this.getLevel(), this.getBlockState(), this.getBlockPos(), side));
+            }
+            return itemHandler.cast();
+        }
+        return super.getCapability(capability, side);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void setBlockState(BlockState state) {
+        super.setBlockState(state);
+        this.itemHandler = null;
+    }
+
+    @Override
+    public void setChanged() {
+        super.setChanged();
+        this.itemHandler = null;
+    }
+
+    protected IItemHandlerModifiable createItemHandler(Level level, BlockState state, BlockPos pos, @Nullable Direction side) {
+        return AbstractOpenableStorageBlockEntity.createGenericItemHandler(this);
     }
 
     private void initialise(ResourceLocation blockId) {

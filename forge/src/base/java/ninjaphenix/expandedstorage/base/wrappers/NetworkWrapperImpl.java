@@ -27,10 +27,10 @@ import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerMenuFactory
 import ninjaphenix.expandedstorage.base.inventory.PagedContainerMenu;
 import ninjaphenix.expandedstorage.base.inventory.ScrollableContainerMenu;
 import ninjaphenix.expandedstorage.base.inventory.SingleContainerMenu;
-import ninjaphenix.expandedstorage.base.network.ScreenTypeUpdateMessage;
 import ninjaphenix.expandedstorage.base.network.OpenSelectScreenMessage;
 import ninjaphenix.expandedstorage.base.network.RemovePlayerPreferenceCallbackMessage;
 import ninjaphenix.expandedstorage.base.network.RequestOpenSelectScreenMessage;
+import ninjaphenix.expandedstorage.base.network.ScreenTypeUpdateMessage;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;

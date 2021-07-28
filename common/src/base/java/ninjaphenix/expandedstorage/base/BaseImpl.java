@@ -64,12 +64,12 @@ public final class BaseImpl implements BaseApi {
             Tier fromTier = tiers[fromIndex];
             for (int toIndex = fromIndex + 1; toIndex < numTiers; toIndex++) {
                 Tier toTier = tiers[toIndex];
-                ResourceLocation itemId = Utils.resloc(fromTier.key().getPath() + "_to_" + toTier.key().getPath() + "_conversion_kit");
+                ResourceLocation itemId = Utils.resloc(fromTier.getId().getPath() + "_to_" + toTier.getId().getPath() + "_conversion_kit");
                 if (!items.containsKey(itemId)) {
-                    Item.Properties properties = fromTier.itemProperties()
-                                                         .andThen(toTier.itemProperties())
+                    Item.Properties properties = fromTier.getItemProperties()
+                                                         .andThen(toTier.getItemProperties())
                                                          .apply(new Item.Properties().tab(Utils.TAB).stacksTo(16));
-                    Item kit = new StorageConversionKit(properties, fromTier.key(), toTier.key(), addingMod);
+                    Item kit = new StorageConversionKit(properties, fromTier.getId(), toTier.getId());
                     this.register(itemId, kit);
                 }
             }

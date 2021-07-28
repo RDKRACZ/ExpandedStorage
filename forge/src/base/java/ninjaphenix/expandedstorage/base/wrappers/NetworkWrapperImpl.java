@@ -142,11 +142,11 @@ final class NetworkWrapperImpl implements NetworkWrapper {
     }
 
     @Override
-    public AbstractContainerMenu createMenu(int windowId, BlockPos pos, Container container, Inventory inventory, Component containerName) {
+    public AbstractContainerMenu createMenu(int windowId, BlockPos pos, Container container, Inventory inventory, Component title) {
         UUID uuid = inventory.player.getUUID();
         ResourceLocation playerPreference;
         if (playerPreferences.containsKey(uuid) && menuFactories.containsKey(playerPreference = playerPreferences.get(uuid))) {
-            return menuFactories.get(playerPreference).create(windowId, pos, container, inventory, containerName);
+            return menuFactories.get(playerPreference).create(windowId, pos, container, inventory, title);
         }
         return null;
     }

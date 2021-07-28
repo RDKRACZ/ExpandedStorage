@@ -18,19 +18,19 @@ import ninjaphenix.expandedstorage.base.inventory.screen.PagedScreenMeta;
 public final class PagedContainerMenu extends AbstractContainerMenu_<PagedScreenMeta> {
     // @formatter:off
     private static final ImmutableMap<Integer, PagedScreenMeta> SIZES = ImmutableMap.<Integer, PagedScreenMeta>builder()
-            .put(27, new PagedScreenMeta(9, 3, 1, 27, getTexture("shared", 9, 3), 208, 192)) // Wood
-            .put(54, new PagedScreenMeta(9, 6, 1, 54, getTexture("shared", 9, 6), 208, 240)) // Iron / Large Wood
-            .put(81, new PagedScreenMeta(9, 6, 2, 81, getTexture("shared", 9, 6), 208, 240)) // Gold
-            .put(108, new PagedScreenMeta(9, 6, 2, 108, getTexture("shared", 9, 6), 208, 240)) // Diamond / Large Iron
-            .put(135, new PagedScreenMeta(9, 6, 3, 135, getTexture("shared", 9, 6), 208, 240)) // Netherite
-            .put(162, new PagedScreenMeta(9, 6, 3, 162, getTexture("shared", 9, 6), 208, 240)) // Large Gold
-            .put(216, new PagedScreenMeta(9, 6, 4, 216, getTexture("shared", 9, 6), 208, 240)) // Large Diamond
-            .put(270, new PagedScreenMeta(9, 6, 5, 270, getTexture("shared", 9, 6), 208, 240)) // Large Netherite
+            .put(Utils.WOOD_STACK_COUNT, new PagedScreenMeta(9, 3, 1, Utils.WOOD_STACK_COUNT, AbstractContainerMenu_.getTexture("shared", 9, 3), 208, 192))
+            .put(Utils.IRON_STACK_COUNT, new PagedScreenMeta(9, 6, 1, Utils.IRON_STACK_COUNT, AbstractContainerMenu_.getTexture("shared", 9, 6), 208, 240))
+            .put(Utils.GOLD_STACK_COUNT, new PagedScreenMeta(9, 6, 2, Utils.GOLD_STACK_COUNT, AbstractContainerMenu_.getTexture("shared", 9, 6), 208, 240))
+            .put(Utils.DIAMOND_STACK_COUNT, new PagedScreenMeta(9, 6, 2, Utils.DIAMOND_STACK_COUNT, AbstractContainerMenu_.getTexture("shared", 9, 6), 208, 240))
+            .put(Utils.NETHERITE_STACK_COUNT, new PagedScreenMeta(9, 6, 3, Utils.NETHERITE_STACK_COUNT, AbstractContainerMenu_.getTexture("shared", 9, 6), 208, 240))
+            .put(2 * Utils.GOLD_STACK_COUNT, new PagedScreenMeta(9, 6, 3, 2 * Utils.GOLD_STACK_COUNT, AbstractContainerMenu_.getTexture("shared", 9, 6), 208, 240))
+            .put(2 * Utils.DIAMOND_STACK_COUNT, new PagedScreenMeta(9, 6, 4, 2 * Utils.DIAMOND_STACK_COUNT, AbstractContainerMenu_.getTexture("shared", 9, 6), 208, 240))
+            .put(2 * Utils.NETHERITE_STACK_COUNT, new PagedScreenMeta(9, 6, 5, 2 * Utils.NETHERITE_STACK_COUNT, AbstractContainerMenu_.getTexture("shared", 9, 6), 208, 240))
             .build();
     // @formatter:on
 
-    public PagedContainerMenu(int windowId, BlockPos pos, Container container, Inventory playerInventory, Component displayName) {
-        super(BaseCommon.PAGE_MENU_TYPE.get(), windowId, pos, container, playerInventory, displayName,
+    public PagedContainerMenu(int windowId, BlockPos pos, Container container, Inventory playerInventory, Component title) {
+        super(BaseCommon.PAGE_MENU_TYPE.get(), windowId, pos, container, playerInventory, title,
                 AbstractContainerMenu_.getNearestScreenMeta(container.getContainerSize(), PagedContainerMenu.SIZES));
         this.resetSlotPositions(true);
         int left = (screenMeta.width * Utils.SLOT_SIZE + 14) / 2 - 80;

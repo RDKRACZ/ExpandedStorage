@@ -125,11 +125,11 @@ final class NetworkWrapperImpl implements NetworkWrapper {
         // else illegal state
     }
 
-    public AbstractContainerMenu createMenu(int windowId, BlockPos pos, Container container, Inventory inventory, Component containerName) {
+    public AbstractContainerMenu createMenu(int windowId, BlockPos pos, Container container, Inventory inventory, Component title) {
         UUID uuid = inventory.player.getUUID();
         ResourceLocation playerPreference;
         if (playerPreferences.containsKey(uuid) && menuFactories.containsKey(playerPreference = playerPreferences.get(uuid))) {
-            return menuFactories.get(playerPreference).create(windowId, pos, container, inventory, containerName);
+            return menuFactories.get(playerPreference).create(windowId, pos, container, inventory, title);
         }
         return null;
     }
@@ -166,12 +166,12 @@ final class NetworkWrapperImpl implements NetworkWrapper {
                 @Nullable
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory inventory, Player player) {
-                    return NetworkWrapperImpl.this.createMenu(windowId, menu.pos, menu.getContainer(), inventory, menu.getDisplayName());
+                    return NetworkWrapperImpl.this.createMenu(windowId, menu.pos, menu.getContainer(), inventory, menu.getTitle());
                 }
 
                 @Override
                 public Component getDisplayName() {
-                    return menu.getDisplayName();
+                    return menu.getTitle();
                 }
 
                 @Override

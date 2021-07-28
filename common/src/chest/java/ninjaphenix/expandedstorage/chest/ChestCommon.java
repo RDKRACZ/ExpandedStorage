@@ -121,7 +121,7 @@ public final class ChestCommon {
         Block block = state.getBlock();
         boolean isExpandedStorageChest = block instanceof ChestBlock;
         var containerSize = !isExpandedStorageChest ? Utils.WOOD_STACK_COUNT : ((ChestBlock) BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, ((ChestBlock) block).getBlockTier())).getSlotCount();
-        if (isExpandedStorageChest && ((ChestBlock) block).getBlockTier() == from || !isExpandedStorageChest && from == Utils.WOOD_TIER.key()) {
+        if (isExpandedStorageChest && ((ChestBlock) block).getBlockTier() == from || !isExpandedStorageChest && from == Utils.WOOD_TIER.getId()) {
             var blockEntity = level.getBlockEntity(pos);
             //noinspection ConstantConditions
             var tag = blockEntity.save(new CompoundTag());

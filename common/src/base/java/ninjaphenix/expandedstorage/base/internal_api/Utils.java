@@ -12,7 +12,6 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Tiers;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import ninjaphenix.expandedstorage.base.config.ResourceLocationTypeAdapter;
 import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
@@ -26,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 @Internal
 @Experimental
@@ -38,15 +38,6 @@ public final class Utils {
             new KeybindComponent("key.sneak").withStyle(ChatFormatting.GOLD),
             new KeybindComponent("key.use").withStyle(ChatFormatting.GOLD));
 
-    // Default tiers which all modules can, but don't need to, specify blocks for.
-    // Note: each module should register their own implementation of these tiers specific to their blocks.
-    public static final Tier WOOD_TIER = Tier.of(resloc("wood"), Tiers.WOOD.getLevel());
-    public static final Tier IRON_TIER = Tier.of(resloc("iron"), Tiers.STONE.getLevel(), BlockBehaviour.Properties::requiresCorrectToolForDrops);
-    public static final Tier GOLD_TIER = Tier.of(resloc("gold"), Tiers.IRON.getLevel(), BlockBehaviour.Properties::requiresCorrectToolForDrops);
-    public static final Tier DIAMOND_TIER = Tier.of(resloc("diamond"), Tiers.IRON.getLevel(), BlockBehaviour.Properties::requiresCorrectToolForDrops);
-    public static final Tier OBSIDIAN_TIER = Tier.of(resloc("obsidian"), Tiers.DIAMOND.getLevel(), BlockBehaviour.Properties::requiresCorrectToolForDrops);
-    public static final Tier NETHERITE_TIER = Tier.of(resloc("netherite"), Tiers.NETHERITE.getLevel(), BlockBehaviour.Properties::requiresCorrectToolForDrops, Item.Properties::fireResistant);
-
     // Slots for Storage Tiers
     public static final int WOOD_STACK_COUNT = 27;
     public static final int IRON_STACK_COUNT = 54;
@@ -54,6 +45,14 @@ public final class Utils {
     public static final int DIAMOND_STACK_COUNT = 108;
     public static final int OBSIDIAN_STACK_COUNT = 108;
     public static final int NETHERITE_STACK_COUNT = 135;
+
+    // Default tiers which all modules can, but don't need to, specify blocks for.
+    public static final Tier WOOD_TIER = new Tier(Utils.resloc("wood"), WOOD_STACK_COUNT, UnaryOperator.identity(), UnaryOperator.identity());
+    public static final Tier IRON_TIER = new Tier(Utils.resloc("iron"), IRON_STACK_COUNT, BlockBehaviour.Properties::requiresCorrectToolForDrops, UnaryOperator.identity());
+    public static final Tier GOLD_TIER = new Tier(Utils.resloc("gold"), GOLD_STACK_COUNT, BlockBehaviour.Properties::requiresCorrectToolForDrops, UnaryOperator.identity());
+    public static final Tier DIAMOND_TIER = new Tier(Utils.resloc("diamond"), DIAMOND_STACK_COUNT, BlockBehaviour.Properties::requiresCorrectToolForDrops, UnaryOperator.identity());
+    public static final Tier OBSIDIAN_TIER = new Tier(Utils.resloc("obsidian"), OBSIDIAN_STACK_COUNT, BlockBehaviour.Properties::requiresCorrectToolForDrops, UnaryOperator.identity());
+    public static final Tier NETHERITE_TIER = new Tier(Utils.resloc("netherite"), NETHERITE_STACK_COUNT, BlockBehaviour.Properties::requiresCorrectToolForDrops, Item.Properties::fireResistant);
 
     // NBT Tag Types
     /**
@@ -122,9 +121,6 @@ public final class Utils {
 
     @Internal
     public static final int CONTAINER_HEADER_HEIGHT = 17;
-
-    @Internal
-    public static final int INVENTORY_HEADER_HEIGHT = 14;
 
     @Internal
     public static final int SLOT_SIZE = 18;

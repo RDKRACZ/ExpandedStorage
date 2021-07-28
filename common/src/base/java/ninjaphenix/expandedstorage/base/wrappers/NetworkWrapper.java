@@ -29,7 +29,7 @@ public interface NetworkWrapper {
 
     void s2c_openSelectScreen(ServerPlayer player, @Nullable Consumer<ResourceLocation> playerPreferenceCallback);
 
-    AbstractContainerMenu createMenu(int windowId, BlockPos blockPos, Container container, Inventory playerInventory, Component containerName);
+    AbstractContainerMenu createMenu(int windowId, BlockPos blockPos, Container container, Inventory playerInventory, Component title);
 
     boolean isValidScreenType(ResourceLocation screenType);
 

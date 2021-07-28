@@ -69,7 +69,7 @@ public class StorageMutator extends Item {
         if (block instanceof BarrelBlock) {
             return this.useModifierOnBlock(context, state, pos, BlockType.SINGLE);
         } else if (block instanceof AbstractChestBlock) {
-            return this.useModifierOnBlock(context, state, pos, ChestBlock.getBlockType(state));
+            return this.useModifierOnBlock(context, state, pos, AbstractChestBlock.getBlockType(state));
         } else {
             return this.useOnBlock(context, state, context.getClickedPos());
         }
@@ -118,8 +118,8 @@ public class StorageMutator extends Item {
                             if (direction != null) {
                                 CursedChestType type = ChestBlock.getChestType(state.getValue(HORIZONTAL_FACING), direction);
                                 Predicate<BlockEntity> isRandomizable = b -> b instanceof RandomizableContainerBlockEntity;
-                                convertContainer(level, state, pos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.key()), Utils.WOOD_STACK_COUNT, type, isRandomizable);
-                                convertContainer(level, otherState, otherPos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.key()), Utils.WOOD_STACK_COUNT, type.getOpposite(), isRandomizable);
+                                this.convertContainer(level, state, pos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type, isRandomizable);
+                                this.convertContainer(level, otherState, otherPos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type.getOpposite(), isRandomizable);
                                 tag.remove("pos");
                                 //noinspection ConstantConditions
                                 player.displayClientMessage(new TranslatableComponent("tooltip.expandedstorage.storage_mutator.merge_end"), true);

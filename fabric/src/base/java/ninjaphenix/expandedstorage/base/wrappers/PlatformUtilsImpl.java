@@ -1,7 +1,6 @@
 package ninjaphenix.expandedstorage.base.wrappers;
 
 import com.google.common.base.Suppliers;
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.types.Type;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -24,7 +23,6 @@ import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.internal_api.inventory.ClientContainerMenuFactory;
 import org.lwjgl.glfw.GLFW;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;

@@ -31,7 +31,7 @@ public final class HTMProperties {
             return null;
         }
     };
-    public static final DoubleBlockCombiner.Combiner<AbstractOpenableStorageBlockEntity,Optional<BlockEntity>> UNLOCKED_BE_GETTER = new DoubleBlockCombiner.Combiner<>() {
+    public static final DoubleBlockCombiner.Combiner<AbstractOpenableStorageBlockEntity, Optional<BlockEntity>> UNLOCKED_BE_GETTER = new DoubleBlockCombiner.Combiner<>() {
         @Override
         public Optional<BlockEntity> acceptDouble(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
             LockableObject firstLockable = (LockableObject) first;

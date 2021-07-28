@@ -8,9 +8,9 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import ninjaphenix.expandedstorage.base.compat.HTMProperties;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractStorageBlockEntity;
-import ninjaphenix.expandedstorage.base.compat.HTMProperties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,7 +25,7 @@ public abstract class HTMOpenableBlockEntitySupport extends AbstractStorageBlock
         super(blockEntityType, pos, state);
     }
 
-    @Inject(method = "load(Lnet/minecraft/nbt/CompoundTag;)V", at=@At(value = "INVOKE", target = "Lnet/minecraft/world/ContainerHelper;loadAllItems(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/core/NonNullList;)V"))
+    @Inject(method = "load(Lnet/minecraft/nbt/CompoundTag;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/ContainerHelper;loadAllItems(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/core/NonNullList;)V"))
     private void loadHTMLock(CompoundTag tag, CallbackInfo ci) {
         if (tag.contains(HTMProperties.LOCK_TAG_KEY, Tag.TAG_COMPOUND)) {
             htmLock.fromTag(tag.getCompound(HTMProperties.LOCK_TAG_KEY));

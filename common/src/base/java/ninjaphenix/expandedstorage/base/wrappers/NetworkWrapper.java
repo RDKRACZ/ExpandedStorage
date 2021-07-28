@@ -31,7 +31,7 @@ public interface NetworkWrapper {
 
     AbstractContainerMenu createMenu(int windowId, BlockPos blockPos, Container container, Inventory playerInventory, Component containerName);
 
-    boolean isValidScreenType(ResourceLocation containerType);
+    boolean isValidScreenType(ResourceLocation screenType);
 
     void c2s_sendTypePreference(ResourceLocation selection);
 

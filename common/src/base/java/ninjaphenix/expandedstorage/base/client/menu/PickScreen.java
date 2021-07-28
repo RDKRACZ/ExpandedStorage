@@ -33,8 +33,8 @@ public final class PickScreen extends Screen {
         this.parent = parent;
     }
 
-    public static void declareButtonSettings(ResourceLocation containerType, ResourceLocation texture, Component text) {
-        PickScreen.BUTTON_SETTINGS.putIfAbsent(containerType, new Tuple<>(texture, text));
+    public static void declareButtonSettings(ResourceLocation screenType, ResourceLocation texture, Component text) {
+        PickScreen.BUTTON_SETTINGS.putIfAbsent(screenType, new Tuple<>(texture, text));
     }
 
     @Override

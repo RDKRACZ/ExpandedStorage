@@ -115,7 +115,7 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
 
             @Nullable
             @Override
-            public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
+            public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, ServerPlayer player) {
                 if (container.canPlayerInteractWith(player) && container.canContinueUse(player)) {
                     return NetworkWrapper.getInstance().createMenu(windowId, container.getBlockPos(), container.getContainerWrapper(), playerInventory, this.getMenuTitle());
                 }

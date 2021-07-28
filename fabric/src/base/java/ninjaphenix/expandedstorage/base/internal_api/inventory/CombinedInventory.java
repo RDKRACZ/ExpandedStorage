@@ -90,8 +90,8 @@ public final class CombinedInventory implements WorldlyContainer {
         second.stopOpen(player);
     }
 
-    public boolean consistsPartlyOf(WorldlyContainer container) {
-        return first == container || second == container;
+    public boolean consistsPartlyOf(WorldlyContainer part) {
+        return first == part || second == part;
     }
 
     public int getMaxStackSize() {

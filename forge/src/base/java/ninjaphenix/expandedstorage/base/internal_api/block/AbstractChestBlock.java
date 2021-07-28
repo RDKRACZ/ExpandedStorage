@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
@@ -87,7 +86,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
 
                 @Nullable
                 @Override
-                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
+                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, ServerPlayer player) {
                     if (first.canContinueUse(player) && second.canContinueUse(player)) {
                         CompoundContainer container = new CompoundContainer(first.getContainerWrapper(), second.getContainerWrapper());
                         return NetworkWrapper.getInstance().createMenu(windowId, first.getBlockPos(), container, playerInventory, this.getMenuTitle());
@@ -121,7 +120,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
 
                 @Nullable
                 @Override
-                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
+                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, ServerPlayer player) {
                     if (single.canContinueUse(player)) {
                         return NetworkWrapper.getInstance().createMenu(windowId, single.getBlockPos(), single.getContainerWrapper(), playerInventory, this.getMenuTitle());
                     }
@@ -293,15 +292,15 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     }
 
     public final NeighborCombineResult<? extends T> createCombinedPropertyGetter(BlockState state, LevelAccessor level, BlockPos pos, boolean alwaysOpen) {
-        BiPredicate<LevelAccessor, BlockPos> isChestBlocked = alwaysOpen ? (_level, _pos) -> false : this::isBlocked;
-        return DoubleBlockCombiner.combineWithNeigbour(this.blockEntityType(), AbstractChestBlock::getBlockType,
+        BiPredicate<LevelAccessor, BlockPos> isChestBlocked = alwaysOpen ? (_level, _pos) -> false : this::isAccessBlocked;
+        return DoubleBlockCombiner.combineWithNeigbour(this.getBlockEntityType(), AbstractChestBlock::getBlockType,
                 AbstractChestBlock::getDirectionToAttached, BlockStateProperties.HORIZONTAL_FACING, state, level, pos,
                 isChestBlocked);
     }
 
-    protected abstract BlockEntityType<T> blockEntityType();
+    protected abstract BlockEntityType<T> getBlockEntityType();
 
-    protected boolean isBlocked(LevelAccessor level, BlockPos pos) {
+    protected boolean isAccessBlocked(LevelAccessor level, BlockPos pos) {
         return false;
     }
 

@@ -14,7 +14,6 @@ import ninjaphenix.expandedstorage.barrel.block.BarrelBlock;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 
 public class BarrelBlockEntity extends AbstractOpenableStorageBlockEntity {
-
     public BarrelBlockEntity(BlockEntityType<BarrelBlockEntity> blockEntityType, BlockPos pos, BlockState state) {
         super(blockEntityType, pos, state, ((BarrelBlock) state.getBlock()).getBlockId());
     }

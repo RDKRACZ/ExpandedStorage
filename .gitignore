@@ -4,5 +4,6 @@
 .vscode/
 build/
 run/
+deps/
 # Personal folder
 local/

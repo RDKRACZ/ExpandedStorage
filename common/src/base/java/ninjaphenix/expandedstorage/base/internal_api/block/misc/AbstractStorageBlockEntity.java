@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.LockCode;
@@ -52,8 +53,8 @@ public abstract class AbstractStorageBlockEntity extends BlockEntity implements 
         return tag;
     }
 
-    public boolean canPlayerInteractWith(Player player) {
-        return !player.isSpectator() && lockKey.unlocksWith(player.getMainHandItem());
+    public boolean canPlayerInteractWith(ServerPlayer player) {
+        return lockKey == LockCode.NO_LOCK || !player.isSpectator() && lockKey.unlocksWith(player.getMainHandItem());
     }
 
     @Override

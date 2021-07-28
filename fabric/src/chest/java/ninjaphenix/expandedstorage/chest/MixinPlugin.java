@@ -11,10 +11,12 @@ import java.util.Set;
 public final class MixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassPath, String mixinClassPath) {
-        if ("ninjaphenix.expandedstorage.chest.mixin.ToweletteSupport".equals(mixinClassPath)) {
-            return FabricLoader.getInstance().isModLoaded("towelette");
-        }
-        return true;
+        String className = mixinClassPath.substring(40);
+        return switch (className) {
+            case "ToweletteSupport" -> FabricLoader.getInstance().isModLoaded("towelette");
+            case "HTMChestSupport", "HTMOpenableBlockEntitySupport" -> FabricLoader.getInstance().isModLoaded("htm");
+            default -> true;
+        };
     }
 
     @Override

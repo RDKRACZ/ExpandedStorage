@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
@@ -84,7 +83,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                 }
 
                 @Override
-                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
+                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, ServerPlayer player) {
                     if (first.stillValid(player) && second.stillValid(player)) {
                         CombinedInventory container = new CombinedInventory(first, second);
                         return NetworkWrapper.getInstance().createMenu(windowId, first.getBlockPos(), container, playerInventory, this.getMenuTitle());
@@ -117,7 +116,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                 }
 
                 @Override
-                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
+                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, ServerPlayer player) {
                     if (single.stillValid(player)) {
                         return NetworkWrapper.getInstance().createMenu(windowId, single.getBlockPos(), single, playerInventory, this.getMenuTitle());
                     }

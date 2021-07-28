@@ -5,5 +5,5 @@ import org.spongepowered.asm.mixin.Mixin;
 import virtuoel.towelette.api.Fluidloggable;
 
 @Mixin(ChestBlock.class)
-public class ToweletteSupport implements Fluidloggable {
+public abstract class ToweletteSupport implements Fluidloggable {
 }

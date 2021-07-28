@@ -18,5 +18,5 @@ public interface ServerMenuFactory {
 
     boolean canPlayerOpen(ServerPlayer player);
 
-    AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player);
+    AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, ServerPlayer player);
 }

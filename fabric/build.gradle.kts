@@ -49,6 +49,17 @@ repositories {
         name = "Siphalor's Maven"
         url = uri("https://maven.siphalor.de/")
     }
+    exclusiveContent {
+        forRepository {
+            flatDir {
+                name = "Local Dependencies"
+                dir(rootDir.resolve("deps"))
+            }
+        }
+        filter {
+            includeGroup("local")
+        }
+    }
 }
 
 val excludeFabric: (ExternalModuleDependency) -> Unit = {
@@ -62,6 +73,7 @@ dependencies {
     // For chest module
     modCompileOnly("com.github.Virtuoel:Statement:31a2c3f", excludeFabric)
     modCompileOnly("com.github.Virtuoel:Towelette:e5e39eb", excludeFabric)
+    modCompileOnly("local:htm:1.1.3")
 
     // For base module
     modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${properties["rei_version"]}", excludeFabric)

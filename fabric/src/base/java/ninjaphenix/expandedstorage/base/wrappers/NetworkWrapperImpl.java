@@ -104,7 +104,7 @@ final class NetworkWrapperImpl implements NetworkWrapper {
                 @Nullable
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory inventory, Player player) {
-                    return menuFactory.createMenu(windowId, inventory, player);
+                    return menuFactory.createMenu(windowId, inventory, (ServerPlayer) player);
                 }
             });
         } else {

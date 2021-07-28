@@ -16,7 +16,7 @@ import java.util.Map;
 
 // todo: hopefully remove this before 1.18
 @Mixin(LayerDefinitions.class)
-public class ModelLayersMixin {
+public abstract class ModelLayersMixin {
     @Inject(method = "createRoots()Ljava/util/Map;",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/builders/LayerDefinition;create(Lnet/minecraft/client/model/geom/builders/MeshDefinition;II)Lnet/minecraft/client/model/geom/builders/LayerDefinition;", ordinal = 0),
             locals = LocalCapture.CAPTURE_FAILHARD)

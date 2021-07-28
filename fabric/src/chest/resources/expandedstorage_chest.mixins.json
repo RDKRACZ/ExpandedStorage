@@ -4,6 +4,8 @@
   "plugin": "ninjaphenix.expandedstorage.chest.MixinPlugin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "HTMChestSupport",
+    "HTMOpenableBlockEntitySupport",
     "ToweletteSupport"
   ],
   "client": [

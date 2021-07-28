@@ -33,7 +33,7 @@ final class PlatformUtilsImpl implements PlatformUtils {
     private static PlatformUtilsImpl INSTANCE;
     private final boolean isClient;
     private boolean configKeyRequiresShift = true;
-    private final Supplier<Object> configKeyMapping = Suppliers.memoize(this::createConfigKey);
+    private final Supplier<Object> configKey = Suppliers.memoize(this::createConfigKey);
 
     private PlatformUtilsImpl() {
         isClient = FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
@@ -97,12 +97,12 @@ final class PlatformUtilsImpl implements PlatformUtils {
     }
 
     @Override
-    public boolean isKeyMappingPressed(int keyCode, int scanCode, int modifiers) {
-        return getConfigScreenKeyMapping().matches(keyCode, scanCode) && (!configKeyRequiresShift || (modifiers & 1) > 0);
+    public boolean isConfigKeyPressed(int keyCode, int scanCode, int modifiers) {
+        return this.getConfigKey().matches(keyCode, scanCode) && (!configKeyRequiresShift || (modifiers & 1) > 0);
     }
 
     @Environment(EnvType.CLIENT)
-    public KeyMapping getConfigScreenKeyMapping() {
-        return (KeyMapping) configKeyMapping.get();
+    public KeyMapping getConfigKey() {
+        return (KeyMapping) configKey.get();
     }
 }

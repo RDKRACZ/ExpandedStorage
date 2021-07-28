@@ -11,10 +11,10 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 @Internal
 @Experimental
-public interface ContainerMenuFactory {
+public interface ServerMenuFactory {
     void writeClientData(ServerPlayer player, FriendlyByteBuf buffer);
 
-    Component displayName();
+    Component getMenuTitle();
 
     boolean canPlayerOpen(ServerPlayer player);
 

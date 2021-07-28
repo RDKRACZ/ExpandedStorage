@@ -11,19 +11,19 @@ public class ConfigV0 implements Config {
     private boolean restrictiveScrolling;
 
     public ConfigV0() {
-        this(Utils.UNSET_CONTAINER_TYPE, false);
+        this(Utils.UNSET_SCREEN_TYPE, false);
     }
 
     public ConfigV0(ResourceLocation containerType, boolean restrictiveScrolling) {
-        this.containerType = containerType == null ? Utils.UNSET_CONTAINER_TYPE : containerType;
+        this.containerType = containerType == null ? Utils.UNSET_SCREEN_TYPE : containerType;
         this.restrictiveScrolling = restrictiveScrolling;
     }
 
-    public ResourceLocation getContainerType() {
+    public ResourceLocation getScreenType() {
         return containerType;
     }
 
-    public void setContainerType(ResourceLocation containerType) {
+    public void setScreenType(ResourceLocation containerType) {
         this.containerType = containerType;
     }
 

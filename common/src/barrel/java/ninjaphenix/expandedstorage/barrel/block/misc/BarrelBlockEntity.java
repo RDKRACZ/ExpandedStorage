@@ -16,7 +16,7 @@ import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenable
 public class BarrelBlockEntity extends AbstractOpenableStorageBlockEntity {
 
     public BarrelBlockEntity(BlockEntityType<BarrelBlockEntity> blockEntityType, BlockPos pos, BlockState state) {
-        super(blockEntityType, pos, state, ((BarrelBlock) state.getBlock()).blockId());
+        super(blockEntityType, pos, state, ((BarrelBlock) state.getBlock()).getBlockId());
     }
 
     private void playSound(BlockState state, SoundEvent sound) {

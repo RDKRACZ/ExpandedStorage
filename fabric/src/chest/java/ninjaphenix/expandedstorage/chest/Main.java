@@ -25,15 +25,16 @@ import java.util.function.Consumer;
 public final class Main implements ModuleInitializer {
     @Override
     public void initialize() {
+        // This is nasty, can I make this code better?
         AtomicReference<Set<ChestBlock>> b = new AtomicReference<>();
         AtomicReference<Set<BlockItem>> i = new AtomicReference<>();
         Consumer<Set<ChestBlock>> registerBlocks = (blocks) -> {
             b.set(blocks);
-            blocks.forEach(block -> Registry.register(Registry.BLOCK, block.blockId(), block));
+            blocks.forEach(block -> Registry.register(Registry.BLOCK, block.getBlockId(), block));
         };
         Consumer<Set<BlockItem>> registerItems = (items) -> {
             i.set(items);
-            items.forEach(item -> Registry.register(Registry.ITEM, ((ChestBlock) item.getBlock()).blockId(), item));
+            items.forEach(item -> Registry.register(Registry.ITEM, ((ChestBlock) item.getBlock()).getBlockId(), item));
         };
         Consumer<BlockEntityType<ChestBlockEntity>> registerBlockEntityType = (blockEntityType) -> {
             Registry.register(Registry.BLOCK_ENTITY_TYPE, ChestCommon.BLOCK_TYPE, blockEntityType);

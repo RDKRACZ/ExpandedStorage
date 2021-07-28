@@ -50,14 +50,14 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
             }
 
             @Override
-            protected void openerCountChanged(Level level, BlockPos pos, BlockState state, int i, int j) {
-                AbstractOpenableStorageBlockEntity.this.openerCountChanged(level, pos, state, i, j);
+            protected void openerCountChanged(Level level, BlockPos pos, BlockState state, int oldCount, int newCount) {
+                AbstractOpenableStorageBlockEntity.this.onObserverCountChanged(level, pos, state, oldCount, newCount);
             }
 
             @Override
             protected boolean isOwnContainer(Player player) {
                 if (player.containerMenu instanceof AbstractContainerMenu_<?>) {
-                    return AbstractOpenableStorageBlockEntity.this.isOwnContainer(((AbstractContainerMenu_<?>) player.containerMenu).getContainer());
+                    return AbstractOpenableStorageBlockEntity.this.isThis(((AbstractContainerMenu_<?>) player.containerMenu).getContainer());
                 } else {
                     return false;
                 }
@@ -83,11 +83,11 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         }
     }
 
-    protected void openerCountChanged(Level level, BlockPos pos, BlockState state, int i, int j) {
+    protected void onObserverCountChanged(Level level, BlockPos pos, BlockState state, int oldCount, int newCount) {
 
     }
 
-    protected boolean isOwnContainer(Container container) {
+    protected boolean isThis(Container container) {
         return container == this;
     }
 
@@ -99,7 +99,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
     }
 
-    public final void recheckOpen() {
+    public final void recheckObserverCount() {
         openersCounter.recheckOpeners(getLevel(), getBlockPos(), getBlockState());
     }
 
@@ -126,7 +126,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     public void load(CompoundTag tag) {
         super.load(tag);
         if (this.getBlockState().getBlock() instanceof AbstractOpenableStorageBlock block) {
-            this.initialise(block.blockId());
+            this.initialise(block.getBlockId());
             ContainerHelper.loadAllItems(tag, inventory);
         } else {
             throw new IllegalStateException("Block Entity attached to wrong block.");

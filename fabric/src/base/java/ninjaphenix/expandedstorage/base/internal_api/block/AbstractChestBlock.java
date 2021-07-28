@@ -27,8 +27,8 @@ import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractStorageBlockEntity;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.CompoundWorldlyContainer;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.ContainerMenuFactory;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.CombinedInventory;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerMenuFactory;
 import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -41,10 +41,11 @@ import java.util.function.BiPredicate;
 @Experimental
 public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockEntity> extends AbstractOpenableStorageBlock {
     public static final EnumProperty<CursedChestType> CURSED_CHEST_TYPE = EnumProperty.create("type", CursedChestType.class);
+
     private final DoubleBlockCombiner.Combiner<T, Optional<WorldlyContainer>> containerGetter = new DoubleBlockCombiner.Combiner<>() {
         @Override
         public Optional<WorldlyContainer> acceptDouble(T first, T second) {
-            return Optional.of(new CompoundWorldlyContainer(first, second));
+            return Optional.of(new CombinedInventory(first, second));
         }
 
         @Override
@@ -58,18 +59,18 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         }
     };
 
-    private final DoubleBlockCombiner.Combiner<T, Optional<ContainerMenuFactory>> menuGetter = new DoubleBlockCombiner.Combiner<>() {
+    private final DoubleBlockCombiner.Combiner<T, Optional<ServerMenuFactory>> menuGetter = new DoubleBlockCombiner.Combiner<>() {
         @Override
-        public Optional<ContainerMenuFactory> acceptDouble(T first, T second) {
-            return Optional.of(new ContainerMenuFactory() {
+        public Optional<ServerMenuFactory> acceptDouble(T first, T second) {
+            return Optional.of(new ServerMenuFactory() {
                 @Override
                 public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
-                    CompoundWorldlyContainer container = new CompoundWorldlyContainer(first, second);
+                    CombinedInventory container = new CombinedInventory(first, second);
                     buffer.writeBlockPos(first.getBlockPos()).writeInt(container.getContainerSize());
                 }
 
                 @Override
-                public Component displayName() {
+                public Component getMenuTitle() {
                     return first.hasCustomName() ? first.getName() : second.hasCustomName() ? second.getName() : Utils.translation("container.expandedstorage.generic_double", first.getName());
                 }
 
@@ -78,15 +79,15 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                     if (first.canPlayerInteractWith(player) && second.canPlayerInteractWith(player)) {
                         return true;
                     }
-                    AbstractStorageBlockEntity.alertBlockLocked(player, this.displayName());
+                    AbstractStorageBlockEntity.alertBlockLocked(player, this.getMenuTitle());
                     return false;
                 }
 
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
                     if (first.stillValid(player) && second.stillValid(player)) {
-                        CompoundWorldlyContainer container = new CompoundWorldlyContainer(first, second);
-                        return NetworkWrapper.getInstance().createMenu(windowId, first.getBlockPos(), container, playerInventory, this.displayName());
+                        CombinedInventory container = new CombinedInventory(first, second);
+                        return NetworkWrapper.getInstance().createMenu(windowId, first.getBlockPos(), container, playerInventory, this.getMenuTitle());
                     }
                     return null;
                 }
@@ -94,15 +95,15 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         }
 
         @Override
-        public Optional<ContainerMenuFactory> acceptSingle(T single) {
-            return Optional.of(new ContainerMenuFactory() {
+        public Optional<ServerMenuFactory> acceptSingle(T single) {
+            return Optional.of(new ServerMenuFactory() {
                 @Override
                 public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
                     buffer.writeBlockPos(single.getBlockPos()).writeInt(single.getContainerSize());
                 }
 
                 @Override
-                public Component displayName() {
+                public Component getMenuTitle() {
                     return single.getName();
                 }
 
@@ -111,14 +112,14 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                     if (single.canPlayerInteractWith(player)) {
                         return true;
                     }
-                    AbstractStorageBlockEntity.alertBlockLocked(player, this.displayName());
+                    AbstractStorageBlockEntity.alertBlockLocked(player, this.getMenuTitle());
                     return false;
                 }
 
                 @Override
                 public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
                     if (single.stillValid(player)) {
-                        return NetworkWrapper.getInstance().createMenu(windowId, single.getBlockPos(), single, playerInventory, this.displayName());
+                        return NetworkWrapper.getInstance().createMenu(windowId, single.getBlockPos(), single, playerInventory, this.getMenuTitle());
                     }
                     return null;
                 }
@@ -126,7 +127,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         }
 
         @Override
-        public Optional<ContainerMenuFactory> acceptNone() {
+        public Optional<ServerMenuFactory> acceptNone() {
             return Optional.empty();
         }
     };
@@ -281,26 +282,26 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         return state.setValue(BlockStateProperties.HORIZONTAL_FACING, rotation.rotate(state.getValue(BlockStateProperties.HORIZONTAL_FACING)));
     }
 
-    public final NeighborCombineResult<? extends T> combine(BlockState state, LevelAccessor level, BlockPos pos, boolean alwaysOpen) {
-        BiPredicate<LevelAccessor, BlockPos> isChestBlocked = alwaysOpen ? (_level, _pos) -> false : this::isBlocked;
-        return DoubleBlockCombiner.combineWithNeigbour(this.blockEntityType(), AbstractChestBlock::getBlockType,
+    public final NeighborCombineResult<? extends T> createCombinedPropertyGetter(BlockState state, LevelAccessor level, BlockPos pos, boolean alwaysOpen) {
+        BiPredicate<LevelAccessor, BlockPos> isChestBlocked = alwaysOpen ? (_level, _pos) -> false : this::isAccessBlocked;
+        return DoubleBlockCombiner.combineWithNeigbour(this.getBlockEntityType(), AbstractChestBlock::getBlockType,
                 AbstractChestBlock::getDirectionToAttached, BlockStateProperties.HORIZONTAL_FACING, state, level, pos,
                 isChestBlocked);
     }
 
-    protected abstract BlockEntityType<T> blockEntityType();
+    protected abstract BlockEntityType<T> getBlockEntityType();
 
-    protected boolean isBlocked(LevelAccessor level, BlockPos pos) {
+    protected boolean isAccessBlocked(LevelAccessor level, BlockPos pos) {
         return false;
     }
 
     @Override
-    protected ContainerMenuFactory createContainerFactory(BlockState state, LevelAccessor level, BlockPos pos) {
-        return this.combine(state, level, pos, false).apply(menuGetter).orElse(null);
+    protected ServerMenuFactory createMenuFactory(BlockState state, LevelAccessor level, BlockPos pos) {
+        return this.createCombinedPropertyGetter(state, level, pos, false).apply(menuGetter).orElse(null);
     }
 
     @Override // Keep for hoppers.
     public WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
-        return this.combine(state, level, pos, true).apply(containerGetter).orElse(null);
+        return this.createCombinedPropertyGetter(state, level, pos, true).apply(containerGetter).orElse(null);
     }
 }

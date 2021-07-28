@@ -20,7 +20,7 @@ public class ModelLayersMixin {
     @Inject(method = "createRoots()Ljava/util/Map;",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/builders/LayerDefinition;create(Lnet/minecraft/client/model/geom/builders/MeshDefinition;II)Lnet/minecraft/client/model/geom/builders/LayerDefinition;", ordinal = 0),
             locals = LocalCapture.CAPTURE_FAILHARD)
-    private static void addLayerDefinitions(CallbackInfoReturnable<Map<ModelLayerLocation, ModelPart>> cir,
+    private static void addChestModelLayers(CallbackInfoReturnable<Map<ModelLayerLocation, ModelPart>> cir,
                                             ImmutableMap.Builder<ModelLayerLocation, LayerDefinition> builder) {
         builder.put(ChestBlockEntityRenderer.SINGLE_LAYER, ChestBlockEntityRenderer.createSingleBodyLayer());
         builder.put(ChestBlockEntityRenderer.VANILLA_LEFT_LAYER, ChestBlockEntityRenderer.createVanillaLeftBodyLayer());

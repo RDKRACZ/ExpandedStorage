@@ -145,7 +145,7 @@ public final class OldChestCommon {
     }
 
     private static void upgradeSingleBlock(Level level, BlockState state, BlockPos pos, ResourceLocation from, ResourceLocation to) {
-        if (((OldChestBlock) state.getBlock()).blockTier() == from) {
+        if (((OldChestBlock) state.getBlock()).getBlockTier() == from) {
             var toBlock = (AbstractOpenableStorageBlock) BaseApi.getInstance().getTieredBlock(OldChestCommon.BLOCK_TYPE, to);
             var inventory = NonNullList.withSize(toBlock.getSlotCount(), ItemStack.EMPTY);
             //noinspection ConstantConditions

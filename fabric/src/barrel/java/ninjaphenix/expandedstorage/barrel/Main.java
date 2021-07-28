@@ -20,14 +20,14 @@ public final class Main implements ModuleInitializer {
     }
 
     private static void registerBlocks(Set<BarrelBlock> blocks) {
-        blocks.forEach(block -> Registry.register(Registry.BLOCK, block.blockId(), block));
+        blocks.forEach(block -> Registry.register(Registry.BLOCK, block.getBlockId(), block));
         if (PlatformUtils.getInstance().isClient()) {
             blocks.forEach(block -> BlockRenderLayerMap.INSTANCE.putBlock(block, RenderType.cutoutMipped()));
         }
     }
 
     private static void registerItems(Set<BlockItem> items) {
-        items.forEach(item -> Registry.register(Registry.ITEM, ((BarrelBlock) item.getBlock()).blockId(), item));
+        items.forEach(item -> Registry.register(Registry.ITEM, ((BarrelBlock) item.getBlock()).getBlockId(), item));
     }
 
     @Override

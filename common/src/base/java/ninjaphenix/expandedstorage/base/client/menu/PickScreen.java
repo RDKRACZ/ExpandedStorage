@@ -62,7 +62,7 @@ public final class PickScreen extends Screen {
         this.topPadding = topPadding;
         optionWidgets.clear();
         for (ResourceLocation option : options) {
-            if (!(ignoreSingle && Utils.SINGLE_CONTAINER_TYPE.equals(option))) {
+            if (!(ignoreSingle && Utils.SINGLE_SCREEN_TYPE.equals(option))) {
                 Tuple<ResourceLocation, Component> settings = PickScreen.BUTTON_SETTINGS.get(option);
                 optionWidgets.add(this.addRenderableWidget(new ScreenPickButton(outerPadding + (innerPadding + 96) * x, topPadding, 96, 96,
                         settings.getA(), settings.getB(), button -> this.updatePlayerPreference(option),

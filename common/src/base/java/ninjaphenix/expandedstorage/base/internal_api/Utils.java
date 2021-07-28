@@ -72,16 +72,16 @@ public final class Utils {
 
     // Container Types
     @Internal
-    public static final ResourceLocation UNSET_CONTAINER_TYPE = Utils.resloc("auto");
+    public static final ResourceLocation UNSET_SCREEN_TYPE = Utils.resloc("auto");
 
     @Internal
-    public static final ResourceLocation SINGLE_CONTAINER_TYPE = Utils.resloc("single");
+    public static final ResourceLocation SINGLE_SCREEN_TYPE = Utils.resloc("single");
 
     @Internal
-    public static final ResourceLocation PAGE_CONTAINER_TYPE = Utils.resloc("page");
+    public static final ResourceLocation PAGED_SCREEN_TYPE = Utils.resloc("page");
 
     @Internal
-    public static final ResourceLocation SCROLL_CONTAINER_TYPE = Utils.resloc("scroll");
+    public static final ResourceLocation SCROLLABLE_SCREEN_TYPE = Utils.resloc("scroll");
 
     // Config paths
     @Internal

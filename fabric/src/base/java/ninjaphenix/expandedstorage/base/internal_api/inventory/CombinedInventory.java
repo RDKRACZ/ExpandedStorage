@@ -10,11 +10,11 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 @Internal
 @Experimental
 @SuppressWarnings("ClassCanBeRecord")
-public final class CompoundWorldlyContainer implements WorldlyContainer {
+public final class CombinedInventory implements WorldlyContainer {
     private final WorldlyContainer first;
     private final WorldlyContainer second;
 
-    public CompoundWorldlyContainer(WorldlyContainer first, WorldlyContainer second) {
+    public CombinedInventory(WorldlyContainer first, WorldlyContainer second) {
         this.first = first;
         this.second = second;
     }

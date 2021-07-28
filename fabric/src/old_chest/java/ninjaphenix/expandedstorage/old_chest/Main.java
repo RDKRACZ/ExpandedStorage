@@ -15,11 +15,11 @@ public final class Main implements ModuleInitializer {
     }
 
     private static void registerBlocks(Set<OldChestBlock> blocks) {
-        blocks.forEach(block -> Registry.register(Registry.BLOCK, block.blockId(), block));
+        blocks.forEach(block -> Registry.register(Registry.BLOCK, block.getBlockId(), block));
     }
 
     private static void registerItems(Set<BlockItem> items) {
-        items.forEach(item -> Registry.register(Registry.ITEM, ((OldChestBlock) item.getBlock()).blockId(), item));
+        items.forEach(item -> Registry.register(Registry.ITEM, ((OldChestBlock) item.getBlock()).getBlockId(), item));
     }
 
     @Override

@@ -76,7 +76,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     }
 
     @Override
-    public ResourceLocation blockType() {
+    public ResourceLocation getBlockType() {
         return ChestCommon.BLOCK_TYPE;
     }
 
@@ -84,14 +84,14 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
         boolean correctBET = blockEntityType == ChestCommon.getBlockEntityType();
-        return level.isClientSide() && correctBET ? (level1, pos, state1, entity) -> ChestBlockEntity.lidAnimateTick(level1, pos, state1, (ChestBlockEntity) entity) : null;
+        return level.isClientSide() && correctBET ? (level1, pos, state1, entity) -> ChestBlockEntity.progressLidAnimation(level1, pos, state1, (ChestBlockEntity) entity) : null;
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public void tick(BlockState state, ServerLevel level, BlockPos pos, Random random) {
         if (level.getBlockEntity(pos) instanceof ChestBlockEntity entity) {
-            entity.recheckOpen();
+            entity.recheckObserverCount();
         }
     }
 
@@ -124,7 +124,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     }
 
     @Override
-    protected BlockEntityType<ChestBlockEntity> blockEntityType() {
+    protected BlockEntityType<ChestBlockEntity> getBlockEntityType() {
         return ChestCommon.getBlockEntityType();
     }
 
@@ -137,7 +137,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     }
 
     @Override
-    protected boolean isBlocked(LevelAccessor level, BlockPos pos) {
+    protected boolean isAccessBlocked(LevelAccessor level, BlockPos pos) {
         return net.minecraft.world.level.block.ChestBlock.isChestBlockedAt(level, pos);
     }
 }

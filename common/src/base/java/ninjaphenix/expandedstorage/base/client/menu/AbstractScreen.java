@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractButton;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
@@ -51,7 +50,7 @@ public abstract class AbstractScreen<T extends AbstractContainerMenu_<R>, R exte
     @Override
     @SuppressWarnings("ConstantConditions")
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (PlatformUtils.getInstance().isKeyMappingPressed(keyCode, scanCode, modifiers)) {
+        if (PlatformUtils.getInstance().isConfigKeyPressed(keyCode, scanCode, modifiers)) {
             NetworkWrapper.getInstance().c2s_openTypeSelectScreen();
             return true;
         } else if (keyCode == GLFW.GLFW_KEY_ESCAPE || minecraft.options.keyInventory.matches(keyCode, scanCode)) {

@@ -124,8 +124,8 @@ public final class BarrelCommon {
         BlockState state = level.getBlockState(pos);
         Block block = state.getBlock();
         boolean isExpandedStorageBarrel = block instanceof BarrelBlock;
-        var containerSize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : ((BarrelBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, ((BarrelBlock) block).blockTier())).getSlotCount();
-        if (isExpandedStorageBarrel && ((BarrelBlock) block).blockTier() == from || !isExpandedStorageBarrel && from == Utils.WOOD_TIER.key()) {
+        var containerSize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : ((BarrelBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, ((BarrelBlock) block).getBlockTier())).getSlotCount();
+        if (isExpandedStorageBarrel && ((BarrelBlock) block).getBlockTier() == from || !isExpandedStorageBarrel && from == Utils.WOOD_TIER.key()) {
             var blockEntity = level.getBlockEntity(pos);
             //noinspection ConstantConditions
             var tag = blockEntity.save(new CompoundTag());

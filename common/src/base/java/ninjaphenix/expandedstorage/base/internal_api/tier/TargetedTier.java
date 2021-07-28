@@ -22,7 +22,7 @@ public class TargetedTier extends Tier {
     }
 
     public final boolean appliesTo(Block block) {
-        return block instanceof AbstractStorageBlock storageBlock && storageBlock.blockType() == blockType;
+        return block instanceof AbstractStorageBlock storageBlock && storageBlock.getBlockType() == blockType;
     }
 
     public final ResourceLocation blockType() {

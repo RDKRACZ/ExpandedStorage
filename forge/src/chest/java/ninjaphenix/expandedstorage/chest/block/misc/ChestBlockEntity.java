@@ -18,7 +18,6 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractChestBlock;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.chest.block.ChestBlock;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity implements TickableBlockEntity {
@@ -112,7 +111,6 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity i
         }
     }
 
-    @NotNull
     @Override
     protected IItemHandlerModifiable createItemHandler(Level level, BlockState state, BlockPos pos, @Nullable Direction side) {
         return AbstractChestBlock.createItemHandler(level, state, pos).orElse(AbstractOpenableStorageBlockEntity.createGenericItemHandler(this));

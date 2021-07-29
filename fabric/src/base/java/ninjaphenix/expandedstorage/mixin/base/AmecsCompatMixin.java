@@ -18,7 +18,7 @@ public abstract class AmecsCompatMixin implements PlatformUtils {
      * @reason To support Amecs custom key mapping
      */
     @Overwrite(remap = false)
-    public Object createConfigKey() {
+    private Object createConfigKey() {
         KeyModifiers modifiers = new KeyModifiers();
         AmecsKeyBinding keyMapping = new AmecsKeyBinding(Utils.resloc("config"), InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_W, "key.categories.inventory", modifiers);
         return KeyBindingHelper.registerKeyBinding(keyMapping);

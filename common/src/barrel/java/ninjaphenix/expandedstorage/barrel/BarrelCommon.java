@@ -29,7 +29,7 @@ import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
-import ninjaphenix.expandedstorage.base.internal_api.tier.OpenableTier;
+import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
 
 import java.util.Collections;
@@ -54,12 +54,6 @@ public final class BarrelCommon {
                                 Consumer<Set<BlockItem>> itemReg,
                                 Consumer<BlockEntityType<BarrelBlockEntity>> blockEntityTypeConsumer,
                                 net.minecraft.tags.Tag<Block> woodenBarrelTag) {
-        // Init tiers
-        OpenableTier ironTier = new OpenableTier(Utils.IRON_TIER, BarrelCommon.BLOCK_TYPE, Utils.IRON_STACK_COUNT);
-        OpenableTier goldTier = new OpenableTier(Utils.GOLD_TIER, BarrelCommon.BLOCK_TYPE, Utils.GOLD_STACK_COUNT);
-        OpenableTier diamondTier = new OpenableTier(Utils.DIAMOND_TIER, BarrelCommon.BLOCK_TYPE, Utils.DIAMOND_STACK_COUNT);
-        OpenableTier obsidianTier = new OpenableTier(Utils.OBSIDIAN_TIER, BarrelCommon.BLOCK_TYPE, Utils.OBSIDIAN_STACK_COUNT);
-        OpenableTier netheriteTier = new OpenableTier(Utils.NETHERITE_TIER, BarrelCommon.BLOCK_TYPE, Utils.NETHERITE_STACK_COUNT);
         // Init and register opening stats
         ResourceLocation ironOpenStat = BaseCommon.registerStat(Utils.resloc("open_iron_barrel"));
         ResourceLocation goldOpenStat = BaseCommon.registerStat(Utils.resloc("open_gold_barrel"));
@@ -83,19 +77,19 @@ public final class BarrelCommon {
                                                                                  .strength(50.0F, 1200.0F)
                                                                                  .sound(SoundType.WOOD);
         // Init blocks
-        BarrelBlock ironBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("iron_barrel"), ironOpenStat, ironTier, ironProperties);
-        BarrelBlock goldBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("gold_barrel"), goldOpenStat, goldTier, goldProperties);
-        BarrelBlock diamondBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("diamond_barrel"), diamondOpenStat, diamondTier, diamondProperties);
-        BarrelBlock obsidianBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("obsidian_barrel"), obsidianOpenStat, obsidianTier, obsidianProperties);
-        BarrelBlock netheriteBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("netherite_barrel"), netheriteOpenStat, netheriteTier, netheriteProperties);
+        BarrelBlock ironBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("iron_barrel"), ironOpenStat, Utils.IRON_TIER, ironProperties);
+        BarrelBlock goldBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("gold_barrel"), goldOpenStat, Utils.GOLD_TIER, goldProperties);
+        BarrelBlock diamondBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("diamond_barrel"), diamondOpenStat, Utils.DIAMOND_TIER, diamondProperties);
+        BarrelBlock obsidianBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("obsidian_barrel"), obsidianOpenStat, Utils.OBSIDIAN_TIER, obsidianProperties);
+        BarrelBlock netheriteBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("netherite_barrel"), netheriteOpenStat, Utils.NETHERITE_TIER, netheriteProperties);
         Set<BarrelBlock> blocks = ImmutableSet.copyOf(new BarrelBlock[]{ironBarrelBlock, goldBarrelBlock, diamondBarrelBlock, obsidianBarrelBlock, netheriteBarrelBlock});
         blockReg.accept(blocks);
         // Init items
-        BlockItem ironBarrelItem = BarrelCommon.barrelItem(ironTier, ironBarrelBlock);
-        BlockItem goldBarrelItem = BarrelCommon.barrelItem(goldTier, goldBarrelBlock);
-        BlockItem diamondBarrelItem = BarrelCommon.barrelItem(diamondTier, diamondBarrelBlock);
-        BlockItem obsidianBarrelItem = BarrelCommon.barrelItem(obsidianTier, obsidianBarrelBlock);
-        BlockItem netheriteBarrelItem = BarrelCommon.barrelItem(netheriteTier, netheriteBarrelBlock);
+        BlockItem ironBarrelItem = BarrelCommon.barrelItem(Utils.IRON_TIER, ironBarrelBlock);
+        BlockItem goldBarrelItem = BarrelCommon.barrelItem(Utils.GOLD_TIER, goldBarrelBlock);
+        BlockItem diamondBarrelItem = BarrelCommon.barrelItem(Utils.DIAMOND_TIER, diamondBarrelBlock);
+        BlockItem obsidianBarrelItem = BarrelCommon.barrelItem(Utils.OBSIDIAN_TIER, obsidianBarrelBlock);
+        BlockItem netheriteBarrelItem = BarrelCommon.barrelItem(Utils.NETHERITE_TIER, netheriteBarrelBlock);
         Set<BlockItem> items = ImmutableSet.copyOf(new BlockItem[]{ironBarrelItem, goldBarrelItem, diamondBarrelItem, obsidianBarrelItem, netheriteBarrelItem});
         itemReg.accept(items);
         // Init block entity type
@@ -108,14 +102,14 @@ public final class BarrelCommon {
         BaseApi.getInstance().defineBlockUpgradeBehaviour(isUpgradableBarrelBlock, BarrelCommon::tryUpgradeBlock);
     }
 
-    private static BarrelBlock barrelBlock(ResourceLocation blockId, ResourceLocation stat, OpenableTier tier, BlockBehaviour.Properties properties) {
-        BarrelBlock block = new BarrelBlock(tier.blockProperties().apply(properties), blockId, tier.key(), stat, tier.slots());
+    private static BarrelBlock barrelBlock(ResourceLocation blockId, ResourceLocation stat, Tier tier, BlockBehaviour.Properties properties) {
+        BarrelBlock block = new BarrelBlock(tier.getBlockProperties().apply(properties), blockId, tier.getId(), stat, tier.getSlots());
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
     }
 
-    private static BlockItem barrelItem(OpenableTier tier, BarrelBlock block) {
-        return new BlockItem(block, tier.itemProperties().apply(new Item.Properties().tab(Utils.TAB)));
+    private static BlockItem barrelItem(Tier tier, BarrelBlock block) {
+        return new BlockItem(block, tier.getItemProperties().apply(new Item.Properties().tab(Utils.TAB)));
     }
 
     public static boolean tryUpgradeBlock(UseOnContext context, ResourceLocation from, ResourceLocation to) {
@@ -125,7 +119,7 @@ public final class BarrelCommon {
         Block block = state.getBlock();
         boolean isExpandedStorageBarrel = block instanceof BarrelBlock;
         var containerSize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : ((BarrelBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, ((BarrelBlock) block).getBlockTier())).getSlotCount();
-        if (isExpandedStorageBarrel && ((BarrelBlock) block).getBlockTier() == from || !isExpandedStorageBarrel && from == Utils.WOOD_TIER.key()) {
+        if (isExpandedStorageBarrel && ((BarrelBlock) block).getBlockTier() == from || !isExpandedStorageBarrel && from == Utils.WOOD_TIER.getId()) {
             var blockEntity = level.getBlockEntity(pos);
             //noinspection ConstantConditions
             var tag = blockEntity.save(new CompoundTag());

@@ -32,12 +32,12 @@ public final class RequestOpenSelectScreenMessage {
                 context.enqueueWork(() -> NetworkWrapper.getInstance().s2c_openSelectScreen(player, (type) -> NetworkHooks.openGui(player, new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
-                        return menu.getDisplayName();
+                        return menu.getTitle();
                     }
 
                     @Override
                     public AbstractContainerMenu createMenu(int windowId, Inventory inventory, Player player1) {
-                        return NetworkWrapper.getInstance().createMenu(windowId, menu.pos, menu.getContainer(), inventory, menu.getDisplayName());
+                        return NetworkWrapper.getInstance().createMenu(windowId, menu.pos, menu.getContainer(), inventory, menu.getTitle());
                     }
                 }, buffer -> buffer.writeBlockPos(menu.pos).writeInt(menu.getContainer().getContainerSize()))));
             } else {

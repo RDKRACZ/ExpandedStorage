@@ -25,7 +25,7 @@ public final class StorageConversionKit extends Item {
     private final Component instructionsFirst;
     private final Component instructionsSecond;
 
-    public StorageConversionKit(Properties properties, ResourceLocation from, ResourceLocation to, Component addingMod) {
+    public StorageConversionKit(Properties properties, ResourceLocation from, ResourceLocation to) {
         super(properties);
         this.from = from;
         this.to = to;

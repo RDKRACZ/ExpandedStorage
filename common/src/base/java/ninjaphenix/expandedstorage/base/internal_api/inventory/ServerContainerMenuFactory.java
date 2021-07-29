@@ -11,5 +11,5 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 @Internal
 @Experimental
 public interface ServerContainerMenuFactory {
-    AbstractContainerMenu create(int windowId, BlockPos pos, Container container, Inventory playerInventory, Component displayName);
+    AbstractContainerMenu create(int windowId, BlockPos pos, Container container, Inventory playerInventory, Component title);
 }

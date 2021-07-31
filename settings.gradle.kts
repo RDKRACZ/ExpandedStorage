@@ -16,18 +16,18 @@ pluginManagement {
                 excludeModule("org.eclipse.platform", "org.eclipse.equinox.common")
             }
         }
-        exclusiveContent {
-            forRepository {
-                maven {
-                    url = uri("https://jitpack.io")
-                    name = "JitPack"
-                }
-            }
-            filter {
-                includeGroup("com.gitlab.ninjaphenix")
-                includeGroup("com.gitlab.ninjaphenix.gradle-utils")
-            }
-        }
+        //exclusiveContent {
+        //    forRepository {
+        //        maven {
+        //            url = uri("https://jitpack.io")
+        //            name = "JitPack"
+        //        }
+        //    }
+        //    filter {
+        //        includeGroup("com.gitlab.ninjaphenix")
+        //        includeGroup("com.gitlab.ninjaphenix.gradle-utils")
+        //    }
+        //}
         gradlePluginPortal()
         mavenLocal()
     }

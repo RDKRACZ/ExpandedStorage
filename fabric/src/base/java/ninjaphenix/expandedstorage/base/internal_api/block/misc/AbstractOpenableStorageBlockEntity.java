@@ -100,7 +100,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     }
 
     public final void recountObservers() {
-        observerCounter.recheckOpeners(getLevel(), getBlockPos(), getBlockState());
+        observerCounter.recheckOpeners(this.getLevel(), this.getBlockPos(), this.getBlockState());
     }
 
     private void initialise(ResourceLocation blockId) {

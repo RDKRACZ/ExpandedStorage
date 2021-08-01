@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements ICapabilityProvider {
     private final ResourceLocation blockId;
     private final ContainerOpenersCounter observerCounter;
-    protected Component defaultMenuTitle;
+    protected Component menuTitle;
     private int slots;
     private NonNullList<ItemStack> inventory;
     private LazyOptional<IItemHandlerModifiable> itemHandler;
@@ -298,13 +298,13 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         if (ForgeRegistries.BLOCKS.getValue(blockId) instanceof AbstractOpenableStorageBlock block) {
             slots = block.getSlotCount();
             inventory = NonNullList.withSize(slots, ItemStack.EMPTY);
-            defaultMenuTitle = block.getMenuTitle();
+            menuTitle = block.getMenuTitle();
         }
     }
 
     @Override
     public Component getDefaultTitle() {
-        return defaultMenuTitle;
+        return menuTitle;
     }
 
     public final ResourceLocation getBlockId() {
@@ -333,7 +333,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         return this.inventory;
     }
 
-    public int getItemCount() {
+    public int getSlotCount() {
         return slots;
     }
 

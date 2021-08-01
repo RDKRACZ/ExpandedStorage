@@ -28,7 +28,6 @@ import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenable
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractStorageBlockEntity;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.base.internal_api.inventory.CombinedIItemHandlerModifiable;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerMenuFactory;
 import ninjaphenix.expandedstorage.base.internal_api.inventory.SyncedMenuFactory;
 import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 import org.jetbrains.annotations.ApiStatus.Experimental;
@@ -68,7 +67,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
             return Optional.of(new SyncedMenuFactory() {
                 @Override
                 public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
-                    buffer.writeBlockPos(first.getBlockPos()).writeInt(first.getItemCount() + second.getItemCount());
+                    buffer.writeBlockPos(first.getBlockPos()).writeInt(first.getSlotCount() + second.getSlotCount());
                 }
 
                 @Override
@@ -102,7 +101,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
             return Optional.of(new SyncedMenuFactory() {
                 @Override
                 public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
-                    buffer.writeBlockPos(single.getBlockPos()).writeInt(single.getItemCount());
+                    buffer.writeBlockPos(single.getBlockPos()).writeInt(single.getSlotCount());
                 }
 
                 @Override
@@ -137,8 +136,8 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     };
 
     public AbstractChestBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier,
-                              ResourceLocation openStat, int slots) {
-        super(properties, blockId, blockTier, openStat, slots);
+                              ResourceLocation openingStat, int slots) {
+        super(properties, blockId, blockTier, openingStat, slots);
         this.registerDefaultState(this.getStateDefinition().any().setValue(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE)
                                       .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
     }

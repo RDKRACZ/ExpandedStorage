@@ -10,7 +10,7 @@ import ninjaphenix.expandedstorage.old_chest.block.misc.OldChestBlockEntity;
 import java.util.Set;
 
 public final class Main implements ModuleInitializer {
-    private static void registerBlockEntityType(BlockEntityType<OldChestBlockEntity> blockEntityType) {
+    private static void registerBET(BlockEntityType<OldChestBlockEntity> blockEntityType) {
         Registry.register(Registry.BLOCK_ENTITY_TYPE, OldChestCommon.BLOCK_TYPE, blockEntityType);
     }
 
@@ -24,6 +24,6 @@ public final class Main implements ModuleInitializer {
 
     @Override
     public void initialize() {
-        OldChestCommon.registerContent(Main::registerBlocks, Main::registerItems, Main::registerBlockEntityType);
+        OldChestCommon.registerContent(Main::registerBlocks, Main::registerItems, Main::registerBET);
     }
 }

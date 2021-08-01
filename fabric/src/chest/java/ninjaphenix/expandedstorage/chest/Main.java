@@ -36,14 +36,14 @@ public final class Main implements ModuleInitializer {
             i.set(items);
             items.forEach(item -> Registry.register(Registry.ITEM, ((ChestBlock) item.getBlock()).getBlockId(), item));
         };
-        Consumer<BlockEntityType<ChestBlockEntity>> registerBlockEntityType = (blockEntityType) -> {
+        Consumer<BlockEntityType<ChestBlockEntity>> registerBET = (blockEntityType) -> {
             Registry.register(Registry.BLOCK_ENTITY_TYPE, ChestCommon.BLOCK_TYPE, blockEntityType);
             if (PlatformUtils.getInstance().isClient()) {
                 Client.registerChestTextures(b.get());
                 Client.registerItemRenderers(i.get());
             }
         };
-        ChestCommon.registerContent(registerBlocks, registerItems, registerBlockEntityType, TagRegistry.block(new ResourceLocation("c", "wooden_chests")), BlockItem::new);
+        ChestCommon.registerContent(registerBlocks, registerItems, registerBET, TagRegistry.block(new ResourceLocation("c", "wooden_chests")), BlockItem::new);
     }
 
     private static class Client {

@@ -75,7 +75,7 @@ public abstract class AbstractStorageBlockEntity extends BlockEntity implements 
         return menuTitle;
     }
 
-    public final void setMenuTitle(Component name) {
-        menuTitle = name;
+    public final void setMenuTitle(Component title) {
+        menuTitle = title;
     }
 }

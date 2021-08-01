@@ -27,7 +27,7 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
         blockEntity.lidController.tickLid();
     }
 
-    private static void playSound(Level level, BlockPos pos, BlockState state, SoundEvent soundEvent) {
+    private static void playSound(Level level, BlockPos pos, BlockState state, SoundEvent sound) {
         DoubleBlockCombiner.BlockType mergeType = ChestBlock.getBlockType(state);
         Vec3 soundPos;
         if (mergeType == DoubleBlockCombiner.BlockType.SINGLE) {
@@ -37,7 +37,7 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
         } else {
             return;
         }
-        level.playSound(null, soundPos.x(), soundPos.y(), soundPos.z(), soundEvent, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
+        level.playSound(null, soundPos.x(), soundPos.y(), soundPos.z(), sound, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
     }
 
     @Override

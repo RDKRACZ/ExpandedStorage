@@ -96,7 +96,7 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
         return new SyncedMenuFactory() {
             @Override
             public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
-                buffer.writeBlockPos(pos).writeInt(container.getItemCount());
+                buffer.writeBlockPos(pos).writeInt(container.getSlotCount());
             }
 
             @Override

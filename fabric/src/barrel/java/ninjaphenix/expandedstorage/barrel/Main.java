@@ -15,7 +15,7 @@ import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
 import java.util.Set;
 
 public final class Main implements ModuleInitializer {
-    private static void registerBlockEntityType(BlockEntityType<BarrelBlockEntity> blockEntityType) {
+    private static void registerBET(BlockEntityType<BarrelBlockEntity> blockEntityType) {
         Registry.register(Registry.BLOCK_ENTITY_TYPE, BarrelCommon.BLOCK_TYPE, blockEntityType);
     }
 
@@ -32,6 +32,6 @@ public final class Main implements ModuleInitializer {
 
     @Override
     public void initialize() {
-        BarrelCommon.registerContent(Main::registerBlocks, Main::registerItems, Main::registerBlockEntityType, TagRegistry.block(new ResourceLocation("c", "wooden_barrels")));
+        BarrelCommon.registerContent(Main::registerBlocks, Main::registerItems, Main::registerBET, TagRegistry.block(new ResourceLocation("c", "wooden_barrels")));
     }
 }

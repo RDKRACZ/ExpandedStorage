@@ -115,7 +115,7 @@ public final class Main implements ModuleInitializer {
 
     private ChestBlock chestBlock(ResourceLocation blockId, ResourceLocation stat, Tier tier, BlockBehaviour.Properties properties) {
         tier.getBlockProperties().apply(properties.dynamicShape());
-        ChestBlock block = Registry.register(Registry.BLOCK, blockId, new ChestBlock(properties, blockId, tier.getId(), stat, tier.getSlots()));
+        ChestBlock block = Registry.register(Registry.BLOCK, blockId, new ChestBlock(properties, blockId, tier.getId(), stat, tier.getSlotCount()));
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
     }

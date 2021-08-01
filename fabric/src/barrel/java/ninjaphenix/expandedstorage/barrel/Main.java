@@ -90,7 +90,7 @@ public final class Main implements ModuleInitializer {
     }
 
     private BarrelBlock barrelBlock(ResourceLocation blockId, ResourceLocation stat, Tier tier, BlockBehaviour.Properties properties) {
-        BarrelBlock block = Registry.register(Registry.BLOCK, blockId, new BarrelBlock(tier.getBlockProperties().apply(properties), blockId, tier.getId(), stat, tier.getSlots()));
+        BarrelBlock block = Registry.register(Registry.BLOCK, blockId, new BarrelBlock(tier.getBlockProperties().apply(properties), blockId, tier.getId(), stat, tier.getSlotCount()));
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
     }

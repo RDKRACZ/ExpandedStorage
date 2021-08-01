@@ -1,3 +1,5 @@
+import com.gitlab.ninjaphenix.gradle.api.task.MinifyJsonTask
+import com.gitlab.ninjaphenix.gradle.api.task.ParamLocalObfuscatorTask
 import org.gradle.jvm.tasks.Jar
 
 plugins {
@@ -83,13 +85,19 @@ val jarTask = tasks.getByName<Jar>("jar") {
 
 jarTask.finalizedBy("reobfJar")
 
-val minifyJarTask = tasks.register<com.gitlab.ninjaphenix.gradle.task.MinifyJsonTask>("minJar") {
-    parent.set(jarTask.outputs.files.singleFile)
+val minifyJarTask = tasks.register<MinifyJsonTask>("minJar") {
+    input.set(jarTask.outputs.files.singleFile)
     filePatterns.set(listOf("**/*.json", "**/*.mcmeta"))
-    archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}.jar")
+    archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}-min.jar")
     dependsOn(jarTask)
 }
 
-tasks.getByName("build") {
+val releaseJarTask = tasks.register<ParamLocalObfuscatorTask>("releaseJar") {
+    input.set(minifyJarTask.get().outputs.files.singleFile)
+    archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}.jar")
     dependsOn(minifyJarTask)
+}
+
+tasks.getByName("build") {
+    dependsOn(releaseJarTask)
 }

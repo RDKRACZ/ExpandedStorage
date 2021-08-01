@@ -5,7 +5,7 @@ import org.gradle.jvm.tasks.Jar
 plugins {
     java
     id("dev.architectury.loom").version("0.8.0-SNAPSHOT").apply(false)
-    id("com.gitlab.ninjaphenix.gradle-utils").version("0.1.0-beta.1")
+    id("com.gitlab.ninjaphenix.gradle-utils").version("0.1.0-beta.2")
 }
 
 subprojects {

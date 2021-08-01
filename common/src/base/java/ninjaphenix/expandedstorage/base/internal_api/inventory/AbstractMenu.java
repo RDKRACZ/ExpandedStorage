@@ -21,14 +21,14 @@ import java.util.List;
 
 @Internal
 @Experimental
-public abstract class AbstractContainerMenu_<T extends ScreenMeta> extends AbstractContainerMenu {
+public abstract class AbstractMenu<T extends ScreenMeta> extends AbstractContainerMenu {
     public final BlockPos pos;
     public final T screenMeta;
     protected final Container container;
     private final Component title;
 
-    public AbstractContainerMenu_(MenuType<?> menuType, int windowId, BlockPos pos, Container container,
-                                  Inventory playerInventory, Component title, T screenMeta) {
+    public AbstractMenu(MenuType<?> menuType, int windowId, BlockPos pos, Container container,
+                        Inventory playerInventory, Component title, T screenMeta) {
         super(menuType, windowId);
         this.pos = pos;
         this.container = container;

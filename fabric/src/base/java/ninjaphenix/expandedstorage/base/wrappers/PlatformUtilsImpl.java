@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.ClientContainerMenuFactory;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.ClientMenuFactory;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Set;
@@ -64,7 +64,7 @@ public final class PlatformUtilsImpl implements PlatformUtils {
     }
 
     @Override
-    public <T extends AbstractContainerMenu> MenuType<T> createMenuType(ResourceLocation menuType, ClientContainerMenuFactory<T> factory) {
+    public <T extends AbstractContainerMenu> MenuType<T> createMenuType(ResourceLocation menuType, ClientMenuFactory<T> factory) {
         return ScreenHandlerRegistry.registerExtended(menuType, factory::create);
     }
 

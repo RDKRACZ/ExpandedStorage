@@ -12,19 +12,19 @@ import net.minecraft.world.level.block.entity.ChestLidController;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.CombinedInventory;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.CombinedContainer;
 import ninjaphenix.expandedstorage.chest.block.ChestBlock;
 
 public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
-    private final ChestLidController chestLidController;
+    private final ChestLidController lidController;
 
     public ChestBlockEntity(BlockEntityType<ChestBlockEntity> blockEntityType, BlockPos pos, BlockState state) {
         super(blockEntityType, pos, state, ((ChestBlock) state.getBlock()).getBlockId());
-        chestLidController = new ChestLidController();
+        lidController = new ChestLidController();
     }
 
     public static void progressLidAnimation(Level level, BlockPos pos, BlockState state, ChestBlockEntity blockEntity) {
-        blockEntity.chestLidController.tickLid();
+        blockEntity.lidController.tickLid();
     }
 
     private static void playSound(Level level, BlockPos pos, BlockState state, SoundEvent soundEvent) {
@@ -52,18 +52,18 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
 
     @Override
     protected void onObserverCountChanged(Level level, BlockPos pos, BlockState state, int oldCount, int newCount) {
-        level.blockEvent(pos, state.getBlock(), ChestBlock.SET_OPEN_COUNT_EVENT, newCount);
+        level.blockEvent(pos, state.getBlock(), ChestBlock.SET_OBSERVER_COUNT_EVENT, newCount);
     }
 
     @Override
     protected boolean isThis(Container container) {
-        return super.isThis(container) || container instanceof CombinedInventory compoundContainer && compoundContainer.consistsPartlyOf(this);
+        return super.isThis(container) || container instanceof CombinedContainer compoundContainer && compoundContainer.consistsPartlyOf(this);
     }
 
     @Override
     public boolean triggerEvent(int event, int value) {
-        if (event == ChestBlock.SET_OPEN_COUNT_EVENT) {
-            chestLidController.shouldBeOpen(value > 0);
+        if (event == ChestBlock.SET_OBSERVER_COUNT_EVENT) {
+            lidController.shouldBeOpen(value > 0);
             return true;
         }
         return super.triggerEvent(event, value);
@@ -71,6 +71,6 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
 
     // Client only
     public float getLidOpenness(float f) {
-        return chestLidController.getOpenness(f);
+        return lidController.getOpenness(f);
     }
 }

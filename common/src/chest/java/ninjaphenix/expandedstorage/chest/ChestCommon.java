@@ -128,7 +128,7 @@ public final class ChestCommon {
     }
 
     private static ChestBlock chestBlock(ResourceLocation blockId, ResourceLocation stat, Tier tier, BlockBehaviour.Properties properties) {
-        ChestBlock block = new ChestBlock(tier.getBlockProperties().apply(properties.dynamicShape()), blockId, tier.getId(), stat, tier.getSlots());
+        ChestBlock block = new ChestBlock(tier.getBlockProperties().apply(properties.dynamicShape()), blockId, tier.getId(), stat, tier.getSlotCount());
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
     }

@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.ClientContainerMenuFactory;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.ClientMenuFactory;
 
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -27,7 +27,7 @@ public interface PlatformUtils {
 
     boolean isClient();
 
-    <T extends AbstractContainerMenu> MenuType<T> createMenuType(ResourceLocation menuType, ClientContainerMenuFactory<T> factory);
+    <T extends AbstractContainerMenu> MenuType<T> createMenuType(ResourceLocation menuType, ClientMenuFactory<T> factory);
 
     <T extends BlockEntity> BlockEntityType<T> createBlockEntityType(BiFunction<BlockPos, BlockState, T> blockEntitySupplier, Set<Block> blocks, Type<?> type);
 

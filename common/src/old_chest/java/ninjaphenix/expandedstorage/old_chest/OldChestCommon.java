@@ -111,7 +111,7 @@ public final class OldChestCommon {
     }
 
     private static OldChestBlock oldChestBlock(ResourceLocation blockId, ResourceLocation stat, Tier tier, BlockBehaviour.Properties properties) {
-        OldChestBlock block = new OldChestBlock(tier.getBlockProperties().apply(properties), blockId, tier.getId(), stat, tier.getSlots());
+        OldChestBlock block = new OldChestBlock(tier.getBlockProperties().apply(properties), blockId, tier.getId(), stat, tier.getSlotCount());
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
     }

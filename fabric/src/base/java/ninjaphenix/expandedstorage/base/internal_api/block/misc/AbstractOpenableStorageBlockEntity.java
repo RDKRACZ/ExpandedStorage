@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractContainerMenu_;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractMenu;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +31,7 @@ import java.util.function.IntUnaryOperator;
 public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements WorldlyContainer {
     private final ResourceLocation blockId;
     private final ContainerOpenersCounter observerCounter;
-    protected Component containerName;
+    protected Component menuTitle;
     private int slots;
     private NonNullList<ItemStack> inventory;
     private int[] slotsForFace;
@@ -56,8 +56,8 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
             @Override
             protected boolean isOwnContainer(Player player) {
-                if (player.containerMenu instanceof AbstractContainerMenu_<?>) {
-                    return AbstractOpenableStorageBlockEntity.this.isThis(((AbstractContainerMenu_<?>) player.containerMenu).getContainer());
+                if (player.containerMenu instanceof AbstractMenu<?>) {
+                    return AbstractOpenableStorageBlockEntity.this.isThis(((AbstractMenu<?>) player.containerMenu).getContainer());
                 } else {
                     return false;
                 }
@@ -109,13 +109,13 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
             slotsForFace = new int[slots];
             Arrays.setAll(slotsForFace, IntUnaryOperator.identity());
             inventory = NonNullList.withSize(slots, ItemStack.EMPTY);
-            containerName = block.getContainerName();
+            menuTitle = block.getMenuTitle();
         }
     }
 
     @Override
-    public Component getDefaultName() {
-        return containerName;
+    public Component getDefaultTitle() {
+        return menuTitle;
     }
 
     public final ResourceLocation getBlockId() {

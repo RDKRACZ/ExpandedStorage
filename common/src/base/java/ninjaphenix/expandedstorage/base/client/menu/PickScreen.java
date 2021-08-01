@@ -22,15 +22,15 @@ import java.util.Set;
 public final class PickScreen extends Screen {
     private static final Map<ResourceLocation, Tuple<ResourceLocation, Component>> BUTTON_SETTINGS = new HashMap<>();
     private final Set<ResourceLocation> options;
-    private final Screen parent;
+    private final Screen returnToScreen;
     private final List<ScreenPickButton> optionWidgets;
     private int topPadding;
 
-    public PickScreen(Set<ResourceLocation> options, Screen parent) {
+    public PickScreen(Set<ResourceLocation> options, Screen returnToScreen) {
         super(new TranslatableComponent("screen.expandedstorage.screen_picker_title"));
         this.options = options;
         this.optionWidgets = new ArrayList<>(options.size());
-        this.parent = parent;
+        this.returnToScreen = returnToScreen;
     }
 
     public static void declareButtonSettings(ResourceLocation screenType, ResourceLocation texture, Component text) {
@@ -40,7 +40,7 @@ public final class PickScreen extends Screen {
     @Override
     public void onClose() {
         //noinspection ConstantConditions
-        minecraft.setScreen(parent);
+        minecraft.setScreen(returnToScreen);
     }
 
     @Override

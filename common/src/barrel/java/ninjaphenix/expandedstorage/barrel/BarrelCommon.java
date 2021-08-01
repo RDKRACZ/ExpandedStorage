@@ -103,7 +103,7 @@ public final class BarrelCommon {
     }
 
     private static BarrelBlock barrelBlock(ResourceLocation blockId, ResourceLocation stat, Tier tier, BlockBehaviour.Properties properties) {
-        BarrelBlock block = new BarrelBlock(tier.getBlockProperties().apply(properties), blockId, tier.getId(), stat, tier.getSlots());
+        BarrelBlock block = new BarrelBlock(tier.getBlockProperties().apply(properties), blockId, tier.getId(), stat, tier.getSlotCount());
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
     }

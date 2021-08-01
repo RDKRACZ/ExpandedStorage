@@ -7,7 +7,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerMenuFactory;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.SyncedMenuFactory;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.SyncedMenuFactory;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -25,7 +26,7 @@ public interface NetworkWrapper {
 
     void c2s_setSendTypePreference(ResourceLocation selection);
 
-    void s2c_openMenu(ServerPlayer player, ServerMenuFactory menuFactory);
+    void s2c_openMenu(ServerPlayer player, SyncedMenuFactory menuFactory);
 
     void s2c_openSelectScreen(ServerPlayer player, @Nullable Consumer<ResourceLocation> playerPreferenceCallback);
 

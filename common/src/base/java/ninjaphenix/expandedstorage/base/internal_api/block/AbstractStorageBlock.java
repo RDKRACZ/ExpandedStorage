@@ -37,7 +37,7 @@ public abstract class AbstractStorageBlock extends Block {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         if (level.getBlockEntity(pos) instanceof AbstractStorageBlockEntity entity && stack.hasCustomHoverName()) {
-            entity.setCustomName(stack.getHoverName());
+            entity.setMenuTitle(stack.getHoverName());
         }
     }
 }

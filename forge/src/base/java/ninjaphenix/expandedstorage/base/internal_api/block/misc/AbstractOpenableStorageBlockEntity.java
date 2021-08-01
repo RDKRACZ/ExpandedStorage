@@ -24,7 +24,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractContainerMenu_;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractMenu;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements ICapabilityProvider {
     private final ResourceLocation blockId;
     private final ContainerOpenersCounter observerCounter;
-    protected Component containerName;
+    protected Component defaultMenuTitle;
     private int slots;
     private NonNullList<ItemStack> inventory;
     private LazyOptional<IItemHandlerModifiable> itemHandler;
@@ -130,8 +130,8 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
             @Override
             protected boolean isOwnContainer(Player player) {
-                if (player.containerMenu instanceof AbstractContainerMenu_<?>) {
-                    return AbstractOpenableStorageBlockEntity.this.isThis(((AbstractContainerMenu_<?>) player.containerMenu).getContainer());
+                if (player.containerMenu instanceof AbstractMenu<?>) {
+                    return AbstractOpenableStorageBlockEntity.this.isThis(((AbstractMenu<?>) player.containerMenu).getContainer());
                 } else {
                     return false;
                 }
@@ -298,13 +298,13 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         if (ForgeRegistries.BLOCKS.getValue(blockId) instanceof AbstractOpenableStorageBlock block) {
             slots = block.getSlotCount();
             inventory = NonNullList.withSize(slots, ItemStack.EMPTY);
-            containerName = block.getContainerName();
+            defaultMenuTitle = block.getMenuTitle();
         }
     }
 
     @Override
-    public Component getDefaultName() {
-        return containerName;
+    public Component getDefaultTitle() {
+        return defaultMenuTitle;
     }
 
     public final ResourceLocation getBlockId() {

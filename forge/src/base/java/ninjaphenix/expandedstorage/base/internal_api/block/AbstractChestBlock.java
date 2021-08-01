@@ -29,6 +29,7 @@ import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractStorageB
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.base.internal_api.inventory.CombinedIItemHandlerModifiable;
 import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerMenuFactory;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.SyncedMenuFactory;
 import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -61,10 +62,10 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
             return Optional.empty();
         }
     };
-    private final DoubleBlockCombiner.Combiner<T, Optional<ServerMenuFactory>> menuGetter = new DoubleBlockCombiner.Combiner<>() {
+    private final DoubleBlockCombiner.Combiner<T, Optional<SyncedMenuFactory>> menuGetter = new DoubleBlockCombiner.Combiner<>() {
         @Override
-        public Optional<ServerMenuFactory> acceptDouble(T first, T second) {
-            return Optional.of(new ServerMenuFactory() {
+        public Optional<SyncedMenuFactory> acceptDouble(T first, T second) {
+            return Optional.of(new SyncedMenuFactory() {
                 @Override
                 public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
                     buffer.writeBlockPos(first.getBlockPos()).writeInt(first.getItemCount() + second.getItemCount());
@@ -80,7 +81,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                     if (first.canPlayerInteractWith(player) && second.canPlayerInteractWith(player)) {
                         return true;
                     }
-                    AbstractStorageBlockEntity.alertBlockLocked(player, this.getMenuTitle());
+                    AbstractStorageBlockEntity.notifyBlockLocked(player, this.getMenuTitle());
                     return false;
                 }
 
@@ -97,8 +98,8 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         }
 
         @Override
-        public Optional<ServerMenuFactory> acceptSingle(T single) {
-            return Optional.of(new ServerMenuFactory() {
+        public Optional<SyncedMenuFactory> acceptSingle(T single) {
+            return Optional.of(new SyncedMenuFactory() {
                 @Override
                 public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
                     buffer.writeBlockPos(single.getBlockPos()).writeInt(single.getItemCount());
@@ -114,7 +115,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                     if (single.canPlayerInteractWith(player)) {
                         return true;
                     }
-                    AbstractStorageBlockEntity.alertBlockLocked(player, this.getMenuTitle());
+                    AbstractStorageBlockEntity.notifyBlockLocked(player, this.getMenuTitle());
                     return false;
                 }
 
@@ -130,7 +131,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         }
 
         @Override
-        public Optional<ServerMenuFactory> acceptNone() {
+        public Optional<SyncedMenuFactory> acceptNone() {
             return Optional.empty();
         }
     };
@@ -306,7 +307,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
 
     @Nullable
     @Override
-    protected ServerMenuFactory createMenuFactory(BlockState state, LevelAccessor level, BlockPos pos) {
+    protected SyncedMenuFactory createMenuFactory(BlockState state, LevelAccessor level, BlockPos pos) {
         return this.createCombinedPropertyGetter(state, level, pos, false).apply(menuGetter).orElse(null);
     }
 }

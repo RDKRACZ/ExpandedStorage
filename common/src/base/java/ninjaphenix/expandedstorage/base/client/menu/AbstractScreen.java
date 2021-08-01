@@ -8,7 +8,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractContainerMenu_;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractMenu;
 import ninjaphenix.expandedstorage.base.inventory.screen.ScreenMeta;
 import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
@@ -17,7 +17,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class AbstractScreen<T extends AbstractContainerMenu_<R>, R extends ScreenMeta> extends AbstractContainerScreen<T> {
+public abstract class AbstractScreen<T extends AbstractMenu<R>, R extends ScreenMeta> extends AbstractContainerScreen<T> {
     protected final R screenMeta;
     private final Integer inventoryLabelLeft;
 

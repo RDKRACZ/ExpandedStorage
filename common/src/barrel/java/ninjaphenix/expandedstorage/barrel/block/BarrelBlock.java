@@ -17,8 +17,8 @@ import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStora
 import java.util.Random;
 
 public final class BarrelBlock extends AbstractOpenableStorageBlock {
-    public BarrelBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier, ResourceLocation openStat, int slots) {
-        super(properties, blockId, blockTier, openStat, slots);
+    public BarrelBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier, ResourceLocation openingStat, int slots) {
+        super(properties, blockId, blockTier, openingStat, slots);
         this.registerDefaultState(this.getStateDefinition().any().setValue(BlockStateProperties.FACING, Direction.NORTH).setValue(BlockStateProperties.OPEN, false));
 
     }

@@ -11,6 +11,7 @@ public interface ConfigWrapper {
 
     boolean isScrollingUnrestricted();
 
+    @SuppressWarnings("unused")
     void setScrollingRestricted(boolean value);
 
     ResourceLocation getPreferredScreenType();

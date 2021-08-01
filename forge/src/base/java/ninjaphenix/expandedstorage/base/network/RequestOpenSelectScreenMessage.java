@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import net.minecraftforge.fmllegacy.network.NetworkHooks;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractContainerMenu_;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractMenu;
 import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 
 import java.util.function.Supplier;
@@ -28,7 +28,7 @@ public final class RequestOpenSelectScreenMessage {
         NetworkEvent.Context context = wrappedContext.get();
         ServerPlayer player = context.getSender();
         if (player != null) {
-            if (player.containerMenu instanceof AbstractContainerMenu_<?> menu) {
+            if (player.containerMenu instanceof AbstractMenu<?> menu) {
                 context.enqueueWork(() -> NetworkWrapper.getInstance().s2c_openSelectScreen(player, (type) -> NetworkHooks.openGui(player, new MenuProvider() {
                     @Override
                     public Component getDisplayName() {

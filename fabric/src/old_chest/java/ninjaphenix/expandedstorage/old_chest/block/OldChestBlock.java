@@ -10,8 +10,8 @@ import ninjaphenix.expandedstorage.old_chest.block.misc.OldChestBlockEntity;
 
 public final class OldChestBlock extends AbstractChestBlock<OldChestBlockEntity> {
     public OldChestBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier,
-                         ResourceLocation openStat, int slots) {
-        super(properties, blockId, blockTier, openStat, slots);
+                         ResourceLocation openingStat, int slots) {
+        super(properties, blockId, blockTier, openingStat, slots);
     }
 
     @Override

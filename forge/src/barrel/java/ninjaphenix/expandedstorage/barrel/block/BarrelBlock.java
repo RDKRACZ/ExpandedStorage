@@ -20,8 +20,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 
 public final class BarrelBlock extends AbstractOpenableStorageBlock {
-    public BarrelBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier, ResourceLocation openStat, int slots) {
-        super(properties, blockId, blockTier, openStat, slots);
+    public BarrelBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier, ResourceLocation openingStat, int slots) {
+        super(properties, blockId, blockTier, openingStat, slots);
         this.registerDefaultState(this.getStateDefinition().any().setValue(BlockStateProperties.FACING, Direction.NORTH).setValue(BlockStateProperties.OPEN, false));
 
     }
@@ -53,7 +53,7 @@ public final class BarrelBlock extends AbstractOpenableStorageBlock {
     @SuppressWarnings("deprecation")
     public void tick(BlockState state, ServerLevel level, BlockPos pos, Random random) {
         if (level.getBlockEntity(pos) instanceof BarrelBlockEntity entity) {
-            entity.checkViewerCount();
+            entity.recountObservers();
         }
     }
 }

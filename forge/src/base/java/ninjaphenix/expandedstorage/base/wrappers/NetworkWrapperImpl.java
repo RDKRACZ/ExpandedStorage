@@ -22,11 +22,11 @@ import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerContainerMenuFactory;
 import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerMenuFactory;
-import ninjaphenix.expandedstorage.base.inventory.PagedContainerMenu;
-import ninjaphenix.expandedstorage.base.inventory.ScrollableContainerMenu;
-import ninjaphenix.expandedstorage.base.inventory.SingleContainerMenu;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.SyncedMenuFactory;
+import ninjaphenix.expandedstorage.base.inventory.PagedMenu;
+import ninjaphenix.expandedstorage.base.inventory.ScrollableMenu;
+import ninjaphenix.expandedstorage.base.inventory.SingleMenu;
 import ninjaphenix.expandedstorage.base.network.OpenSelectScreenMessage;
 import ninjaphenix.expandedstorage.base.network.RemovePlayerPreferenceCallbackMessage;
 import ninjaphenix.expandedstorage.base.network.RequestOpenSelectScreenMessage;
@@ -43,10 +43,10 @@ final class NetworkWrapperImpl implements NetworkWrapper {
     private static NetworkWrapperImpl INSTANCE;
     private final Map<UUID, Consumer<ResourceLocation>> preferenceCallbacks = new HashMap<>();
     private final Map<UUID, ResourceLocation> playerPreferences = new HashMap<>();
-    private final Map<ResourceLocation, ServerContainerMenuFactory> menuFactories = Utils.unmodifiableMap(map -> {
-        map.put(Utils.SINGLE_SCREEN_TYPE, SingleContainerMenu::new);
-        map.put(Utils.SCROLLABLE_SCREEN_TYPE, ScrollableContainerMenu::new);
-        map.put(Utils.PAGED_SCREEN_TYPE, PagedContainerMenu::new);
+    private final Map<ResourceLocation, ServerMenuFactory> menuFactories = Utils.unmodifiableMap(map -> {
+        map.put(Utils.SINGLE_SCREEN_TYPE, SingleMenu::new);
+        map.put(Utils.SCROLLABLE_SCREEN_TYPE, ScrollableMenu::new);
+        map.put(Utils.PAGED_SCREEN_TYPE, PagedMenu::new);
     });
     private SimpleChannel channel;
 
@@ -110,7 +110,7 @@ final class NetworkWrapperImpl implements NetworkWrapper {
     }
 
     @Override
-    public void s2c_openMenu(ServerPlayer player, ServerMenuFactory menuFactory) {
+    public void s2c_openMenu(ServerPlayer player, SyncedMenuFactory menuFactory) {
         UUID uuid = player.getUUID();
         if (playerPreferences.containsKey(uuid) && this.isValidScreenType(playerPreferences.get(uuid))) {
             NetworkHooks.openGui(player, new MenuProvider() {

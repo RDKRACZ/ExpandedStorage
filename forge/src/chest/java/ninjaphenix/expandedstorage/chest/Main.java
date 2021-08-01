@@ -155,7 +155,7 @@ public class Main {
     private ChestBlock chestBlock(ResourceLocation blockId, ResourceLocation stat, Tier tier, BlockBehaviour.Properties properties) {
         tier.getBlockProperties().apply(properties.dynamicShape());
         // Forge makes it so correct tool harvest tier and requires tool are copied.
-        ChestBlock block = new ChestBlock(properties, blockId, tier.getId(), stat, tier.getSlots());
+        ChestBlock block = new ChestBlock(properties, blockId, tier.getId(), stat, tier.getSlotCount());
         block.setRegistryName(blockId);
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
@@ -178,7 +178,7 @@ public class Main {
 
             @Override
             public void renderByItem(ItemStack item, ItemTransforms.TransformType transform, PoseStack pose, MultiBufferSource source, int light, int overlay) {
-                BlockEntityRenderDispatcher.instance.renderItem(getOrCreateBlockEntity(), pose, source, light, overlay);
+                BlockEntityRenderDispatcher.instance.renderItem(this.getOrCreateBlockEntity(), pose, source, light, overlay);
             }
 
             private ChestBlockEntity getOrCreateBlockEntity() {

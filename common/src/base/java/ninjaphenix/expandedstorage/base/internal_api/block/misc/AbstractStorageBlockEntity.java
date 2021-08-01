@@ -21,14 +21,14 @@ import org.jetbrains.annotations.Nullable;
 @Experimental
 public abstract class AbstractStorageBlockEntity extends BlockEntity implements Nameable {
     private LockCode lockKey;
-    private Component customName;
+    private Component customTitle;
 
     public AbstractStorageBlockEntity(BlockEntityType<?> blockEntityType) {
         super(blockEntityType);
         lockKey = LockCode.NO_LOCK;
     }
 
-    public static void alertBlockLocked(Player player, Component displayName) {
+    public static void notifyBlockLocked(Player player, Component displayName) {
         player.displayClientMessage(new TranslatableComponent("container.isLocked", displayName), true);
         player.playNotifySound(SoundEvents.CHEST_LOCKED, SoundSource.BLOCKS, 1.0F, 1.0F);
     }
@@ -38,7 +38,7 @@ public abstract class AbstractStorageBlockEntity extends BlockEntity implements 
         super.load(state, tag);
         lockKey = LockCode.fromTag(tag);
         if (tag.contains("CustomName", Utils.NBT_STRING_TYPE)) {
-            customName = Component.Serializer.fromJson(tag.getString("CustomName"));
+            customTitle = Component.Serializer.fromJson(tag.getString("CustomName"));
         }
     }
 
@@ -46,8 +46,8 @@ public abstract class AbstractStorageBlockEntity extends BlockEntity implements 
     public CompoundTag save(CompoundTag tag) {
         super.save(tag);
         lockKey.addToTag(tag);
-        if (customName != null) {
-            tag.putString("CustomName", Component.Serializer.toJson(customName));
+        if (customTitle != null) {
+            tag.putString("CustomName", Component.Serializer.toJson(customTitle));
         }
         return tag;
     }
@@ -58,23 +58,23 @@ public abstract class AbstractStorageBlockEntity extends BlockEntity implements 
 
     @Override
     public final Component getName() {
-        return this.hasCustomName() ? customName : this.getDefaultName();
+        return this.hasCustomName() ? customTitle : this.getDefaultTitle();
     }
 
-    public abstract Component getDefaultName();
+    public abstract Component getDefaultTitle();
 
     @Override
     public final boolean hasCustomName() {
-        return customName != null;
+        return customTitle != null;
     }
 
     @Nullable
     @Override
     public final Component getCustomName() {
-        return customName;
+        return customTitle;
     }
 
-    public final void setCustomName(Component name) {
-        customName = name;
+    public final void setCustomTitle(Component title) {
+        customTitle = title;
     }
 }

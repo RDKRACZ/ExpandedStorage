@@ -14,7 +14,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.ClientContainerMenuFactory;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.ClientMenuFactory;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Supplier;
@@ -56,7 +56,7 @@ public final class PlatformUtilsImpl implements PlatformUtils {
     }
 
     @Override
-    public <T extends AbstractContainerMenu> MenuType<T> createMenuType(ResourceLocation menuType, ClientContainerMenuFactory<T> factory) {
+    public <T extends AbstractContainerMenu> MenuType<T> createMenuType(ResourceLocation menuType, ClientMenuFactory<T> factory) {
         return ScreenHandlerRegistry.registerExtended(menuType, factory::create);
     }
 

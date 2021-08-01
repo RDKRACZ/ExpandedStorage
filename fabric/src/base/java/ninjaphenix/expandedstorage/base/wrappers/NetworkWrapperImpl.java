@@ -22,12 +22,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import ninjaphenix.expandedstorage.base.client.menu.PickScreen;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractContainerMenu_;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerContainerMenuFactory;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractMenu;
 import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerMenuFactory;
-import ninjaphenix.expandedstorage.base.inventory.PagedContainerMenu;
-import ninjaphenix.expandedstorage.base.inventory.ScrollableContainerMenu;
-import ninjaphenix.expandedstorage.base.inventory.SingleContainerMenu;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.SyncedMenuFactory;
+import ninjaphenix.expandedstorage.base.inventory.PagedMenu;
+import ninjaphenix.expandedstorage.base.inventory.ScrollableMenu;
+import ninjaphenix.expandedstorage.base.inventory.SingleMenu;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -43,10 +43,10 @@ final class NetworkWrapperImpl implements NetworkWrapper {
     private static NetworkWrapperImpl INSTANCE;
     private final Map<UUID, Consumer<ResourceLocation>> preferenceCallbacks = new HashMap<>();
     private final Map<UUID, ResourceLocation> playerPreferences = new HashMap<>();
-    private final Map<ResourceLocation, ServerContainerMenuFactory> menuFactories = Utils.unmodifiableMap(map -> {
-        map.put(Utils.SINGLE_SCREEN_TYPE, SingleContainerMenu::new);
-        map.put(Utils.SCROLLABLE_SCREEN_TYPE, ScrollableContainerMenu::new);
-        map.put(Utils.PAGED_SCREEN_TYPE, PagedContainerMenu::new);
+    private final Map<ResourceLocation, ServerMenuFactory> menuFactories = Utils.unmodifiableMap(map -> {
+        map.put(Utils.SINGLE_SCREEN_TYPE, SingleMenu::new);
+        map.put(Utils.SCROLLABLE_SCREEN_TYPE, ScrollableMenu::new);
+        map.put(Utils.PAGED_SCREEN_TYPE, PagedMenu::new);
     });
 
     public static NetworkWrapper getInstance() {
@@ -87,7 +87,7 @@ final class NetworkWrapperImpl implements NetworkWrapper {
         }
     }
 
-    public void s2c_openMenu(ServerPlayer player, ServerMenuFactory menuFactory) {
+    public void s2c_openMenu(ServerPlayer player, SyncedMenuFactory menuFactory) {
         UUID uuid = player.getUUID();
         if (playerPreferences.containsKey(uuid) && this.isValidScreenType(playerPreferences.get(uuid))) {
             player.openMenu(new ExtendedScreenHandlerFactory() {
@@ -161,7 +161,7 @@ final class NetworkWrapperImpl implements NetworkWrapper {
 
     private void s_handleOpenSelectScreen(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl listener,
                                           FriendlyByteBuf buffer, PacketSender sender) {
-        if (player.containerMenu instanceof AbstractContainerMenu_<?> menu) {
+        if (player.containerMenu instanceof AbstractMenu<?> menu) {
             server.submit(() -> this.s2c_openSelectScreen(player, (type) -> player.openMenu(new ExtendedScreenHandlerFactory() {
                 @Nullable
                 @Override

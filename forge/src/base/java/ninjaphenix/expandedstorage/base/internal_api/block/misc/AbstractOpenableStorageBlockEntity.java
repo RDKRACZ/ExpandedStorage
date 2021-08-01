@@ -25,7 +25,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractContainerMenu_;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractMenu;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
@@ -119,10 +119,10 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         }
     }
 
-    protected static int countViewers(Level level, Container container, int x, int y, int z) {
+    protected static int countObservers(Level level, Container container, int x, int y, int z) {
         return level.getEntitiesOfClass(Player.class, new AABB(x - 5, y - 5, z - 5, x + 6, y + 6, z + 6)).stream()
-                    .filter(player -> player.containerMenu instanceof AbstractContainerMenu_<?>)
-                    .map(player -> ((AbstractContainerMenu_<?>) player.containerMenu).getContainer())
+                    .filter(player -> player.containerMenu instanceof AbstractMenu<?>)
+                    .map(player -> ((AbstractMenu<?>) player.containerMenu).getContainer())
                     .filter(openContainer -> openContainer == container ||
                             openContainer instanceof CompoundContainer compoundContainer && compoundContainer.contains(container))
                     .mapToInt(inv -> 1).sum();
@@ -258,12 +258,12 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         if (ForgeRegistries.BLOCKS.getValue(blockId) instanceof AbstractOpenableStorageBlock block) {
             slots = block.getSlotCount();
             inventory = NonNullList.withSize(slots, ItemStack.EMPTY);
-            containerName = block.getContainerName();
+            containerName = block.getMenuTitle();
         }
     }
 
     @Override
-    public Component getDefaultName() {
+    public Component getDefaultTitle() {
         return containerName;
     }
 

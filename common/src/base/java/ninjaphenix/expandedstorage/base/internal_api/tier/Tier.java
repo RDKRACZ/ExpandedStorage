@@ -37,7 +37,7 @@ public class Tier {
         return blockProperties;
     }
 
-    public final int getSlots() {
+    public final int getSlotCount() {
         return slots;
     }
 }

@@ -117,7 +117,7 @@ public class Main {
 
     private OldChestBlock oldChestBlock(ResourceLocation id, ResourceLocation stat, Tier tier, BlockBehaviour.Properties properties) {
         tier.getBlockProperties().apply(properties);
-        OldChestBlock block = new OldChestBlock(properties, id, tier.getId(), stat, tier.getSlots());
+        OldChestBlock block = new OldChestBlock(properties, id, tier.getId(), stat, tier.getSlotCount());
         block.setRegistryName(id);
         BaseApi.getInstance().registerTieredBlock(block);
         return block;

@@ -1,18 +1,16 @@
 package ninjaphenix.expandedstorage.chest;
 
 import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.IForgeRegistry;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
@@ -28,10 +26,6 @@ public final class Main {
         ChestCommon.registerContent(this::registerBlocks, this::registerItems, this::registerBET,
                 BlockTags.createOptional(new ResourceLocation("forge", "chests/wooden")),
                 ChestBlockItem::new);
-
-        if (PlatformUtils.getInstance().isClient()) {
-            Client.registerModelLayers();
-        }
     }
 
     private void registerBlocks(Set<ChestBlock> blocks) {
@@ -77,25 +71,24 @@ public final class Main {
             event.getRegistry().register(blockEntityType);
         });
         if (PlatformUtils.getInstance().isClient()) {
-            Client.registerBER(blockEntityType);
+            Client.registerEvents(modEventBus, blockEntityType);
         }
     }
 
     private static class Client {
-        private static void registerBER(BlockEntityType<ChestBlockEntity> type) {
-            BlockEntityRenderers.register(type, ChestBlockEntityRenderer::new);
-        }
+        private static void registerEvents(IEventBus bus, BlockEntityType<ChestBlockEntity> type) {
+            bus.addListener((EntityRenderersEvent.RegisterRenderers.RegisterRenderers event) -> {
+                event.registerBlockEntityRenderer(type, ChestBlockEntityRenderer::new);
+            });
 
-        public static void registerModelLayers() {
-            IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-            modEventBus.addListener((FMLClientSetupEvent event) -> {
-                ForgeHooksClient.registerLayerDefinition(ChestBlockEntityRenderer.SINGLE_LAYER, ChestBlockEntityRenderer::createSingleBodyLayer);
-                ForgeHooksClient.registerLayerDefinition(ChestBlockEntityRenderer.VANILLA_LEFT_LAYER, ChestBlockEntityRenderer::createVanillaLeftBodyLayer);
-                ForgeHooksClient.registerLayerDefinition(ChestBlockEntityRenderer.VANILLA_RIGHT_LAYER, ChestBlockEntityRenderer::createVanillaRightBodyLayer);
-                ForgeHooksClient.registerLayerDefinition(ChestBlockEntityRenderer.TALL_TOP_LAYER, ChestBlockEntityRenderer::createTallTopBodyLayer);
-                ForgeHooksClient.registerLayerDefinition(ChestBlockEntityRenderer.TALL_BOTTOM_LAYER, ChestBlockEntityRenderer::createTallBottomBodyLayer);
-                ForgeHooksClient.registerLayerDefinition(ChestBlockEntityRenderer.LONG_FRONT_LAYER, ChestBlockEntityRenderer::createLongFrontBodyLayer);
-                ForgeHooksClient.registerLayerDefinition(ChestBlockEntityRenderer.LONG_BACK_LAYER, ChestBlockEntityRenderer::createLongBackBodyLayer);
+            bus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> {
+                event.registerLayerDefinition(ChestBlockEntityRenderer.SINGLE_LAYER, ChestBlockEntityRenderer::createSingleBodyLayer);
+                event.registerLayerDefinition(ChestBlockEntityRenderer.VANILLA_LEFT_LAYER, ChestBlockEntityRenderer::createVanillaLeftBodyLayer);
+                event.registerLayerDefinition(ChestBlockEntityRenderer.VANILLA_RIGHT_LAYER, ChestBlockEntityRenderer::createVanillaRightBodyLayer);
+                event.registerLayerDefinition(ChestBlockEntityRenderer.TALL_TOP_LAYER, ChestBlockEntityRenderer::createTallTopBodyLayer);
+                event.registerLayerDefinition(ChestBlockEntityRenderer.TALL_BOTTOM_LAYER, ChestBlockEntityRenderer::createTallBottomBodyLayer);
+                event.registerLayerDefinition(ChestBlockEntityRenderer.LONG_FRONT_LAYER, ChestBlockEntityRenderer::createLongFrontBodyLayer);
+                event.registerLayerDefinition(ChestBlockEntityRenderer.LONG_BACK_LAYER, ChestBlockEntityRenderer::createLongBackBodyLayer);
             });
         }
     }

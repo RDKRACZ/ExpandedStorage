@@ -16,8 +16,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractContainerMenu_;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.CompoundWorldlyContainer;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractMenu;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.CombinedContainer;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +29,7 @@ import java.util.function.IntUnaryOperator;
 @Experimental
 public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements WorldlyContainer {
     private final ResourceLocation blockId;
-    protected Component containerName;
+    protected Component menuTitle;
     private int slots;
     private NonNullList<ItemStack> inventory;
     private int[] slotsForFace;
@@ -42,12 +42,12 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         }
     }
 
-    protected static int countViewers(Level level, WorldlyContainer container, int x, int y, int z) {
+    protected static int countObservers(Level level, WorldlyContainer container, int x, int y, int z) {
         return level.getEntitiesOfClass(Player.class, new AABB(x - 5, y - 5, z - 5, x + 6, y + 6, z + 6)).stream()
-                    .filter(player -> player.containerMenu instanceof AbstractContainerMenu_<?>)
-                    .map(player -> ((AbstractContainerMenu_<?>) player.containerMenu).getContainer())
+                    .filter(player -> player.containerMenu instanceof AbstractMenu<?>)
+                    .map(player -> ((AbstractMenu<?>) player.containerMenu).getContainer())
                     .filter(openContainer -> openContainer == container ||
-                            openContainer instanceof CompoundWorldlyContainer compoundContainer && compoundContainer.consistsPartlyOf(container))
+                            openContainer instanceof CombinedContainer compoundContainer && compoundContainer.consistsPartlyOf(container))
                     .mapToInt(inv -> 1).sum();
     }
 
@@ -57,13 +57,13 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
             slotsForFace = new int[slots];
             Arrays.setAll(slotsForFace, IntUnaryOperator.identity());
             inventory = NonNullList.withSize(slots, ItemStack.EMPTY);
-            containerName = block.getContainerName();
+            menuTitle = block.getMenuTitle();
         }
     }
 
     @Override
-    public Component getDefaultName() {
-        return containerName;
+    public Component getDefaultTitle() {
+        return menuTitle;
     }
 
     public final ResourceLocation getBlockId() {
@@ -74,7 +74,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     public void load(BlockState state, CompoundTag tag) {
         super.load(state, tag);
         if (state.getBlock() instanceof AbstractOpenableStorageBlock block) {
-            this.initialise(block.blockId());
+            this.initialise(block.getBlockId());
             ContainerHelper.loadAllItems(tag, inventory);
         } else {
             throw new IllegalStateException("Block Entity attached to wrong block.");
@@ -141,6 +141,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
     @Override
     public boolean stillValid(Player player) {
+        //noinspection ConstantConditions
         return level.getBlockEntity(worldPosition) == this && player.distanceToSqr(Vec3.atCenterOf(worldPosition)) <= 64;
     }
 

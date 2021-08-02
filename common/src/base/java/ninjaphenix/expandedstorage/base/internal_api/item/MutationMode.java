@@ -15,6 +15,7 @@ public enum MutationMode {
     private final int index;
 
     MutationMode(String name, int index) {
+        // todo: can maybe replace with Enum's name() privat field
         this.name = name;
         this.index = index;
     }

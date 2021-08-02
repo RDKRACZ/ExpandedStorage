@@ -58,7 +58,7 @@ public final class ChestCommon {
     static Set<ResourceLocation> getChestTextures(Set<ChestBlock> blocks) {
         Set<ResourceLocation> textures = new HashSet<>();
         for (ChestBlock block : blocks) {
-            ResourceLocation blockId = block.blockId();
+            ResourceLocation blockId = block.getBlockId();
             for (CursedChestType type : CursedChestType.values()) {
                 textures.add(ChestApi.INSTANCE.getChestTexture(blockId, type));
             }
@@ -68,7 +68,7 @@ public final class ChestCommon {
 
     static void registerChestTextures(Set<ChestBlock> blocks) {
         for (ChestBlock block : blocks) {
-            ResourceLocation blockId = block.blockId();
+            ResourceLocation blockId = block.getBlockId();
             ChestApi.INSTANCE.declareChestTextures(
                     blockId, Utils.resloc("entity/" + blockId.getPath() + "/single"),
                     Utils.resloc("entity/" + blockId.getPath() + "/left"),
@@ -120,9 +120,10 @@ public final class ChestCommon {
     private static void upgradeSingleBlock(Level level, BlockState state, BlockPos pos, ResourceLocation from, ResourceLocation to) {
         Block block = state.getBlock();
         boolean isExpandedStorageChest = block instanceof ChestBlock;
-        var containerSize = !isExpandedStorageChest ? Utils.WOOD_STACK_COUNT : ((ChestBlock) BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, ((ChestBlock) block).blockTier())).getSlotCount();
-        if (isExpandedStorageChest && ((ChestBlock) block).blockTier() == from || !isExpandedStorageChest && from == Utils.WOOD_TIER.key()) {
+        var containerSize = !isExpandedStorageChest ? Utils.WOOD_STACK_COUNT : ((ChestBlock) BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, ((ChestBlock) block).getBlockTier())).getSlotCount();
+        if (isExpandedStorageChest && ((ChestBlock) block).getBlockTier() == from || !isExpandedStorageChest && from == Utils.WOOD_TIER.getId()) {
             var blockEntity = level.getBlockEntity(pos);
+            //noinspection ConstantConditions
             var tag = blockEntity.save(new CompoundTag());
             boolean verifiedSize = blockEntity instanceof Container container && container.getContainerSize() == containerSize;
             if (!verifiedSize) { // Cannot verify container size, we'll let it upgrade if it has or has less than 27 items
@@ -151,6 +152,7 @@ public final class ChestCommon {
                 }
                 if (level.setBlockAndUpdate(pos, newState)) {
                     var newEntity = (AbstractOpenableStorageBlockEntity) level.getBlockEntity(pos);
+                    //noinspection ConstantConditions
                     var newTag = newEntity.save(new CompoundTag());
                     ContainerHelper.saveAllItems(newTag, inventory);
                     code.addToTag(newTag);

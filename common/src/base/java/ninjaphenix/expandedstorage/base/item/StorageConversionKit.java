@@ -25,11 +25,10 @@ public final class StorageConversionKit extends Item {
     private final Component instructionsFirst;
     private final Component instructionsSecond;
 
-    public StorageConversionKit(Properties properties, ResourceLocation from, ResourceLocation to, Component addingMod) {
+    public StorageConversionKit(Properties properties, ResourceLocation from, ResourceLocation to) {
         super(properties);
         this.from = from;
         this.to = to;
-        //this.addedByMod = Utils.translation("tooltip.expandedstorage.added_by", addingMod).withStyle(ChatFormatting.GRAY);
         this.instructionsFirst = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_1", Utils.ALT_USE)
                                       .withStyle(ChatFormatting.GRAY);
         this.instructionsSecond = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_2", Utils.ALT_USE)
@@ -60,8 +59,5 @@ public final class StorageConversionKit extends Item {
         if (!instructionsSecond.getString().equals("")) {
             list.add(instructionsSecond);
         }
-        // if (flag.isAdvanced()) {
-        //     list.add(addedByMod);
-        // }
     }
 }

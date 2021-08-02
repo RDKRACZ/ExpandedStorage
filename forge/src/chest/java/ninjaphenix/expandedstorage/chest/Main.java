@@ -32,7 +32,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import ninjaphenix.expandedstorage.base.BaseCommon;
 import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
-import ninjaphenix.expandedstorage.base.internal_api.tier.OpenableTier;
+import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
 import ninjaphenix.expandedstorage.chest.block.ChestBlock;
 import ninjaphenix.expandedstorage.chest.block.misc.ChestBlockEntity;
@@ -43,15 +43,6 @@ import java.util.Set;
 
 public class Main {
     public Main() {
-        // Init tiers
-        OpenableTier woodTier = new OpenableTier(Utils.WOOD_TIER, ChestCommon.BLOCK_TYPE, Utils.WOOD_STACK_COUNT);
-        OpenableTier pumpkinTier = woodTier;
-        OpenableTier christmasTier = woodTier;
-        OpenableTier ironTier = new OpenableTier(Utils.IRON_TIER, ChestCommon.BLOCK_TYPE, Utils.IRON_STACK_COUNT);
-        OpenableTier goldTier = new OpenableTier(Utils.GOLD_TIER, ChestCommon.BLOCK_TYPE, Utils.GOLD_STACK_COUNT);
-        OpenableTier diamondTier = new OpenableTier(Utils.DIAMOND_TIER, ChestCommon.BLOCK_TYPE, Utils.DIAMOND_STACK_COUNT);
-        OpenableTier obsidianTier = new OpenableTier(Utils.OBSIDIAN_TIER, ChestCommon.BLOCK_TYPE, Utils.OBSIDIAN_STACK_COUNT);
-        OpenableTier netheriteTier = new OpenableTier(Utils.NETHERITE_TIER, ChestCommon.BLOCK_TYPE, Utils.NETHERITE_STACK_COUNT);
         // Init and register opening stats
         ResourceLocation woodOpenStat = BaseCommon.registerStat(Utils.resloc("open_wood_chest"));
         ResourceLocation pumpkinOpenStat = BaseCommon.registerStat(Utils.resloc("open_pumpkin_chest"));
@@ -107,24 +98,24 @@ public class Main {
                                                                                  .strength(50.0F, 1200.0F)
                                                                                  .sound(SoundType.NETHERITE_BLOCK);
         // Init blocks
-        ChestBlock woodChestBlock = this.chestBlock(Utils.resloc("wood_chest"), woodOpenStat, woodTier, woodProperties);
-        ChestBlock pumpkinChestBlock = this.chestBlock(Utils.resloc("pumpkin_chest"), pumpkinOpenStat, pumpkinTier, pumpkinProperties);
-        ChestBlock christmasChestBlock = this.chestBlock(Utils.resloc("christmas_chest"), christmasOpenStat, christmasTier, christmasProperties);
-        ChestBlock ironChestBlock = this.chestBlock(Utils.resloc("iron_chest"), ironOpenStat, ironTier, ironProperties);
-        ChestBlock goldChestBlock = this.chestBlock(Utils.resloc("gold_chest"), goldOpenStat, goldTier, goldProperties);
-        ChestBlock diamondChestBlock = this.chestBlock(Utils.resloc("diamond_chest"), diamondOpenStat, diamondTier, diamondProperties);
-        ChestBlock obsidianChestBlock = this.chestBlock(Utils.resloc("obsidian_chest"), obsidianOpenStat, obsidianTier, obsidianProperties);
-        ChestBlock netheriteChestBlock = this.chestBlock(Utils.resloc("netherite_chest"), netheriteOpenStat, netheriteTier, netheriteProperties);
+        ChestBlock woodChestBlock = this.chestBlock(Utils.resloc("wood_chest"), woodOpenStat, Utils.WOOD_TIER, woodProperties);
+        ChestBlock pumpkinChestBlock = this.chestBlock(Utils.resloc("pumpkin_chest"), pumpkinOpenStat, Utils.WOOD_TIER, pumpkinProperties);
+        ChestBlock christmasChestBlock = this.chestBlock(Utils.resloc("christmas_chest"), christmasOpenStat, Utils.WOOD_TIER, christmasProperties);
+        ChestBlock ironChestBlock = this.chestBlock(Utils.resloc("iron_chest"), ironOpenStat, Utils.IRON_TIER, ironProperties);
+        ChestBlock goldChestBlock = this.chestBlock(Utils.resloc("gold_chest"), goldOpenStat, Utils.GOLD_TIER, goldProperties);
+        ChestBlock diamondChestBlock = this.chestBlock(Utils.resloc("diamond_chest"), diamondOpenStat, Utils.DIAMOND_TIER, diamondProperties);
+        ChestBlock obsidianChestBlock = this.chestBlock(Utils.resloc("obsidian_chest"), obsidianOpenStat, Utils.OBSIDIAN_TIER, obsidianProperties);
+        ChestBlock netheriteChestBlock = this.chestBlock(Utils.resloc("netherite_chest"), netheriteOpenStat, Utils.NETHERITE_TIER, netheriteProperties);
         Set<ChestBlock> blocks = ImmutableSet.copyOf(new ChestBlock[]{woodChestBlock, pumpkinChestBlock, christmasChestBlock, ironChestBlock, goldChestBlock, diamondChestBlock, obsidianChestBlock, netheriteChestBlock});
         // Init items
-        BlockItem woodChestItem = this.chestItem(woodTier, woodChestBlock);
-        BlockItem pumpkinChestItem = this.chestItem(pumpkinTier, pumpkinChestBlock);
-        BlockItem christmasChestItem = this.chestItem(christmasTier, christmasChestBlock);
-        BlockItem ironChestItem = this.chestItem(ironTier, ironChestBlock);
-        BlockItem goldChestItem = this.chestItem(goldTier, goldChestBlock);
-        BlockItem diamondChestItem = this.chestItem(diamondTier, diamondChestBlock);
-        BlockItem obsidianChestItem = this.chestItem(obsidianTier, obsidianChestBlock);
-        BlockItem netheriteChestItem = this.chestItem(netheriteTier, netheriteChestBlock);
+        BlockItem woodChestItem = this.chestItem(Utils.WOOD_TIER, woodChestBlock);
+        BlockItem pumpkinChestItem = this.chestItem(Utils.WOOD_TIER, pumpkinChestBlock);
+        BlockItem christmasChestItem = this.chestItem(Utils.WOOD_TIER, christmasChestBlock);
+        BlockItem ironChestItem = this.chestItem(Utils.IRON_TIER, ironChestBlock);
+        BlockItem goldChestItem = this.chestItem(Utils.GOLD_TIER, goldChestBlock);
+        BlockItem diamondChestItem = this.chestItem(Utils.DIAMOND_TIER, diamondChestBlock);
+        BlockItem obsidianChestItem = this.chestItem(Utils.OBSIDIAN_TIER, obsidianChestBlock);
+        BlockItem netheriteChestItem = this.chestItem(Utils.NETHERITE_TIER, netheriteChestBlock);
         Set<BlockItem> items = ImmutableSet.copyOf(new BlockItem[]{woodChestItem, pumpkinChestItem, christmasChestItem, ironChestItem, goldChestItem, diamondChestItem, obsidianChestItem, netheriteChestItem});
         // Init block entity type
         BlockEntityType<ChestBlockEntity> blockEntityType = new BlockEntityType<>(() -> new ChestBlockEntity(ChestCommon.getBlockEntityType(), null), Collections.unmodifiableSet(blocks), null);
@@ -161,22 +152,22 @@ public class Main {
         }
     }
 
-    private ChestBlock chestBlock(ResourceLocation blockId, ResourceLocation stat, OpenableTier tier, BlockBehaviour.Properties properties) {
-        tier.blockProperties().apply(properties.dynamicShape());
+    private ChestBlock chestBlock(ResourceLocation blockId, ResourceLocation stat, Tier tier, BlockBehaviour.Properties properties) {
+        tier.getBlockProperties().apply(properties.dynamicShape());
         // Forge makes it so correct tool harvest tier and requires tool are copied.
-        ChestBlock block = new ChestBlock(properties, blockId, tier.key(), stat, tier.slots());
+        ChestBlock block = new ChestBlock(properties, blockId, tier.getId(), stat, tier.getSlotCount());
         block.setRegistryName(blockId);
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
     }
 
-    private BlockItem chestItem(OpenableTier tier, ChestBlock block) {
-        Item.Properties itemProperties = tier.itemProperties().apply(new Item.Properties().tab(Utils.TAB));
+    private BlockItem chestItem(Tier tier, ChestBlock block) {
+        Item.Properties itemProperties = tier.getItemProperties().apply(new Item.Properties().tab(Utils.TAB));
         if (PlatformUtils.getInstance().isClient()) {
             this.addItemBlockEntityRenderer(itemProperties, block);
         }
         BlockItem item = new BlockItem(block, itemProperties);
-        item.setRegistryName(block.blockId());
+        item.setRegistryName(block.getBlockId());
         return item;
     }
 
@@ -187,12 +178,12 @@ public class Main {
 
             @Override
             public void renderByItem(ItemStack item, ItemTransforms.TransformType transform, PoseStack pose, MultiBufferSource source, int light, int overlay) {
-                BlockEntityRenderDispatcher.instance.renderItem(getOrCreateBlockEntity(), pose, source, light, overlay);
+                BlockEntityRenderDispatcher.instance.renderItem(this.getOrCreateBlockEntity(), pose, source, light, overlay);
             }
 
             private ChestBlockEntity getOrCreateBlockEntity() {
                 if (renderEntity == null) {
-                    renderEntity = new ChestBlockEntity(ChestCommon.getBlockEntityType(), block.blockId());
+                    renderEntity = new ChestBlockEntity(ChestCommon.getBlockEntityType(), block.getBlockId());
                 }
                 return renderEntity;
             }

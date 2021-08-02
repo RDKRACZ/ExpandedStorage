@@ -24,8 +24,7 @@
   },
   "environment": "*",
   "mixins": [
-    "expandedstorage_base.mixins.json",
-    "expandedstorage_chest.mixins.json"
+    "expandedstorage.mixins.json"
   ],
   "authors": [
     "NinjaPhenix"

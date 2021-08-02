@@ -26,7 +26,7 @@ import ninjaphenix.expandedstorage.chest.block.misc.ChestBlockEntity;
 import org.jetbrains.annotations.NotNull;
 
 public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements SimpleWaterloggedBlock {
-    public static final int SET_OPEN_COUNT_EVENT = 1;
+    public static final int SET_OBSERVER_COUNT_EVENT = 1;
     private static final VoxelShape[] SHAPES = {
             Block.box(1, 0, 0, 15, 14, 15), // Horizontal shapes, depends on orientation and chest type.
             Block.box(1, 0, 1, 16, 14, 15),
@@ -38,8 +38,8 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     };
 
     public ChestBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier,
-                      ResourceLocation openStat, int slots) {
-        super(properties, blockId, blockTier, openStat, slots);
+                      ResourceLocation openingStat, int slots) {
+        super(properties, blockId, blockTier, openingStat, slots);
         this.registerDefaultState(this.defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, false).setValue(BlockStateProperties.OPEN, false));
     }
 
@@ -71,7 +71,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     }
 
     @Override
-    public ResourceLocation blockType() {
+    public ResourceLocation getBlockType() {
         return ChestCommon.BLOCK_TYPE;
     }
 
@@ -86,7 +86,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
         } else if (type == CursedChestType.SINGLE) {
             return ChestBlock.SHAPES[6];
         } else {
-            int index = (state.getValue(BlockStateProperties.HORIZONTAL_FACING).get2DDataValue() + type.offset()) % 4;
+            int index = (state.getValue(BlockStateProperties.HORIZONTAL_FACING).get2DDataValue() + type.getOffset()) % 4;
             return ChestBlock.SHAPES[index];
         }
     }
@@ -94,7 +94,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     @NotNull
     @Override
     public BlockEntity newBlockEntity(BlockGetter getter) {
-        return new ChestBlockEntity(ChestCommon.getBlockEntityType(), blockId());
+        return new ChestBlockEntity(ChestCommon.getBlockEntityType(), this.getBlockId());
     }
 
     @Override
@@ -104,7 +104,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     }
 
     @Override
-    protected BlockEntityType<ChestBlockEntity> blockEntityType() {
+    protected BlockEntityType<ChestBlockEntity> getBlockEntityType() {
         return ChestCommon.getBlockEntityType();
     }
 
@@ -117,7 +117,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     }
 
     @Override
-    protected boolean isBlocked(LevelAccessor level, BlockPos pos) {
+    protected boolean isAccessBlocked(LevelAccessor level, BlockPos pos) {
         return net.minecraft.world.level.block.ChestBlock.isChestBlockedAt(level, pos);
     }
 }

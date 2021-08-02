@@ -20,26 +20,28 @@ import java.util.Set;
 public final class PickScreen extends Screen {
     private static final Map<ResourceLocation, Tuple<ResourceLocation, Component>> BUTTON_SETTINGS = new HashMap<>();
     private final Set<ResourceLocation> options;
-    private final Screen parent;
+    private final Screen returnToScreen;
     private int topPadding;
 
-    public PickScreen(Set<ResourceLocation> options, Screen parent) {
+    public PickScreen(Set<ResourceLocation> options, Screen returnToScreen) {
         super(new TranslatableComponent("screen.expandedstorage.screen_picker_title"));
         this.options = options;
-        this.parent = parent;
+        this.returnToScreen = returnToScreen;
     }
 
-    public static void declareButtonSettings(ResourceLocation containerType, ResourceLocation texture, Component text) {
-        PickScreen.BUTTON_SETTINGS.putIfAbsent(containerType, new Tuple<>(texture, text));
+    public static void declareButtonSettings(ResourceLocation screenType, ResourceLocation texture, Component text) {
+        PickScreen.BUTTON_SETTINGS.putIfAbsent(screenType, new Tuple<>(texture, text));
     }
 
     @Override
     public void onClose() {
-        minecraft.setScreen(parent);
+        //noinspection ConstantConditions
+        minecraft.setScreen(returnToScreen);
     }
 
     @Override
     public boolean isPauseScreen() {
+        //noinspection ConstantConditions
         return minecraft.level == null;
     }
 
@@ -55,7 +57,7 @@ public final class PickScreen extends Screen {
         int topPadding = (height - 96) / 2;
         this.topPadding = topPadding;
         for (ResourceLocation option : options) {
-            if (!(ignoreSingle && Utils.SINGLE_CONTAINER_TYPE.equals(option))) {
+            if (!(ignoreSingle && Utils.SINGLE_SCREEN_TYPE.equals(option))) {
                 Tuple<ResourceLocation, Component> settings = PickScreen.BUTTON_SETTINGS.get(option);
                 this.addButton(new ScreenPickButton(outerPadding + (innerPadding + 96) * x, topPadding, 96, 96,
                         settings.getA(), settings.getB(), button -> this.updatePlayerPreference(option),

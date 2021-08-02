@@ -38,7 +38,7 @@ public final class ChestBlockEntityRenderer extends BlockEntityRenderer<ChestBlo
         map.put(CursedChestType.LEFT, new LeftChestModel());
         map.put(CursedChestType.RIGHT, new RightChestModel());
     });
-    private static final DoubleBlockCombiner.Combiner<ChestBlockEntity, Float2FloatFunction> LID_OPENNESS_FUNCTION_GETTER = new DoubleBlockCombiner.Combiner<ChestBlockEntity, Float2FloatFunction>() {
+    private static final DoubleBlockCombiner.Combiner<ChestBlockEntity, Float2FloatFunction> LID_OPENNESS_FUNCTION_GETTER = new DoubleBlockCombiner.Combiner<>() {
         @Override
         public Float2FloatFunction acceptDouble(ChestBlockEntity first, ChestBlockEntity second) {
             return (delta) -> Math.max(first.getLidOpenness(delta), second.getLidOpenness(delta));
@@ -74,7 +74,7 @@ public final class ChestBlockEntityRenderer extends BlockEntityRenderer<ChestBlo
         stack.mulPose(Vector3f.YP.rotationDegrees(-state.getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot()));
         stack.translate(-0.5D, -0.5D, -0.5D);
         DoubleBlockCombiner.NeighborCombineResult<? extends ChestBlockEntity> compoundPropertyAccessor = entity.hasLevel() ?
-                block.combine(state, entity.getLevel(), entity.getBlockPos(), true) :
+                block.createCombinedPropertyGetter(state, entity.getLevel(), entity.getBlockPos(), true) :
                 DoubleBlockCombiner.Combiner::acceptNone;
         VertexConsumer consumer = new Material(Sheets.CHEST_SHEET, ChestApi.INSTANCE.getChestTexture(blockId, chestType)).buffer(source, RenderType::entityCutout);
         float lidOpenness = compoundPropertyAccessor.apply(ChestBlockEntityRenderer.LID_OPENNESS_FUNCTION_GETTER).get(delta);

@@ -4,10 +4,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,8 +20,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 
 public final class BarrelBlock extends AbstractOpenableStorageBlock {
-    public BarrelBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier, ResourceLocation openStat, int slots) {
-        super(properties, blockId, blockTier, openStat, slots);
+    public BarrelBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier, ResourceLocation openingStat, int slots) {
+        super(properties, blockId, blockTier, openingStat, slots);
         this.registerDefaultState(this.getStateDefinition().any().setValue(BlockStateProperties.FACING, Direction.NORTH).setValue(BlockStateProperties.OPEN, false));
 
     }
@@ -41,21 +39,21 @@ public final class BarrelBlock extends AbstractOpenableStorageBlock {
     }
 
     @Override
-    public ResourceLocation blockType() {
+    public ResourceLocation getBlockType() {
         return BarrelCommon.BLOCK_TYPE;
     }
 
     @NotNull
     @Override
     public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return new BarrelBlockEntity(BarrelCommon.getBlockEntityType(), this.blockId());
+        return new BarrelBlockEntity(BarrelCommon.getBlockEntityType(), this.getBlockId());
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public void tick(BlockState state, ServerLevel level, BlockPos pos, Random random) {
         if (level.getBlockEntity(pos) instanceof BarrelBlockEntity entity) {
-            entity.checkViewerCount();
+            entity.recountObservers();
         }
     }
 }

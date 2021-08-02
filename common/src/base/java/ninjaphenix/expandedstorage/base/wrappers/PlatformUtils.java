@@ -6,7 +6,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.ClientContainerMenuFactory;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.ClientMenuFactory;
 
 import java.util.function.Supplier;
 
@@ -19,11 +19,11 @@ public interface PlatformUtils {
 
     boolean isClient();
 
-    <T extends AbstractContainerMenu> MenuType<T> createMenuType(ResourceLocation menuType, ClientContainerMenuFactory<T> factory);
+    <T extends AbstractContainerMenu> MenuType<T> createMenuType(ResourceLocation menuType, ClientMenuFactory<T> factory);
 
     boolean isModLoaded(String modId);
 
-    KeyMapping getConfigScreenKeyMapping();
+    KeyMapping getConfigKey();
 
-    boolean configKeyRequiresShift();
+    boolean isConfigKeyPressed(int keyCode, int scanCode, int modifiers);
 }

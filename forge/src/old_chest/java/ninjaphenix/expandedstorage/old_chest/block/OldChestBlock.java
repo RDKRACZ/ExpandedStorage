@@ -12,23 +12,23 @@ import org.jetbrains.annotations.NotNull;
 
 public final class OldChestBlock extends AbstractChestBlock<OldChestBlockEntity> {
     public OldChestBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier,
-                         ResourceLocation openStat, int slots) {
-        super(properties, blockId, blockTier, openStat, slots);
+                         ResourceLocation openingStat, int slots) {
+        super(properties, blockId, blockTier, openingStat, slots);
     }
 
     @Override
-    protected BlockEntityType<OldChestBlockEntity> blockEntityType() {
+    protected BlockEntityType<OldChestBlockEntity> getBlockEntityType() {
         return OldChestCommon.getBlockEntityType();
     }
 
     @Override
-    public ResourceLocation blockType() {
+    public ResourceLocation getBlockType() {
         return OldChestCommon.BLOCK_TYPE;
     }
 
     @NotNull
     @Override
     public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return new OldChestBlockEntity(OldChestCommon.getBlockEntityType(), this.blockId());
+        return new OldChestBlockEntity(OldChestCommon.getBlockEntityType(), this.getBlockId());
     }
 }

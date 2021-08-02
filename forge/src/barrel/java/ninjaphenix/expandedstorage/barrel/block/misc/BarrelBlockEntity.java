@@ -13,17 +13,17 @@ import ninjaphenix.expandedstorage.barrel.block.BarrelBlock;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 
 public class BarrelBlockEntity extends AbstractOpenableStorageBlockEntity {
-    private int viewerCount;
+    private int observerCount;
 
     public BarrelBlockEntity(BlockEntityType<BarrelBlockEntity> blockEntityType, ResourceLocation blockId) {
         super(blockEntityType, blockId);
     }
 
-    public void checkViewerCount() {
+    public void recountObservers() {
         //noinspection ConstantConditions
-        viewerCount = AbstractOpenableStorageBlockEntity.countViewers(level, this.getContainerWrapper(), worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
-        if (viewerCount > 0) {
-            this.scheduleViewCountCheck();
+        observerCount = AbstractOpenableStorageBlockEntity.countObservers(level, this.getContainerWrapper(), worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
+        if (observerCount > 0) {
+            this.scheduleObserverRecount();
         } else {
             BlockState state = this.getBlockState();
             if (!(state.getBlock() instanceof BarrelBlock)) {
@@ -40,23 +40,23 @@ public class BarrelBlockEntity extends AbstractOpenableStorageBlockEntity {
     @Override
     public void startOpen(Player player) {
         if (!player.isSpectator()) {
-            if (viewerCount < 0) {
-                viewerCount = 0;
+            if (observerCount < 0) {
+                observerCount = 0;
             }
-            ++viewerCount;
+            ++observerCount;
             BlockState state = this.getBlockState();
             if (!state.getValue(BlockStateProperties.OPEN)) {
                 this.playSound(state, SoundEvents.BARREL_OPEN);
                 this.setOpen(state, true);
             }
-            this.scheduleViewCountCheck();
+            this.scheduleObserverRecount();
         }
     }
 
     @Override
     public void stopOpen(Player player) {
         if (!player.isSpectator()) {
-            --viewerCount;
+            --observerCount;
         }
     }
 
@@ -74,7 +74,7 @@ public class BarrelBlockEntity extends AbstractOpenableStorageBlockEntity {
         level.playSound(null, X, Y, Z, sound, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
     }
 
-    private void scheduleViewCountCheck() {
+    private void scheduleObserverRecount() {
         //noinspection ConstantConditions
         level.getBlockTicks().scheduleTick(this.getBlockPos(), this.getBlockState().getBlock(), 5);
     }

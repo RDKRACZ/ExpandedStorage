@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
-import ninjaphenix.expandedstorage.base.inventory.ScrollableContainerMenu;
+import ninjaphenix.expandedstorage.base.inventory.ScrollableMenu;
 import ninjaphenix.expandedstorage.base.inventory.screen.ScrollableScreenMeta;
 import ninjaphenix.expandedstorage.base.wrappers.ConfigWrapper;
 import org.lwjgl.glfw.GLFW;
@@ -16,13 +16,13 @@ import org.lwjgl.glfw.GLFW;
 import java.util.Collections;
 import java.util.List;
 
-public final class ScrollableScreen extends AbstractScreen<ScrollableContainerMenu, ScrollableScreenMeta> {
-    protected final boolean hasScrollbar;
+public final class ScrollableScreen extends AbstractScreen<ScrollableMenu, ScrollableScreenMeta> {
+    private final boolean hasScrollbar;
     private final boolean scrollingUnrestricted;
     private boolean isDragging;
     private int topRow;
 
-    public ScrollableScreen(ScrollableContainerMenu container, Inventory playerInventory, Component title) {
+    public ScrollableScreen(ScrollableMenu container, Inventory playerInventory, Component title) {
         super(container, playerInventory, title, (screenMeta) -> (screenMeta.width * 18 + 14) / 2 - 80);
         hasScrollbar = screenMeta.totalRows != screenMeta.height;
         imageWidth = 14 + 18 * screenMeta.width;

@@ -16,7 +16,7 @@ import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenable
 import ninjaphenix.expandedstorage.chest.block.ChestBlock;
 
 public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity implements TickableBlockEntity {
-    private int viewerCount;
+    private int observerCount;
     private float lastAnimationAngle;
     private float animationAngle;
     private int ticksOpen;
@@ -25,17 +25,17 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity i
         super(blockEntityType, blockId);
     }
 
-    private static int tickViewerCount(Level level, ChestBlockEntity entity, int ticksOpen, int x, int y, int z, int viewCount) {
-        if (!level.isClientSide() && viewCount != 0 && (ticksOpen + x + y + z) % 200 == 0) {
-            return AbstractOpenableStorageBlockEntity.countViewers(level, entity, x, y, z);
+    private static int maybeUpdateObserverCount(Level level, ChestBlockEntity entity, int ticksOpen, int x, int y, int z, int observerCount) {
+        if (!level.isClientSide() && observerCount != 0 && (ticksOpen + x + y + z) % 200 == 0) {
+            return AbstractOpenableStorageBlockEntity.countObservers(level, entity, x, y, z);
         }
-        return viewCount;
+        return observerCount;
     }
 
     @Override
     public boolean triggerEvent(int event, int value) {
-        if (event == ChestBlock.SET_OPEN_COUNT_EVENT) {
-            viewerCount = value;
+        if (event == ChestBlock.SET_OBSERVER_COUNT_EVENT) {
+            observerCount = value;
             return true;
         }
         return super.triggerEvent(event, value);
@@ -49,13 +49,13 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity i
     @Override
     @SuppressWarnings("ConstantConditions")
     public void tick() {
-        viewerCount = tickViewerCount(level, this, ++ticksOpen, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), viewerCount);
+        observerCount = ChestBlockEntity.maybeUpdateObserverCount(level, this, ++ticksOpen, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), observerCount);
         lastAnimationAngle = animationAngle;
-        if (viewerCount > 0 && animationAngle == 0.0F) {
+        if (observerCount > 0 && animationAngle == 0.0F) {
             this.playSound(SoundEvents.CHEST_OPEN);
         }
-        if (viewerCount == 0 && animationAngle > 0.0F || viewerCount > 0 && animationAngle < 1.0F) {
-            animationAngle = Mth.clamp(animationAngle + (viewerCount > 0 ? 0.1F : -0.1F), 0, 1);
+        if (observerCount == 0 && animationAngle > 0.0F || observerCount > 0 && animationAngle < 1.0F) {
+            animationAngle = Mth.clamp(animationAngle + (observerCount > 0 ? 0.1F : -0.1F), 0, 1);
             if (animationAngle < 0.5F && lastAnimationAngle >= 0.5F) {
                 this.playSound(SoundEvents.CHEST_CLOSE);
             }
@@ -63,7 +63,7 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity i
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void playSound(SoundEvent soundEvent) {
+    private void playSound(SoundEvent sound) {
         BlockState state = this.getBlockState();
         DoubleBlockCombiner.BlockType mergeType = ChestBlock.getBlockType(state);
         Vec3 soundPos;
@@ -74,7 +74,7 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity i
         } else {
             return;
         }
-        level.playSound(null, soundPos.x(), soundPos.y(), soundPos.z(), soundEvent, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
+        level.playSound(null, soundPos.x(), soundPos.y(), soundPos.z(), sound, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
     }
 
     @Override
@@ -82,11 +82,11 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity i
         if (player.isSpectator()) {
             return;
         }
-        if (viewerCount < 0) {
-            viewerCount = 0;
+        if (observerCount < 0) {
+            observerCount = 0;
         }
-        viewerCount++;
-        this.onInvOpenOrClose();
+        observerCount++;
+        this.onMenuOpenOrClosed();
     }
 
     @Override
@@ -94,14 +94,14 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity i
         if (player.isSpectator()) {
             return;
         }
-        viewerCount--;
-        this.onInvOpenOrClose();
+        observerCount--;
+        this.onMenuOpenOrClosed();
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void onInvOpenOrClose() {
+    private void onMenuOpenOrClosed() {
         if (this.getBlockState().getBlock() instanceof ChestBlock block) {
-            level.blockEvent(worldPosition, block, ChestBlock.SET_OPEN_COUNT_EVENT, viewerCount);
+            level.blockEvent(worldPosition, block, ChestBlock.SET_OBSERVER_COUNT_EVENT, observerCount);
             level.updateNeighborsAt(worldPosition, block);
         }
     }

@@ -25,24 +25,25 @@ import java.util.function.Consumer;
 public final class Main implements ModuleInitializer {
     @Override
     public void initialize() {
+        // This is nasty, can I make this code better?
         AtomicReference<Set<ChestBlock>> b = new AtomicReference<>();
         AtomicReference<Set<BlockItem>> i = new AtomicReference<>();
         Consumer<Set<ChestBlock>> registerBlocks = (blocks) -> {
             b.set(blocks);
-            blocks.forEach(block -> Registry.register(Registry.BLOCK, block.blockId(), block));
+            blocks.forEach(block -> Registry.register(Registry.BLOCK, block.getBlockId(), block));
         };
         Consumer<Set<BlockItem>> registerItems = (items) -> {
             i.set(items);
-            items.forEach(item -> Registry.register(Registry.ITEM, ((ChestBlock) item.getBlock()).blockId(), item));
+            items.forEach(item -> Registry.register(Registry.ITEM, ((ChestBlock) item.getBlock()).getBlockId(), item));
         };
-        Consumer<BlockEntityType<ChestBlockEntity>> registerBlockEntityType = (blockEntityType) -> {
+        Consumer<BlockEntityType<ChestBlockEntity>> registerBET = (blockEntityType) -> {
             Registry.register(Registry.BLOCK_ENTITY_TYPE, ChestCommon.BLOCK_TYPE, blockEntityType);
             if (PlatformUtils.getInstance().isClient()) {
                 Client.registerChestTextures(b.get());
                 Client.registerItemRenderers(i.get());
             }
         };
-        ChestCommon.registerContent(registerBlocks, registerItems, registerBlockEntityType, TagRegistry.block(new ResourceLocation("c", "wooden_chests")), BlockItem::new);
+        ChestCommon.registerContent(registerBlocks, registerItems, registerBET, TagRegistry.block(new ResourceLocation("c", "wooden_chests")), BlockItem::new);
     }
 
     private static class Client {

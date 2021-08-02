@@ -11,7 +11,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import ninjaphenix.expandedstorage.base.client.menu.widget.PageButton;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
-import ninjaphenix.expandedstorage.base.inventory.PagedContainerMenu;
+import ninjaphenix.expandedstorage.base.inventory.PagedMenu;
 import ninjaphenix.expandedstorage.base.inventory.screen.PagedScreenMeta;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
 import org.lwjgl.glfw.GLFW;
@@ -23,7 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class PagedScreen extends AbstractScreen<PagedContainerMenu, PagedScreenMeta> {
+public final class PagedScreen extends AbstractScreen<PagedMenu, PagedScreenMeta> {
     private final Set<Image> blankArea = new LinkedHashSet<>();
     private PageButton leftPageButton;
     private PageButton rightPageButton;
@@ -31,7 +31,7 @@ public final class PagedScreen extends AbstractScreen<PagedContainerMenu, PagedS
     private TranslatableComponent currentPageText;
     private float pageTextX;
 
-    public PagedScreen(PagedContainerMenu screenHandler, Inventory playerInventory, Component title) {
+    public PagedScreen(PagedMenu screenHandler, Inventory playerInventory, Component title) {
         super(screenHandler, playerInventory, title, (screenMeta) -> (screenMeta.width * 18 + 14) / 2 - 80);
         imageWidth = 14 + 18 * screenMeta.width;
         imageHeight = 17 + 97 + 18 * screenMeta.height;

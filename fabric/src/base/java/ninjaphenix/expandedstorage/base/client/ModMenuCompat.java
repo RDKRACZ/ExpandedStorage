@@ -12,12 +12,12 @@ import java.util.Set;
 public class ModMenuCompat implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parent -> {
+        return returnToScreen -> {
             Set<ResourceLocation> values = new HashSet<>();
-            values.add(Utils.SINGLE_CONTAINER_TYPE);
-            values.add(Utils.PAGE_CONTAINER_TYPE);
-            values.add(Utils.SCROLL_CONTAINER_TYPE);
-            return new PickScreen(values, parent);
+            values.add(Utils.SINGLE_SCREEN_TYPE);
+            values.add(Utils.PAGED_SCREEN_TYPE);
+            values.add(Utils.SCROLLABLE_SCREEN_TYPE);
+            return new PickScreen(values, returnToScreen);
         };
     }
 }

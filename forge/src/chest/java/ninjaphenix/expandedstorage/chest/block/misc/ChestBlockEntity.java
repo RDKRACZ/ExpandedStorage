@@ -17,22 +17,21 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractChestBlock;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.chest.block.ChestBlock;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
-    private final ChestLidController chestLidController;
+    private final ChestLidController lidController;
 
     public ChestBlockEntity(BlockEntityType<ChestBlockEntity> blockEntityType, BlockPos pos, BlockState state) {
-        super(blockEntityType, pos, state, ((ChestBlock) state.getBlock()).blockId());
-        chestLidController = new ChestLidController();
+        super(blockEntityType, pos, state, ((ChestBlock) state.getBlock()).getBlockId());
+        lidController = new ChestLidController();
     }
 
-    public static void lidAnimateTick(Level level, BlockPos pos, BlockState state, ChestBlockEntity blockEntity) {
-        blockEntity.chestLidController.tickLid();
+    public static void progressLidAnimation(Level level, BlockPos pos, BlockState state, ChestBlockEntity blockEntity) {
+        blockEntity.lidController.tickLid();
     }
 
-    private static void playSound(Level level, BlockPos pos, BlockState state, SoundEvent soundEvent) {
+    private static void playSound(Level level, BlockPos pos, BlockState state, SoundEvent sound) {
         DoubleBlockCombiner.BlockType mergeType = ChestBlock.getBlockType(state);
         Vec3 soundPos;
         if (mergeType == DoubleBlockCombiner.BlockType.SINGLE) {
@@ -42,7 +41,7 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
         } else {
             return;
         }
-        level.playSound(null, soundPos.x(), soundPos.y(), soundPos.z(), soundEvent, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
+        level.playSound(null, soundPos.x(), soundPos.y(), soundPos.z(), sound, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
     }
 
     @Override
@@ -56,19 +55,19 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
     }
 
     @Override
-    protected void openerCountChanged(Level level, BlockPos pos, BlockState state, int oldCount, int newCount) {
-        level.blockEvent(pos, state.getBlock(), ChestBlock.SET_OPEN_COUNT_EVENT, newCount);
+    protected void onObserverCountChanged(Level level, BlockPos pos, BlockState state, int oldCount, int newCount) {
+        level.blockEvent(pos, state.getBlock(), ChestBlock.SET_OBSERVER_COUNT_EVENT, newCount);
     }
 
     @Override
-    protected boolean isOwnContainer(Container container) {
-        return super.isOwnContainer(container) || container instanceof CompoundContainer compoundContainer && compoundContainer.contains(this.getContainerWrapper());
+    protected boolean isThis(Container container) {
+        return super.isThis(container) || container instanceof CompoundContainer compoundContainer && compoundContainer.contains(this.getContainerWrapper());
     }
 
     @Override
     public boolean triggerEvent(int event, int value) {
-        if (event == ChestBlock.SET_OPEN_COUNT_EVENT) {
-            chestLidController.shouldBeOpen(value > 0);
+        if (event == ChestBlock.SET_OBSERVER_COUNT_EVENT) {
+            lidController.shouldBeOpen(value > 0);
             return true;
         }
         return super.triggerEvent(event, value);
@@ -76,10 +75,9 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
 
     // Client only
     public float getLidOpenness(float f) {
-        return chestLidController.getOpenness(f);
+        return lidController.getOpenness(f);
     }
 
-    @NotNull
     @Override
     protected IItemHandlerModifiable createItemHandler(Level level, BlockState state, BlockPos pos, @Nullable Direction side) {
         return AbstractChestBlock.createItemHandler(level, state, pos).orElse(AbstractOpenableStorageBlockEntity.createGenericItemHandler(this));

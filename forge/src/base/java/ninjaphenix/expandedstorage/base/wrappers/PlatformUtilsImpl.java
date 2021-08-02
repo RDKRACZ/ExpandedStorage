@@ -23,7 +23,7 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import net.minecraftforge.fmllegacy.network.IContainerFactory;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.ClientContainerMenuFactory;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.ClientMenuFactory;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Set;
@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 
 final class PlatformUtilsImpl implements PlatformUtils {
     private static PlatformUtilsImpl INSTANCE;
-    private final Supplier<Object> configKeyMapping = Suppliers.memoize(() -> {
+    private final Supplier<Object> configKey = Suppliers.memoize(() -> {
         KeyMapping binding = new KeyMapping("key.expandedstorage.config", KeyConflictContext.GUI, KeyModifier.SHIFT, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_W, "key.categories.inventory");
         ClientRegistry.registerKeyBinding(binding);
         return binding;
@@ -66,7 +66,7 @@ final class PlatformUtilsImpl implements PlatformUtils {
     }
 
     @Override
-    public <T extends AbstractContainerMenu> MenuType<T> createMenuType(ResourceLocation menuType, ClientContainerMenuFactory<T> factory) {
+    public <T extends AbstractContainerMenu> MenuType<T> createMenuType(ResourceLocation menuType, ClientMenuFactory<T> factory) {
         MenuType<T> menu = new MenuType<>((IContainerFactory<T>) factory::create);
         menu.setRegistryName(menuType);
         return menu;
@@ -84,12 +84,12 @@ final class PlatformUtilsImpl implements PlatformUtils {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public KeyMapping getConfigScreenKeyMapping() {
-        return (KeyMapping) configKeyMapping.get();
+    public KeyMapping getConfigKey() {
+        return (KeyMapping) configKey.get();
     }
 
     @Override
-    public boolean isKeyMappingPressed(int keyCode, int scanCode, int modifiers) {
-        return getConfigScreenKeyMapping().isActiveAndMatches(InputConstants.getKey(keyCode, scanCode));
+    public boolean isConfigKeyPressed(int keyCode, int scanCode, int modifiers) {
+        return getConfigKey().isActiveAndMatches(InputConstants.getKey(keyCode, scanCode));
     }
 }

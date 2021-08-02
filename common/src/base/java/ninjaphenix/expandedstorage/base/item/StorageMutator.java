@@ -70,7 +70,7 @@ public class StorageMutator extends Item {
         if (block instanceof BarrelBlock) {
             return this.useModifierOnBlock(context, state, pos, BlockType.SINGLE);
         } else if (block instanceof AbstractChestBlock) {
-            return this.useModifierOnBlock(context, state, pos, ChestBlock.getBlockType(state));
+            return this.useModifierOnBlock(context, state, pos, AbstractChestBlock.getBlockType(state));
         } else {
             return this.useOnBlock(context, state, context.getClickedPos());
         }
@@ -119,8 +119,8 @@ public class StorageMutator extends Item {
                             if (direction != null) {
                                 CursedChestType type = ChestBlock.getChestType(state.getValue(HORIZONTAL_FACING), direction);
                                 Predicate<BlockEntity> isRandomizable = b -> b instanceof RandomizableContainerBlockEntity;
-                                convertContainer(level, state, pos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.key()), Utils.WOOD_STACK_COUNT, type, isRandomizable);
-                                convertContainer(level, otherState, otherPos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.key()), Utils.WOOD_STACK_COUNT, type.getOpposite(), isRandomizable);
+                                this.convertBlock(level, state, pos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type, isRandomizable);
+                                this.convertBlock(level, otherState, otherPos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type.getOpposite(), isRandomizable);
                                 tag.remove("pos");
                                 //noinspection ConstantConditions
                                 player.displayClientMessage(new TranslatableComponent("tooltip.expandedstorage.storage_mutator.merge_end"), true);
@@ -166,7 +166,7 @@ public class StorageMutator extends Item {
         return InteractionResult.FAIL;
     }
 
-    private void convertContainer(Level level, BlockState state, BlockPos pos, Block block, int slotCount, @Nullable CursedChestType type, Predicate<BlockEntity> check) {
+    private void convertBlock(Level level, BlockState state, BlockPos pos, Block block, int slotCount, @Nullable CursedChestType type, Predicate<BlockEntity> check) {
         BlockEntity targetBlockEntity = level.getBlockEntity(pos);
         if (check.test(targetBlockEntity)) {
             NonNullList<ItemStack> invData = NonNullList.withSize(slotCount, ItemStack.EMPTY);
@@ -214,8 +214,8 @@ public class StorageMutator extends Item {
                             if (direction != null) {
                                 CursedChestType chestType = AbstractChestBlock.getChestType(state.getValue(HORIZONTAL_FACING), direction);
                                 Predicate<BlockEntity> isStorage = b -> b instanceof AbstractOpenableStorageBlockEntity;
-                                this.convertContainer(level, state, pos, block, chestBlock.getSlotCount(), chestType, isStorage);
-                                this.convertContainer(level, otherState, otherPos, block, chestBlock.getSlotCount(), chestType.getOpposite(), isStorage);
+                                this.convertBlock(level, state, pos, block, chestBlock.getSlotCount(), chestType, isStorage);
+                                this.convertBlock(level, otherState, otherPos, block, chestBlock.getSlotCount(), chestType.getOpposite(), isStorage);
                                 tag.remove("pos");
                                 //noinspection ConstantConditions
                                 player.displayClientMessage(new TranslatableComponent("tooltip.expandedstorage.storage_mutator.merge_end"), true);
@@ -330,7 +330,7 @@ public class StorageMutator extends Item {
         }
     }
 
-    private MutableComponent getToolModeComponent(MutationMode mode) {
+    private MutableComponent getToolModeText(MutationMode mode) {
         return new TranslatableComponent("tooltip.expandedstorage.storage_mutator.tool_mode",
                 new TranslatableComponent("tooltip.expandedstorage.storage_mutator." + mode));
     }
@@ -343,7 +343,7 @@ public class StorageMutator extends Item {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> list, TooltipFlag flag) {
         MutationMode mode = StorageMutator.getMode(stack);
-        list.add(this.getToolModeComponent(mode).withStyle(ChatFormatting.GRAY));
+        list.add(this.getToolModeText(mode).withStyle(ChatFormatting.GRAY));
         list.add(Utils.translation("tooltip.expandedstorage.storage_mutator.description_" + mode, Utils.ALT_USE).withStyle(ChatFormatting.GRAY));
     }
 }

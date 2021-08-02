@@ -35,7 +35,7 @@ public final class Main {
 
     private void registerItems(Set<BlockItem> items) {
         for (BlockItem item : items) {
-            item.setRegistryName(((BarrelBlock) item.getBlock()).blockId());
+            item.setRegistryName(((BarrelBlock) item.getBlock()).getBlockId());
         }
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addGenericListener(Item.class, (RegistryEvent.Register<Item> event) -> {
@@ -46,7 +46,7 @@ public final class Main {
 
     private void registerBlocks(Set<BarrelBlock> blocks) {
         for (BarrelBlock block : blocks) {
-            block.setRegistryName(block.blockId());
+            block.setRegistryName(block.getBlockId());
         }
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addGenericListener(Block.class, (RegistryEvent.Register<Block> event) -> {

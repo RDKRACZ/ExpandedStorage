@@ -22,25 +22,25 @@ import java.util.Set;
 public final class PickScreen extends Screen {
     private static final Map<ResourceLocation, Tuple<ResourceLocation, Component>> BUTTON_SETTINGS = new HashMap<>();
     private final Set<ResourceLocation> options;
-    private final Screen parent;
+    private final Screen returnToScreen;
     private final List<ScreenPickButton> optionWidgets;
     private int topPadding;
 
-    public PickScreen(Set<ResourceLocation> options, Screen parent) {
+    public PickScreen(Set<ResourceLocation> options, Screen returnToScreen) {
         super(new TranslatableComponent("screen.expandedstorage.screen_picker_title"));
         this.options = options;
         this.optionWidgets = new ArrayList<>(options.size());
-        this.parent = parent;
+        this.returnToScreen = returnToScreen;
     }
 
-    public static void declareButtonSettings(ResourceLocation containerType, ResourceLocation texture, Component text) {
-        PickScreen.BUTTON_SETTINGS.putIfAbsent(containerType, new Tuple<>(texture, text));
+    public static void declareButtonSettings(ResourceLocation screenType, ResourceLocation texture, Component text) {
+        PickScreen.BUTTON_SETTINGS.putIfAbsent(screenType, new Tuple<>(texture, text));
     }
 
     @Override
     public void onClose() {
         //noinspection ConstantConditions
-        minecraft.setScreen(parent);
+        minecraft.setScreen(returnToScreen);
     }
 
     @Override
@@ -62,7 +62,7 @@ public final class PickScreen extends Screen {
         this.topPadding = topPadding;
         optionWidgets.clear();
         for (ResourceLocation option : options) {
-            if (!(ignoreSingle && Utils.SINGLE_CONTAINER_TYPE.equals(option))) {
+            if (!(ignoreSingle && Utils.SINGLE_SCREEN_TYPE.equals(option))) {
                 Tuple<ResourceLocation, Component> settings = PickScreen.BUTTON_SETTINGS.get(option);
                 optionWidgets.add(this.addRenderableWidget(new ScreenPickButton(outerPadding + (innerPadding + 96) * x, topPadding, 96, 96,
                         settings.getA(), settings.getB(), button -> this.updatePlayerPreference(option),

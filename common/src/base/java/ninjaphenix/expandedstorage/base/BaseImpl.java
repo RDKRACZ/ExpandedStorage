@@ -64,12 +64,12 @@ public final class BaseImpl implements BaseApi {
             Tier fromTier = tiers[fromIndex];
             for (int toIndex = fromIndex + 1; toIndex < numTiers; toIndex++) {
                 Tier toTier = tiers[toIndex];
-                ResourceLocation itemId = Utils.resloc(fromTier.key().getPath() + "_to_" + toTier.key().getPath() + "_conversion_kit");
+                ResourceLocation itemId = Utils.resloc(fromTier.getId().getPath() + "_to_" + toTier.getId().getPath() + "_conversion_kit");
                 if (!items.containsKey(itemId)) {
-                    Item.Properties properties = fromTier.itemProperties()
-                                                         .andThen(toTier.itemProperties())
+                    Item.Properties properties = fromTier.getItemProperties()
+                                                         .andThen(toTier.getItemProperties())
                                                          .apply(new Item.Properties().tab(Utils.TAB).stacksTo(16));
-                    Item kit = new StorageConversionKit(properties, fromTier.key(), toTier.key(), addingMod);
+                    Item kit = new StorageConversionKit(properties, fromTier.getId(), toTier.getId());
                     this.register(itemId, kit);
                 }
             }
@@ -83,9 +83,9 @@ public final class BaseImpl implements BaseApi {
     }
 
     @Override
-    public void registerContainerButtonSettings(ResourceLocation containerType, ResourceLocation texture, Component text) {
+    public void registerContainerButtonSettings(ResourceLocation screenType, ResourceLocation texture, Component text) {
         if (PlatformUtils.getInstance().isClient()) {
-            PickScreen.declareButtonSettings(containerType, texture, text);
+            PickScreen.declareButtonSettings(screenType, texture, text);
         } else {
             throw new IllegalStateException("registerContainerButtonSettings is client only");
         }
@@ -93,7 +93,7 @@ public final class BaseImpl implements BaseApi {
 
     @Override
     public void registerTieredBlock(AbstractStorageBlock block) {
-        BLOCKS.putIfAbsent(new Pair<>(block.blockType(), block.blockTier()), block);
+        BLOCKS.putIfAbsent(new Pair<>(block.getBlockType(), block.getBlockTier()), block);
     }
 
     @Override

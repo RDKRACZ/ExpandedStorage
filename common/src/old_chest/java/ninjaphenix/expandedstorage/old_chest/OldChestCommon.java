@@ -27,7 +27,7 @@ import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
-import ninjaphenix.expandedstorage.base.internal_api.tier.OpenableTier;
+import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
 import ninjaphenix.expandedstorage.old_chest.block.OldChestBlock;
 import ninjaphenix.expandedstorage.old_chest.block.misc.OldChestBlockEntity;
@@ -53,13 +53,6 @@ public final class OldChestCommon {
     static void registerContent(Consumer<Set<OldChestBlock>> blockReg,
                                 Consumer<Set<BlockItem>> itemReg,
                                 Consumer<BlockEntityType<OldChestBlockEntity>> blockEntityTypeConsumer) {
-        // Init tiers
-        OpenableTier woodTier = new OpenableTier(Utils.WOOD_TIER, OldChestCommon.BLOCK_TYPE, Utils.WOOD_STACK_COUNT);
-        OpenableTier ironTier = new OpenableTier(Utils.IRON_TIER, OldChestCommon.BLOCK_TYPE, Utils.IRON_STACK_COUNT);
-        OpenableTier goldTier = new OpenableTier(Utils.GOLD_TIER, OldChestCommon.BLOCK_TYPE, Utils.GOLD_STACK_COUNT);
-        OpenableTier diamondTier = new OpenableTier(Utils.DIAMOND_TIER, OldChestCommon.BLOCK_TYPE, Utils.DIAMOND_STACK_COUNT);
-        OpenableTier obsidianTier = new OpenableTier(Utils.OBSIDIAN_TIER, OldChestCommon.BLOCK_TYPE, Utils.OBSIDIAN_STACK_COUNT);
-        OpenableTier netheriteTier = new OpenableTier(Utils.NETHERITE_TIER, OldChestCommon.BLOCK_TYPE, Utils.NETHERITE_STACK_COUNT);
         // Init and register opening stats
         ResourceLocation woodOpenStat = BaseCommon.registerStat(Utils.resloc("open_old_wood_chest"));
         ResourceLocation ironOpenStat = BaseCommon.registerStat(Utils.resloc("open_old_iron_chest"));
@@ -86,21 +79,21 @@ public final class OldChestCommon {
                                                                                  .strength(50.0F, 1200.0F)
                                                                                  .sound(SoundType.NETHERITE_BLOCK);
         // Init blocks
-        OldChestBlock woodChestBlock = OldChestCommon.oldChestBlock(Utils.resloc("old_wood_chest"), woodOpenStat, woodTier, woodProperties);
-        OldChestBlock ironChestBlock = OldChestCommon.oldChestBlock(Utils.resloc("old_iron_chest"), ironOpenStat, ironTier, ironProperties);
-        OldChestBlock goldChestBlock = OldChestCommon.oldChestBlock(Utils.resloc("old_gold_chest"), goldOpenStat, goldTier, goldProperties);
-        OldChestBlock diamondChestBlock = OldChestCommon.oldChestBlock(Utils.resloc("old_diamond_chest"), diamondOpenStat, diamondTier, diamondProperties);
-        OldChestBlock obsidianChestBlock = OldChestCommon.oldChestBlock(Utils.resloc("old_obsidian_chest"), obsidianOpenStat, obsidianTier, obsidianProperties);
-        OldChestBlock netheriteChestBlock = OldChestCommon.oldChestBlock(Utils.resloc("old_netherite_chest"), netheriteOpenStat, netheriteTier, netheriteProperties);
+        OldChestBlock woodChestBlock = OldChestCommon.oldChestBlock(Utils.resloc("old_wood_chest"), woodOpenStat, Utils.WOOD_TIER, woodProperties);
+        OldChestBlock ironChestBlock = OldChestCommon.oldChestBlock(Utils.resloc("old_iron_chest"), ironOpenStat, Utils.IRON_TIER, ironProperties);
+        OldChestBlock goldChestBlock = OldChestCommon.oldChestBlock(Utils.resloc("old_gold_chest"), goldOpenStat, Utils.GOLD_TIER, goldProperties);
+        OldChestBlock diamondChestBlock = OldChestCommon.oldChestBlock(Utils.resloc("old_diamond_chest"), diamondOpenStat, Utils.DIAMOND_TIER, diamondProperties);
+        OldChestBlock obsidianChestBlock = OldChestCommon.oldChestBlock(Utils.resloc("old_obsidian_chest"), obsidianOpenStat, Utils.OBSIDIAN_TIER, obsidianProperties);
+        OldChestBlock netheriteChestBlock = OldChestCommon.oldChestBlock(Utils.resloc("old_netherite_chest"), netheriteOpenStat, Utils.NETHERITE_TIER, netheriteProperties);
         Set<OldChestBlock> blocks = ImmutableSet.copyOf(new OldChestBlock[]{woodChestBlock, ironChestBlock, goldChestBlock, diamondChestBlock, obsidianChestBlock, netheriteChestBlock});
         blockReg.accept(blocks);
         // Init items
-        BlockItem woodChestItem = OldChestCommon.oldChestItem(woodTier, woodChestBlock);
-        BlockItem ironChestItem = OldChestCommon.oldChestItem(ironTier, ironChestBlock);
-        BlockItem goldChestItem = OldChestCommon.oldChestItem(goldTier, goldChestBlock);
-        BlockItem diamondChestItem = OldChestCommon.oldChestItem(diamondTier, diamondChestBlock);
-        BlockItem obsidianChestItem = OldChestCommon.oldChestItem(obsidianTier, obsidianChestBlock);
-        BlockItem netheriteChestItem = OldChestCommon.oldChestItem(netheriteTier, netheriteChestBlock);
+        BlockItem woodChestItem = OldChestCommon.oldChestItem(Utils.WOOD_TIER, woodChestBlock);
+        BlockItem ironChestItem = OldChestCommon.oldChestItem(Utils.IRON_TIER, ironChestBlock);
+        BlockItem goldChestItem = OldChestCommon.oldChestItem(Utils.GOLD_TIER, goldChestBlock);
+        BlockItem diamondChestItem = OldChestCommon.oldChestItem(Utils.DIAMOND_TIER, diamondChestBlock);
+        BlockItem obsidianChestItem = OldChestCommon.oldChestItem(Utils.OBSIDIAN_TIER, obsidianChestBlock);
+        BlockItem netheriteChestItem = OldChestCommon.oldChestItem(Utils.NETHERITE_TIER, netheriteChestBlock);
         Set<BlockItem> items = ImmutableSet.copyOf(new BlockItem[]{woodChestItem, ironChestItem, goldChestItem, diamondChestItem, obsidianChestItem, netheriteChestItem});
         itemReg.accept(items);
         // Init block entity type
@@ -113,12 +106,12 @@ public final class OldChestCommon {
         BaseApi.getInstance().defineBlockUpgradeBehaviour(isUpgradableChestBlock, OldChestCommon::tryUpgradeBlock);
     }
 
-    private static BlockItem oldChestItem(OpenableTier tier, OldChestBlock block) {
-        return new BlockItem(block, tier.itemProperties().apply(new Item.Properties().tab(Utils.TAB)));
+    private static BlockItem oldChestItem(Tier tier, OldChestBlock block) {
+        return new BlockItem(block, tier.getItemProperties().apply(new Item.Properties().tab(Utils.TAB)));
     }
 
-    private static OldChestBlock oldChestBlock(ResourceLocation blockId, ResourceLocation stat, OpenableTier tier, BlockBehaviour.Properties properties) {
-        OldChestBlock block = new OldChestBlock(tier.blockProperties().apply(properties), blockId, tier.key(), stat, tier.slots());
+    private static OldChestBlock oldChestBlock(ResourceLocation blockId, ResourceLocation stat, Tier tier, BlockBehaviour.Properties properties) {
+        OldChestBlock block = new OldChestBlock(tier.getBlockProperties().apply(properties), blockId, tier.getId(), stat, tier.getSlotCount());
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
     }
@@ -145,7 +138,7 @@ public final class OldChestCommon {
     }
 
     private static void upgradeSingleBlock(Level level, BlockState state, BlockPos pos, ResourceLocation from, ResourceLocation to) {
-        if (((OldChestBlock) state.getBlock()).blockTier() == from) {
+        if (((OldChestBlock) state.getBlock()).getBlockTier() == from) {
             var toBlock = (AbstractOpenableStorageBlock) BaseApi.getInstance().getTieredBlock(OldChestCommon.BLOCK_TYPE, to);
             var inventory = NonNullList.withSize(toBlock.getSlotCount(), ItemStack.EMPTY);
             //noinspection ConstantConditions

@@ -10,11 +10,11 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 @Internal
 @Experimental
 @SuppressWarnings("ClassCanBeRecord")
-public final class CompoundWorldlyContainer implements WorldlyContainer {
+public final class CombinedContainer implements WorldlyContainer {
     private final WorldlyContainer first;
     private final WorldlyContainer second;
 
-    public CompoundWorldlyContainer(WorldlyContainer first, WorldlyContainer second) {
+    public CombinedContainer(WorldlyContainer first, WorldlyContainer second) {
         this.first = first;
         this.second = second;
     }
@@ -90,8 +90,8 @@ public final class CompoundWorldlyContainer implements WorldlyContainer {
         second.stopOpen(player);
     }
 
-    public boolean consistsPartlyOf(WorldlyContainer container) {
-        return first == container || second == container;
+    public boolean consistsPartlyOf(WorldlyContainer part) {
+        return first == part || second == part;
     }
 
     public int getMaxStackSize() {

@@ -4,12 +4,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractButton;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractContainerMenu_;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractMenu;
 import ninjaphenix.expandedstorage.base.inventory.screen.ScreenMeta;
 import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
@@ -18,7 +17,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 import java.util.function.Function;
 
-public abstract class AbstractScreen<T extends AbstractContainerMenu_<R>, R extends ScreenMeta> extends AbstractContainerScreen<T> {
+public abstract class AbstractScreen<T extends AbstractMenu<R>, R extends ScreenMeta> extends AbstractContainerScreen<T> {
     protected final R screenMeta;
     private final Integer inventoryLabelLeft;
 
@@ -51,7 +50,7 @@ public abstract class AbstractScreen<T extends AbstractContainerMenu_<R>, R exte
     @Override
     @SuppressWarnings("ConstantConditions")
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (PlatformUtils.getInstance().isKeyMappingPressed(keyCode, scanCode, modifiers)) {
+        if (PlatformUtils.getInstance().isConfigKeyPressed(keyCode, scanCode, modifiers)) {
             NetworkWrapper.getInstance().c2s_openTypeSelectScreen();
             return true;
         } else if (keyCode == GLFW.GLFW_KEY_ESCAPE || minecraft.options.keyInventory.matches(keyCode, scanCode)) {

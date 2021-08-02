@@ -168,7 +168,7 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
         stack.mulPose(Vector3f.YP.rotationDegrees(-state.getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot()));
         stack.translate(-0.5D, -0.5D, -0.5D);
         DoubleBlockCombiner.NeighborCombineResult<? extends ChestBlockEntity> compoundPropertyAccessor = entity.hasLevel() ?
-                block.combine(state, entity.getLevel(), entity.getBlockPos(), true) :
+                block.createCombinedPropertyGetter(state, entity.getLevel(), entity.getBlockPos(), true) :
                 DoubleBlockCombiner.Combiner::acceptNone;
         VertexConsumer consumer = new Material(Sheets.CHEST_SHEET, ChestApi.INSTANCE.getChestTexture(blockId, chestType)).buffer(source, RenderType::entityCutout);
         float lidOpenness = compoundPropertyAccessor.apply(ChestBlockEntityRenderer.LID_OPENNESS_FUNCTION_GETTER).get(delta);

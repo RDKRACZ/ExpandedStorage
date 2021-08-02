@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import net.minecraftforge.fmllegacy.network.NetworkHooks;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractContainerMenu_;
+import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractMenu;
 import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 
 import java.util.function.Supplier;
@@ -28,16 +28,16 @@ public final class RequestOpenSelectScreenMessage {
         NetworkEvent.Context context = wrappedContext.get();
         ServerPlayer player = context.getSender();
         if (player != null) {
-            if (player.containerMenu instanceof AbstractContainerMenu_<?> menu) {
+            if (player.containerMenu instanceof AbstractMenu<?> menu) {
                 context.enqueueWork(() -> NetworkWrapper.getInstance().s2c_openSelectScreen(player, (type) -> NetworkHooks.openGui(player, new MenuProvider() {
                     @Override
                     public Component getDisplayName() {
-                        return menu.getDisplayName();
+                        return menu.getTitle();
                     }
 
                     @Override
                     public AbstractContainerMenu createMenu(int windowId, Inventory inventory, Player player1) {
-                        return NetworkWrapper.getInstance().createMenu(windowId, menu.pos, menu.getContainer(), inventory, menu.getDisplayName());
+                        return NetworkWrapper.getInstance().createMenu(windowId, menu.pos, menu.getContainer(), inventory, menu.getTitle());
                     }
                 }, buffer -> buffer.writeBlockPos(menu.pos).writeInt(menu.getContainer().getContainerSize()))));
             } else {

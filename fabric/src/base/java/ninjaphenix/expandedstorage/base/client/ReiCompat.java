@@ -8,12 +8,14 @@ import net.minecraft.client.renderer.Rect2i;
 import ninjaphenix.expandedstorage.base.client.menu.AbstractScreen;
 
 public class ReiCompat implements REIClientPlugin {
-    private static Rectangle toReiRect(Rect2i rect) {
+    private static Rectangle asReiRectangle(Rect2i rect) {
         return new Rectangle(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
     }
 
     @Override
     public void registerExclusionZones(ExclusionZones zones) {
-        zones.register(AbstractScreen.class, (AbstractScreen<?, ?> screen) -> CollectionUtils.map(screen.getExclusionZones(), ReiCompat::toReiRect));
+        zones.register(AbstractScreen.class, (AbstractScreen<?, ?> screen) -> {
+            return CollectionUtils.map(screen.getExclusionZones(), ReiCompat::asReiRectangle);
+        });
     }
 }

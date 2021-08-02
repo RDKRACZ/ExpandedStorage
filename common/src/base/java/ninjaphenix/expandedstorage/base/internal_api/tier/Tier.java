@@ -10,51 +10,36 @@ import java.util.function.UnaryOperator;
 
 @Internal
 @Experimental
+@SuppressWarnings("ClassCanBeRecord")
 public class Tier {
-    private final ResourceLocation key;
+    private final ResourceLocation id;
     private final UnaryOperator<Item.Properties> itemProperties;
     private final UnaryOperator<BlockBehaviour.Properties> blockProperties;
-    private final int miningLevel;
+    private final int slots;
 
-    protected Tier(ResourceLocation key, int miningLevel, UnaryOperator<BlockBehaviour.Properties> blockProperties,
-                   UnaryOperator<Item.Properties> itemProperties) {
-        this.key = key;
+    public Tier(ResourceLocation id, int slots, UnaryOperator<BlockBehaviour.Properties> blockProperties,
+                UnaryOperator<Item.Properties> itemProperties) {
+        this.id = id;
+        this.slots = slots;
         this.itemProperties = itemProperties;
         this.blockProperties = blockProperties;
-        this.miningLevel = miningLevel;
     }
 
-    public static Tier of(ResourceLocation key, int miningLevel) {
-        return new Tier(key, miningLevel, UnaryOperator.identity(), UnaryOperator.identity());
+    public final ResourceLocation getId() {
+        return id;
     }
 
-    public static Tier of(ResourceLocation key, int miningLevel, UnaryOperator<BlockBehaviour.Properties> blockProperties) {
-        return new Tier(key, miningLevel, blockProperties, UnaryOperator.identity());
-    }
-
-    public static Tier of(ResourceLocation key, int miningLevel, UnaryOperator<BlockBehaviour.Properties> blockProperties,
-                          UnaryOperator<Item.Properties> itemProperties) {
-        return new Tier(key, miningLevel, blockProperties, itemProperties);
-    }
-
-    public final ResourceLocation key() {
-        return key;
-    }
-
-    public final UnaryOperator<Item.Properties> itemProperties() {
+    public final UnaryOperator<Item.Properties> getItemProperties() {
         return itemProperties;
     }
 
-    public UnaryOperator<BlockBehaviour.Properties> blockProperties() {
+    public UnaryOperator<BlockBehaviour.Properties> getBlockProperties() {
         return blockProperties;
     }
 
-    public final int miningLevel() {
-        return miningLevel;
-    }
-
-    public final boolean requiresTool() {
-        return miningLevel > 0;
+    public final int getSlotCount() {
+        return slots;
     }
 }
+
 

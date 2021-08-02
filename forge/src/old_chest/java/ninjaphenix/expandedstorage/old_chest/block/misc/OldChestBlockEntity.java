@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class OldChestBlockEntity extends AbstractOpenableStorageBlockEntity {
     public OldChestBlockEntity(BlockEntityType<OldChestBlockEntity> blockEntityType, BlockPos pos, BlockState state) {
-        super(blockEntityType, pos, state, ((OldChestBlock) state.getBlock()).blockId());
+        super(blockEntityType, pos, state, ((OldChestBlock) state.getBlock()).getBlockId());
     }
 
     @Override

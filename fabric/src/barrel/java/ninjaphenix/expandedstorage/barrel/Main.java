@@ -15,23 +15,23 @@ import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
 import java.util.Set;
 
 public final class Main implements ModuleInitializer {
-    private static void registerBlockEntityType(BlockEntityType<BarrelBlockEntity> blockEntityType) {
+    private static void registerBET(BlockEntityType<BarrelBlockEntity> blockEntityType) {
         Registry.register(Registry.BLOCK_ENTITY_TYPE, BarrelCommon.BLOCK_TYPE, blockEntityType);
     }
 
     private static void registerBlocks(Set<BarrelBlock> blocks) {
-        blocks.forEach(block -> Registry.register(Registry.BLOCK, block.blockId(), block));
+        blocks.forEach(block -> Registry.register(Registry.BLOCK, block.getBlockId(), block));
         if (PlatformUtils.getInstance().isClient()) {
             blocks.forEach(block -> BlockRenderLayerMap.INSTANCE.putBlock(block, RenderType.cutoutMipped()));
         }
     }
 
     private static void registerItems(Set<BlockItem> items) {
-        items.forEach(item -> Registry.register(Registry.ITEM, ((BarrelBlock) item.getBlock()).blockId(), item));
+        items.forEach(item -> Registry.register(Registry.ITEM, ((BarrelBlock) item.getBlock()).getBlockId(), item));
     }
 
     @Override
     public void initialize() {
-        BarrelCommon.registerContent(Main::registerBlocks, Main::registerItems, Main::registerBlockEntityType, TagRegistry.block(new ResourceLocation("c", "wooden_barrels")));
+        BarrelCommon.registerContent(Main::registerBlocks, Main::registerItems, Main::registerBET, TagRegistry.block(new ResourceLocation("c", "wooden_barrels")));
     }
 }

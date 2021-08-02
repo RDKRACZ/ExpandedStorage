@@ -56,7 +56,7 @@ public interface BaseApi {
     @Internal
     @Deprecated
     @ScheduledForRemoval
-    void registerContainerButtonSettings(ResourceLocation containerType, ResourceLocation texture, Component text);
+    void registerContainerButtonSettings(ResourceLocation screenType, ResourceLocation texture, Component text);
 
     /**
      * @deprecated Will be removed with no replacement.

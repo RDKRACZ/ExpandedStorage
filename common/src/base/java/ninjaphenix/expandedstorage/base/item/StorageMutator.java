@@ -117,7 +117,7 @@ public class StorageMutator extends Item {
                             BlockPos offset = otherPos.subtract(pos);
                             Direction direction = Direction.fromNormal(offset.getX(), offset.getY(), offset.getZ());
                             if (direction != null) {
-                                CursedChestType type = ChestBlock.getChestType(state.getValue(HORIZONTAL_FACING), direction);
+                                CursedChestType type = ChestBlock.getChestType(state.getValue(AbstractChestBlock.Y_ROTATION), state.getValue(AbstractChestBlock.FACE_ROTATION), state.getValue(AbstractChestBlock.PERP_ROTATION), direction);
                                 Predicate<BlockEntity> isRandomizable = b -> b instanceof RandomizableContainerBlockEntity;
                                 this.convertBlock(level, state, pos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type, isRandomizable);
                                 this.convertBlock(level, otherState, otherPos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type.getOpposite(), isRandomizable);
@@ -212,7 +212,7 @@ public class StorageMutator extends Item {
                             BlockPos offset = otherPos.subtract(pos);
                             Direction direction = Direction.fromNormal(offset.getX(), offset.getY(), offset.getZ());
                             if (direction != null) {
-                                CursedChestType chestType = AbstractChestBlock.getChestType(state.getValue(HORIZONTAL_FACING), direction);
+                                CursedChestType chestType = AbstractChestBlock.getChestType(state.getValue(AbstractChestBlock.Y_ROTATION), state.getValue(AbstractChestBlock.FACE_ROTATION), state.getValue(AbstractChestBlock.PERP_ROTATION), direction);
                                 Predicate<BlockEntity> isStorage = b -> b instanceof AbstractOpenableStorageBlockEntity;
                                 this.convertBlock(level, state, pos, block, chestBlock.getSlotCount(), chestType, isStorage);
                                 this.convertBlock(level, otherState, otherPos, block, chestBlock.getSlotCount(), chestType.getOpposite(), isStorage);

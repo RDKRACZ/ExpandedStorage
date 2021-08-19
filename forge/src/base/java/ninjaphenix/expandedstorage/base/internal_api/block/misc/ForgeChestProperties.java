@@ -11,9 +11,9 @@ import ninjaphenix.expandedstorage.base.internal_api.inventory.CombinedIItemHand
 import java.util.Optional;
 
 public final class ForgeChestProperties {
-    public static final DoubleBlockCombiner.Combiner<AbstractOpenableStorageBlockEntity, Optional<IItemHandlerModifiable>> INVENTORY_GETTER = new DoubleBlockCombiner.Combiner<>() {
+    public static final Property<AbstractOpenableStorageBlockEntity, Optional<IItemHandlerModifiable>> INVENTORY_GETTER = new Property<>() {
         @Override
-        public Optional<IItemHandlerModifiable> acceptDouble(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
+        public Optional<IItemHandlerModifiable> get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
             return Optional.of(new CombinedIItemHandlerModifiable(
                     AbstractOpenableStorageBlockEntity.createGenericItemHandler(first),
                     AbstractOpenableStorageBlockEntity.createGenericItemHandler(second)
@@ -21,19 +21,14 @@ public final class ForgeChestProperties {
         }
 
         @Override
-        public Optional<IItemHandlerModifiable> acceptSingle(AbstractOpenableStorageBlockEntity single) {
+        public Optional<IItemHandlerModifiable> get(AbstractOpenableStorageBlockEntity single) {
             return Optional.of(AbstractOpenableStorageBlockEntity.createGenericItemHandler(single));
-        }
-
-        @Override
-        public Optional<IItemHandlerModifiable> acceptNone() {
-            return Optional.empty();
         }
     };
 
     public static Optional<IItemHandlerModifiable> createItemHandler(Level level, BlockState state, BlockPos pos) {
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
-            return block.createCombinedPropertyGetter(state, level, pos, false).apply(ForgeChestProperties.INVENTORY_GETTER);
+            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, level, pos, false).get(ForgeChestProperties.INVENTORY_GETTER);
         }
         return Optional.empty();
     }

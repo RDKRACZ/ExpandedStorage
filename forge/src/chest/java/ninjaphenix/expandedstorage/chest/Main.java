@@ -83,12 +83,12 @@ public final class Main {
 
             bus.addListener((EntityRenderersEvent.RegisterLayerDefinitions event) -> {
                 event.registerLayerDefinition(ChestBlockEntityRenderer.SINGLE_LAYER, ChestBlockEntityRenderer::createSingleBodyLayer);
-                event.registerLayerDefinition(ChestBlockEntityRenderer.VANILLA_LEFT_LAYER, ChestBlockEntityRenderer::createVanillaLeftBodyLayer);
-                event.registerLayerDefinition(ChestBlockEntityRenderer.VANILLA_RIGHT_LAYER, ChestBlockEntityRenderer::createVanillaRightBodyLayer);
-                event.registerLayerDefinition(ChestBlockEntityRenderer.TALL_TOP_LAYER, ChestBlockEntityRenderer::createTallTopBodyLayer);
-                event.registerLayerDefinition(ChestBlockEntityRenderer.TALL_BOTTOM_LAYER, ChestBlockEntityRenderer::createTallBottomBodyLayer);
-                event.registerLayerDefinition(ChestBlockEntityRenderer.LONG_FRONT_LAYER, ChestBlockEntityRenderer::createLongFrontBodyLayer);
-                event.registerLayerDefinition(ChestBlockEntityRenderer.LONG_BACK_LAYER, ChestBlockEntityRenderer::createLongBackBodyLayer);
+                event.registerLayerDefinition(ChestBlockEntityRenderer.LEFT_LAYER, ChestBlockEntityRenderer::createLeftBodyLayer);
+                event.registerLayerDefinition(ChestBlockEntityRenderer.RIGHT_LAYER, ChestBlockEntityRenderer::createRightBodyLayer);
+                event.registerLayerDefinition(ChestBlockEntityRenderer.TOP_LAYER, ChestBlockEntityRenderer::createTopBodyLayer);
+                event.registerLayerDefinition(ChestBlockEntityRenderer.BOTTOM_LAYER, ChestBlockEntityRenderer::createBottomBodyLayer);
+                event.registerLayerDefinition(ChestBlockEntityRenderer.FRONT_LAYER, ChestBlockEntityRenderer::createFrontBodyLayer);
+                event.registerLayerDefinition(ChestBlockEntityRenderer.BACK_LAYER, ChestBlockEntityRenderer::createBackBodyLayer);
             });
         }
     }

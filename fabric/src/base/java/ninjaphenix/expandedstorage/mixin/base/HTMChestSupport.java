@@ -17,13 +17,13 @@ import java.util.Optional;
 public abstract class HTMChestSupport implements LockableChestBlock {
     @Override
     public HTMContainerLock getLockAt(BlockState state, Level level, BlockPos pos) {
-        return self().createCombinedPropertyGetter(state, level, pos, true).apply(FabricChestProperties.LOCK_GETTER);
+        return AbstractChestBlock.createPropertyRetriever(self(), state, level, pos, true).get(FabricChestProperties.LOCK_PROPERTY);
     }
 
     // Seems to be used to synchronize lock between both parts of chest.
     @Override
     public Optional<BlockEntity> getUnlockedPart(BlockState state, Level level, BlockPos pos) {
-        return self().createCombinedPropertyGetter(state, level, pos, true).apply(FabricChestProperties.UNLOCKED_BE_GETTER);
+        return AbstractChestBlock.createPropertyRetriever(self(), state, level, pos, true).get(FabricChestProperties.UNLOCKED_BE_PROPERTY);
     }
 
     private AbstractChestBlock<AbstractOpenableStorageBlockEntity> self() {

@@ -65,12 +65,12 @@ public final class Main implements ModuleInitializer {
                         Minecraft.getInstance().getBlockEntityRenderDispatcher().renderItem(renderEntity, stack, source, light, overlay));
             });
             ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.SINGLE_LAYER);
-            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.VANILLA_LEFT_LAYER);
-            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.VANILLA_RIGHT_LAYER);
-            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.TALL_TOP_LAYER);
-            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.TALL_BOTTOM_LAYER);
-            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.LONG_FRONT_LAYER);
-            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.LONG_BACK_LAYER);
+            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.LEFT_LAYER);
+            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.RIGHT_LAYER);
+            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.TOP_LAYER);
+            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.BOTTOM_LAYER);
+            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.FRONT_LAYER);
+            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.BACK_LAYER);
         }
     }
 }

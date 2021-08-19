@@ -18,9 +18,9 @@ import java.util.Optional;
 public final class FabricChestProperties {
     public static final String LOCK_TAG_KEY = "HTM_Lock";
 
-    public static final DoubleBlockCombiner.Combiner<AbstractOpenableStorageBlockEntity, HTMContainerLock> LOCK_GETTER = new DoubleBlockCombiner.Combiner<>() {
+    public static final Property<AbstractOpenableStorageBlockEntity, HTMContainerLock> LOCK_PROPERTY = new Property<>() {
         @Override
-        public HTMContainerLock acceptDouble(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
+        public HTMContainerLock get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
             LockableObject firstLockable = (LockableObject) first;
             LockableObject secondLockable = (LockableObject) second;
             if (firstLockable.getLock().isLocked() || !secondLockable.getLock().isLocked()) {
@@ -30,19 +30,14 @@ public final class FabricChestProperties {
         }
 
         @Override
-        public HTMContainerLock acceptSingle(AbstractOpenableStorageBlockEntity single) {
+        public HTMContainerLock get(AbstractOpenableStorageBlockEntity single) {
             return ((LockableObject) single).getLock();
-        }
-
-        @Override
-        public HTMContainerLock acceptNone() {
-            return null;
         }
     };
 
-    public static final DoubleBlockCombiner.Combiner<AbstractOpenableStorageBlockEntity, Optional<BlockEntity>> UNLOCKED_BE_GETTER = new DoubleBlockCombiner.Combiner<>() {
+    public static final Property<AbstractOpenableStorageBlockEntity, Optional<BlockEntity>> UNLOCKED_BE_PROPERTY = new Property<>() {
         @Override
-        public Optional<BlockEntity> acceptDouble(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
+        public Optional<BlockEntity> get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
             LockableObject firstLockable = (LockableObject) first;
             if (!firstLockable.getLock().isLocked()) {
                 return Optional.of(first);
@@ -55,38 +50,28 @@ public final class FabricChestProperties {
         }
 
         @Override
-        public Optional<BlockEntity> acceptSingle(AbstractOpenableStorageBlockEntity single) {
-            return Optional.empty();
-        }
-
-        @Override
-        public Optional<BlockEntity> acceptNone() {
+        public Optional<BlockEntity> get(AbstractOpenableStorageBlockEntity single) {
             return Optional.empty();
         }
     };
 
-    public static final DoubleBlockCombiner.Combiner<AbstractOpenableStorageBlockEntity, Optional<Storage<ItemVariant>>> INVENTORY_GETTER = new DoubleBlockCombiner.Combiner<>() {
+    public static final Property<AbstractOpenableStorageBlockEntity, Optional<Storage<ItemVariant>>> INVENTORY_GETTER = new Property<>() {
         @Override
-        public Optional<Storage<ItemVariant>> acceptDouble(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
+        public Optional<Storage<ItemVariant>> get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
             return Optional.of(new CombinedStorage<>(List.of(AbstractOpenableStorageBlockEntity.createGenericItemStorage(first),
                     AbstractOpenableStorageBlockEntity.createGenericItemStorage(second))));
         }
 
         @Override
-        public Optional<Storage<ItemVariant>> acceptSingle(AbstractOpenableStorageBlockEntity single) {
+        public Optional<Storage<ItemVariant>> get(AbstractOpenableStorageBlockEntity single) {
             return Optional.of(AbstractOpenableStorageBlockEntity.createGenericItemStorage(single));
-        }
-
-        @Override
-        public Optional<Storage<ItemVariant>> acceptNone() {
-            return Optional.empty();
         }
     };
 
 
     public static Optional<Storage<ItemVariant>> createItemStorage(Level level, BlockState state, BlockPos pos) {
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
-            return block.createCombinedPropertyGetter(state, level, pos, false).apply(FabricChestProperties.INVENTORY_GETTER);
+            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, level, pos, true).get(FabricChestProperties.INVENTORY_GETTER);
         }
         return Optional.empty();
     }

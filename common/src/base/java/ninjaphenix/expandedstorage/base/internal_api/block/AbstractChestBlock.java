@@ -14,18 +14,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoubleBlockCombiner;
-import net.minecraft.world.level.block.DoubleBlockCombiner.NeighborCombineResult;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractStorageBlockEntity;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
+import ninjaphenix.expandedstorage.base.internal_api.block.misc.FaceRotation;
+import ninjaphenix.expandedstorage.base.internal_api.block.misc.Property;
+import ninjaphenix.expandedstorage.base.internal_api.block.misc.PropertyRetriever;
 import ninjaphenix.expandedstorage.base.internal_api.inventory.SyncedMenuFactory;
 import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 import org.jetbrains.annotations.ApiStatus.Experimental;
@@ -33,18 +35,18 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-import java.util.function.BiPredicate;
-
 @Internal
 @Experimental
 public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockEntity> extends AbstractOpenableStorageBlock {
     public static final EnumProperty<CursedChestType> CURSED_CHEST_TYPE = EnumProperty.create("type", CursedChestType.class);
+    public static final EnumProperty<FaceRotation> FACE_ROTATION = EnumProperty.create("face_rotation", FaceRotation.class);
+    public static final EnumProperty<FaceRotation> PERP_ROTATION = EnumProperty.create("perp_rotation", FaceRotation.class);
+    public static final EnumProperty<FaceRotation> Y_ROTATION = DirectionProperty.create("facing", FaceRotation.class);
 
-    private final DoubleBlockCombiner.Combiner<T, Optional<SyncedMenuFactory>> menuGetter = new DoubleBlockCombiner.Combiner<>() {
+    private final Property<T, SyncedMenuFactory> menuProperty = new Property<>() {
         @Override
-        public Optional<SyncedMenuFactory> acceptDouble(T first, T second) {
-            return Optional.of(new SyncedMenuFactory() {
+        public SyncedMenuFactory get(T first, T second) {
+            return new SyncedMenuFactory() {
                 @Override
                 public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
                     buffer.writeBlockPos(first.getBlockPos()).writeInt(first.getSlotCount() + second.getSlotCount());
@@ -73,12 +75,12 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                     }
                     return null;
                 }
-            });
+            };
         }
 
         @Override
-        public Optional<SyncedMenuFactory> acceptSingle(T single) {
-            return Optional.of(new SyncedMenuFactory() {
+        public SyncedMenuFactory get(T single) {
+            return new SyncedMenuFactory() {
                 @Override
                 public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
                     buffer.writeBlockPos(single.getBlockPos()).writeInt(single.getSlotCount());
@@ -106,40 +108,36 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                     }
                     return null;
                 }
-            });
-        }
-
-        @Override
-        public Optional<SyncedMenuFactory> acceptNone() {
-            return Optional.empty();
+            };
         }
     };
 
-    public AbstractChestBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier,
-                              ResourceLocation openingStat, int slots) {
+    public AbstractChestBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier, ResourceLocation openingStat, int slots) {
         super(properties, blockId, blockTier, openingStat, slots);
-        this.registerDefaultState(this.getStateDefinition().any().setValue(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE)
-                                      .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
+        this.registerDefaultState(this.getStateDefinition().any()
+                                      .setValue(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE)
+                                      .setValue(AbstractChestBlock.PERP_ROTATION, FaceRotation.NORTH)
+                                      .setValue(AbstractChestBlock.FACE_ROTATION, FaceRotation.NORTH)
+                                      .setValue(AbstractChestBlock.Y_ROTATION, FaceRotation.NORTH));
     }
 
     public static Direction getDirectionToAttached(BlockState state) {
         CursedChestType value = state.getValue(AbstractChestBlock.CURSED_CHEST_TYPE);
-        if (value == CursedChestType.TOP) {
-            return Direction.DOWN;
-        } else if (value == CursedChestType.BACK) {
-            return state.getValue(BlockStateProperties.HORIZONTAL_FACING);
-        } else if (value == CursedChestType.RIGHT) {
-            return state.getValue(BlockStateProperties.HORIZONTAL_FACING).getClockWise();
-        } else if (value == CursedChestType.BOTTOM) {
-            return Direction.UP;
-        } else if (value == CursedChestType.FRONT) {
-            return state.getValue(BlockStateProperties.HORIZONTAL_FACING).getOpposite();
-        } else if (value == CursedChestType.LEFT) {
-            return state.getValue(BlockStateProperties.HORIZONTAL_FACING).getCounterClockWise();
-        } else if (value == CursedChestType.SINGLE) {
+        if (value == CursedChestType.SINGLE) {
             throw new IllegalArgumentException("BaseChestBlock#getDirectionToAttached received an unexpected state.");
         }
-        throw new IllegalArgumentException("Invalid CursedChestType passed.");
+        FaceRotation face = state.getValue(AbstractChestBlock.FACE_ROTATION);
+        FaceRotation y = state.getValue(AbstractChestBlock.Y_ROTATION);
+        FaceRotation perpendicular = state.getValue(AbstractChestBlock.PERP_ROTATION);
+        return switch (value) {
+            case TOP -> FaceRotation.getRelativeDirection(Direction.UP, face, y, perpendicular);
+            case BOTTOM -> FaceRotation.getRelativeDirection(Direction.DOWN, face, y, perpendicular);
+            case FRONT -> FaceRotation.getRelativeDirection(Direction.SOUTH, face, y, perpendicular);
+            case BACK -> FaceRotation.getRelativeDirection(Direction.NORTH, face, y, perpendicular);
+            case LEFT -> FaceRotation.getRelativeDirection(Direction.EAST, face, y, perpendicular);
+            case RIGHT -> FaceRotation.getRelativeDirection(Direction.WEST, face, y, perpendicular);
+            default -> throw new IllegalStateException("Unreachable code.");
+        };
     }
 
     public static DoubleBlockCombiner.BlockType getBlockType(BlockState state) {
@@ -154,19 +152,21 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         throw new IllegalArgumentException("Invalid CursedChestType passed.");
     }
 
-    public static CursedChestType getChestType(Direction facing, Direction offset) {
-        if (facing.getClockWise() == offset) {
-            return CursedChestType.RIGHT;
-        } else if (facing.getCounterClockWise() == offset) {
-            return CursedChestType.LEFT;
-        } else if (facing == offset) {
-            return CursedChestType.BACK;
-        } else if (facing == offset.getOpposite()) {
-            return CursedChestType.FRONT;
-        } else if (offset == Direction.DOWN) {
+    public static CursedChestType getChestType(FaceRotation yRotation, FaceRotation faceRotation, FaceRotation perpRotation, Direction offset) {
+        var definitiveFacing = yRotation.asDirection(Direction.Axis.Y);
+        var definitiveOffset = FaceRotation.getDefinitiveDirection(offset, faceRotation, yRotation, perpRotation);
+        if (definitiveOffset == Direction.DOWN) {
             return CursedChestType.TOP;
-        } else if (offset == Direction.UP) {
+        } else if (definitiveOffset == Direction.UP) {
             return CursedChestType.BOTTOM;
+        } else if (definitiveFacing.getClockWise() == definitiveOffset) {
+            return CursedChestType.RIGHT;
+        } else if (definitiveFacing.getCounterClockWise() == definitiveOffset) {
+            return CursedChestType.LEFT;
+        } else if (definitiveFacing == definitiveOffset) {
+            return CursedChestType.BACK;
+        } else if (definitiveFacing.getOpposite() == definitiveOffset) {
+            return CursedChestType.FRONT;
         }
         return CursedChestType.SINGLE;
     }
@@ -174,8 +174,10 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     @Override
     protected final void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(AbstractChestBlock.CURSED_CHEST_TYPE);
-        builder.add(BlockStateProperties.HORIZONTAL_FACING);
-        appendAdditionalStateDefinitions(builder);
+        builder.add(AbstractChestBlock.PERP_ROTATION);
+        builder.add(AbstractChestBlock.FACE_ROTATION);
+        builder.add(AbstractChestBlock.Y_ROTATION);
+        this.appendAdditionalStateDefinitions(builder);
     }
 
     @NotNull
@@ -191,7 +193,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
             if (direction_2.getAxis().isVertical()) {
                 state = level.getBlockState(pos.relative(direction_2.getOpposite()));
                 if (state.getBlock() == this && state.getValue(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
-                    Direction direction_3 = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
+                    Direction direction_3 = state.getValue(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y);
                     if (direction_3.getAxis() != direction_2.getAxis() && direction_3 == direction_1) {
                         chestType = direction_2 == Direction.UP ? CursedChestType.TOP : CursedChestType.BOTTOM;
                     }
@@ -200,14 +202,14 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                 Direction offsetDir = direction_2.getOpposite();
                 BlockState clickedBlock = level.getBlockState(pos.relative(offsetDir));
                 if (clickedBlock.getBlock() == this && clickedBlock.getValue(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
-                    if (clickedBlock.getValue(BlockStateProperties.HORIZONTAL_FACING) == direction_2 && clickedBlock.getValue(BlockStateProperties.HORIZONTAL_FACING) == direction_1) {
+                    if (clickedBlock.getValue(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y) == direction_2 && clickedBlock.getValue(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y) == direction_1) {
                         chestType = CursedChestType.FRONT;
                     } else {
                         state = level.getBlockState(pos.relative(direction_2.getOpposite()));
-                        if (state.getValue(BlockStateProperties.HORIZONTAL_FACING).get2DDataValue() < 2) {
+                        if (state.getValue(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y).get2DDataValue() < 2) {
                             offsetDir = offsetDir.getOpposite();
                         }
-                        if (direction_1 == state.getValue(BlockStateProperties.HORIZONTAL_FACING)) {
+                        if (direction_1 == state.getValue(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y)) {
                             chestType = (offsetDir == Direction.WEST || offsetDir == Direction.NORTH) ? CursedChestType.LEFT : CursedChestType.RIGHT;
                         }
                     }
@@ -216,34 +218,34 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         } else {
             for (Direction dir : Direction.values()) {
                 BlockState state = level.getBlockState(pos.relative(dir));
-                if (state.getBlock() != this || state.getValue(AbstractChestBlock.CURSED_CHEST_TYPE) != CursedChestType.SINGLE || state.getValue(BlockStateProperties.HORIZONTAL_FACING) != direction_1) {
+                if (state.getBlock() != this || state.getValue(AbstractChestBlock.CURSED_CHEST_TYPE) != CursedChestType.SINGLE || state.getValue(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y) != direction_1) {
                     continue;
                 }
-                CursedChestType type = getChestType(direction_1, dir);
+                CursedChestType type = AbstractChestBlock.getChestType(FaceRotation.of(direction_1), state.getValue(AbstractChestBlock.FACE_ROTATION), state.getValue(AbstractChestBlock.PERP_ROTATION), dir);
                 if (type != CursedChestType.SINGLE) {
                     chestType = type;
                     break;
                 }
             }
         }
-        return this.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, direction_1).setValue(AbstractChestBlock.CURSED_CHEST_TYPE, chestType);
+        return this.defaultBlockState().setValue(AbstractChestBlock.Y_ROTATION, FaceRotation.of(direction_1)).setValue(AbstractChestBlock.CURSED_CHEST_TYPE, chestType);
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public BlockState updateShape(BlockState state, Direction offset, BlockState offsetState, LevelAccessor level,
                                   BlockPos pos, BlockPos offsetPos) {
-        DoubleBlockCombiner.BlockType mergeType = getBlockType(state);
+        DoubleBlockCombiner.BlockType mergeType = AbstractChestBlock.getBlockType(state);
         if (mergeType == DoubleBlockCombiner.BlockType.SINGLE) {
-            Direction facing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
+            Direction facing = state.getValue(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y);
             if (!offsetState.hasProperty(AbstractChestBlock.CURSED_CHEST_TYPE)) {
                 return state.setValue(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE);
             }
-            CursedChestType newType = getChestType(facing, offset);
-            if (offsetState.getValue(AbstractChestBlock.CURSED_CHEST_TYPE) == newType.getOpposite() && facing == offsetState.getValue(BlockStateProperties.HORIZONTAL_FACING)) {
+            CursedChestType newType = AbstractChestBlock.getChestType(FaceRotation.of(facing), state.getValue(AbstractChestBlock.FACE_ROTATION), state.getValue(AbstractChestBlock.PERP_ROTATION), offset);
+            if (offsetState.getValue(AbstractChestBlock.CURSED_CHEST_TYPE) == newType.getOpposite() && facing == offsetState.getValue(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y)) {
                 return state.setValue(AbstractChestBlock.CURSED_CHEST_TYPE, newType);
             }
-        } else if (level.getBlockState(pos.relative(getDirectionToAttached(state))).getBlock() != this) {
+        } else if (level.getBlockState(pos.relative(AbstractChestBlock.getDirectionToAttached(state))).getBlock() != this) {
             return state.setValue(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE);
         }
         return super.updateShape(state, offset, offsetState, level, pos, offsetPos);
@@ -256,20 +258,21 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     @Override
     @SuppressWarnings("deprecation")
     public BlockState mirror(BlockState state, Mirror mirror) {
-        return state.rotate(mirror.getRotation(state.getValue(BlockStateProperties.HORIZONTAL_FACING)));
+        return state.rotate(mirror.getRotation(state.getValue(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y)));
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public BlockState rotate(BlockState state, Rotation rotation) {
-        return state.setValue(BlockStateProperties.HORIZONTAL_FACING, rotation.rotate(state.getValue(BlockStateProperties.HORIZONTAL_FACING)));
+        return state.setValue(AbstractChestBlock.Y_ROTATION, state.getValue(AbstractChestBlock.Y_ROTATION).rotated(rotation));
     }
 
-    public final NeighborCombineResult<? extends T> createCombinedPropertyGetter(BlockState state, LevelAccessor level, BlockPos pos, boolean alwaysOpen) {
-        BiPredicate<LevelAccessor, BlockPos> isChestBlocked = alwaysOpen ? (_level, _pos) -> false : this::isAccessBlocked;
-        return DoubleBlockCombiner.combineWithNeigbour(this.getBlockEntityType(), AbstractChestBlock::getBlockType,
-                AbstractChestBlock::getDirectionToAttached, BlockStateProperties.HORIZONTAL_FACING, state, level, pos,
-                isChestBlocked);
+    public static <A extends AbstractOpenableStorageBlockEntity> PropertyRetriever<A> createPropertyRetriever(AbstractChestBlock<A> block, BlockState state, LevelAccessor level, BlockPos pos, boolean alwaysOpen) {
+        //BiPredicate<LevelAccessor, BlockPos> isChestBlocked = alwaysOpen ? (_level, _pos) -> false : block::isAccessBlocked;
+        //return DoubleBlockCombiner.combineWithNeigbour(block.getBlockEntityType(), AbstractChestBlock::getBlockType,
+        //        AbstractChestBlock::getDirectionToAttached, AbstractChestBlock.Y_ROTATION, state, level, pos, isChestBlocked);
+        // todo: reimplement
+        return PropertyRetriever.create();
     }
 
     protected abstract BlockEntityType<T> getBlockEntityType();
@@ -281,6 +284,6 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     @Nullable
     @Override
     protected SyncedMenuFactory createMenuFactory(BlockState state, LevelAccessor level, BlockPos pos) {
-        return this.createCombinedPropertyGetter(state, level, pos, false).apply(menuGetter).orElse(null);
+        return AbstractChestBlock.createPropertyRetriever(this, state, level, pos, false).get(menuProperty);
     }
 }

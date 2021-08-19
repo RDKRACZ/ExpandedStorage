@@ -23,11 +23,11 @@ public abstract class ModelLayersMixin {
     private static void addChestModelLayers(CallbackInfoReturnable<Map<ModelLayerLocation, ModelPart>> cir,
                                             ImmutableMap.Builder<ModelLayerLocation, LayerDefinition> builder) {
         builder.put(ChestBlockEntityRenderer.SINGLE_LAYER, ChestBlockEntityRenderer.createSingleBodyLayer());
-        builder.put(ChestBlockEntityRenderer.VANILLA_LEFT_LAYER, ChestBlockEntityRenderer.createVanillaLeftBodyLayer());
-        builder.put(ChestBlockEntityRenderer.VANILLA_RIGHT_LAYER, ChestBlockEntityRenderer.createVanillaRightBodyLayer());
-        builder.put(ChestBlockEntityRenderer.TALL_TOP_LAYER, ChestBlockEntityRenderer.createTallTopBodyLayer());
-        builder.put(ChestBlockEntityRenderer.TALL_BOTTOM_LAYER, ChestBlockEntityRenderer.createTallBottomBodyLayer());
-        builder.put(ChestBlockEntityRenderer.LONG_FRONT_LAYER, ChestBlockEntityRenderer.createLongFrontBodyLayer());
-        builder.put(ChestBlockEntityRenderer.LONG_BACK_LAYER, ChestBlockEntityRenderer.createLongBackBodyLayer());
+        builder.put(ChestBlockEntityRenderer.LEFT_LAYER, ChestBlockEntityRenderer.createLeftBodyLayer());
+        builder.put(ChestBlockEntityRenderer.RIGHT_LAYER, ChestBlockEntityRenderer.createRightBodyLayer());
+        builder.put(ChestBlockEntityRenderer.TOP_LAYER, ChestBlockEntityRenderer.createTopBodyLayer());
+        builder.put(ChestBlockEntityRenderer.BOTTOM_LAYER, ChestBlockEntityRenderer.createBottomBodyLayer());
+        builder.put(ChestBlockEntityRenderer.FRONT_LAYER, ChestBlockEntityRenderer.createFrontBodyLayer());
+        builder.put(ChestBlockEntityRenderer.BACK_LAYER, ChestBlockEntityRenderer.createBackBodyLayer());
     }
 }

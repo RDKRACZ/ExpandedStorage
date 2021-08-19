@@ -3,7 +3,8 @@ import com.gitlab.ninjaphenix.gradle.api.task.ParamLocalObfuscatorTask
 import org.gradle.jvm.tasks.Jar
 
 plugins {
-    id("net.minecraftforge.gradle").version("5.1.+")
+    alias(libs.plugins.gradleUtils)
+    alias(libs.plugins.forgeGradle)
 }
 
 minecraft {
@@ -51,27 +52,28 @@ minecraft {
 }
 
 repositories {
-    maven {
-        // JEI maven
-        name = "Progwml6 maven"
-        url = uri("https://dvs1.progwml6.com/files/maven/")
-    }
-    maven {
-        // JEI maven - fallback
-        name = "ModMaven"
-        url = uri("https://modmaven.k-4u.nl")
-    }
+    //maven {
+    //    // JEI maven
+    //    name = "Progwml6 maven"
+    //    url = uri("https://dvs1.progwml6.com/files/maven/")
+    //}
+    //maven {
+    //    // JEI maven - fallback
+    //    name = "ModMaven"
+    //    url = uri("https://modmaven.k-4u.nl")
+    //}
     mavenCentral()
     mavenLocal()
 }
 
 dependencies {
-    minecraft("net.minecraftforge:forge:${properties["minecraft_version"]}-${properties["forge_version"]}")
-    compileOnly(fg.deobf("mezz.jei:jei-1.17.1:${properties["jei_version"]}:api"))
-    implementation("org.jetbrains:annotations:21.0.1")
+    minecraft(libs.minecraft.forge)
+    val jei = (libs.jei.api as Provider<MinimalExternalModuleDependency>).get()
+    compileOnly(fg.deobf("${jei.module.group}:${jei.module.name}:${jei.versionConstraint.displayName}"))
+    implementation(libs.jetbrainAnnotations)
 }
 
-tasks.withType<ProcessResources>() {
+tasks.withType<ProcessResources> {
     val props = mutableMapOf("version" to properties["mod_version"]) // Needs to be mutable
     inputs.properties(props)
     filesMatching("META-INF/mods.toml") {
@@ -87,7 +89,6 @@ jarTask.finalizedBy("reobfJar")
 
 val minifyJarTask = tasks.register<MinifyJsonTask>("minJar") {
     input.set(jarTask.outputs.files.singleFile)
-    filePatterns.set(listOf("**/*.json", "**/*.mcmeta"))
     archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}-min.jar")
     dependsOn(jarTask)
 }
@@ -95,6 +96,7 @@ val minifyJarTask = tasks.register<MinifyJsonTask>("minJar") {
 val releaseJarTask = tasks.register<ParamLocalObfuscatorTask>("releaseJar") {
     input.set(minifyJarTask.get().outputs.files.singleFile)
     archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}.jar")
+    from(rootDir.resolve("LICENSE"))
     dependsOn(minifyJarTask)
 }
 

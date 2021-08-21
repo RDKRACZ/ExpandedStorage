@@ -4,23 +4,24 @@ import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
+import java.util.Locale;
+
 @Internal
 @Experimental
 public enum CursedChestType implements StringRepresentable {
-    TOP("top", -1),
-    BOTTOM("bottom", -1),
-    FRONT("front", 0),
-    BACK("back", 2),
-    LEFT("left", 1),
-    RIGHT("right", 3),
-    SINGLE("single", -1);
+    TOP(-1),
+    BOTTOM(-1),
+    FRONT(0),
+    BACK(2),
+    LEFT(1),
+    RIGHT(3),
+    SINGLE(-1);
 
     private final String name;
     private final int offset;
 
-    CursedChestType(String name, int offset) {
-        // todo: can maybe replace name with accessing Enum's name() private field
-        this.name = name;
+    CursedChestType(int offset) {
+        this.name = name().toLowerCase(Locale.ROOT);
         this.offset = offset;
     }
 

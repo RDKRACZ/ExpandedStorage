@@ -1,9 +1,9 @@
 package ninjaphenix.expandedstorage.chest;
 
-import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
-import net.fabricmc.fabric.api.tag.TagRegistry;
+import net.fabricmc.fabric.api.tag.TagFactory;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayers;
@@ -47,15 +47,14 @@ public final class Main implements ModuleInitializer {
                 Client.registerItemRenderers(i.get());
             }
         };
-        ChestCommon.registerContent(registerBlocks, registerItems, registerBET, TagRegistry.block(new ResourceLocation("c", "wooden_chests")), BlockItem::new);
+        ChestCommon.registerContent(registerBlocks, registerItems, registerBET, TagFactory.BLOCK.create(new ResourceLocation("c", "wooden_chests")), BlockItem::new);
     }
 
     private static class Client {
         public static void registerChestTextures(Set<ChestBlock> blocks) {
             ChestCommon.registerChestTextures(blocks);
             ClientSpriteRegistryCallback.event(Sheets.CHEST_SHEET).register((atlasTexture, registry) -> ChestCommon.getChestTextures(blocks).forEach(registry::register));
-
-            BlockEntityRendererRegistry.INSTANCE.register(ChestCommon.getBlockEntityType(), ChestBlockEntityRenderer::new);
+            BlockEntityRendererRegistry.register(ChestCommon.getBlockEntityType(), ChestBlockEntityRenderer::new);
         }
 
         public static void registerItemRenderers(Set<BlockItem> items) {

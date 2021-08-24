@@ -1,7 +1,7 @@
 package ninjaphenix.expandedstorage.barrel;
 
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.tag.TagRegistry;
+import net.fabricmc.fabric.api.tag.TagFactory;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Registry;
@@ -36,6 +36,6 @@ public final class Main implements ModuleInitializer {
 
     @Override
     public void initialize() {
-        BarrelCommon.registerContent(Main::registerBlocks, Main::registerItems, Main::registerBET, TagRegistry.block(new ResourceLocation("c", "wooden_barrels")));
+        BarrelCommon.registerContent(Main::registerBlocks, Main::registerItems, Main::registerBET, TagFactory.BLOCK.create(new ResourceLocation("c", "wooden_barrels")));
     }
 }

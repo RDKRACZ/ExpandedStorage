@@ -51,7 +51,7 @@ public abstract class AbstractScreen<T extends AbstractMenu<R>, R extends Screen
     @SuppressWarnings("ConstantConditions")
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (PlatformUtils.getInstance().isConfigKeyPressed(keyCode, scanCode, modifiers)) {
-            NetworkWrapper.getInstance().c2s_openTypeSelectScreen();
+            minecraft.setScreen(new PickScreen(NetworkWrapper.getInstance().getScreenOptions(), null, (selection) -> NetworkWrapper.getInstance().c_openInventoryAt(menu.pos, selection)));
             return true;
         } else if (keyCode == GLFW.GLFW_KEY_ESCAPE || minecraft.options.keyInventory.matches(keyCode, scanCode)) {
             minecraft.player.closeContainer();

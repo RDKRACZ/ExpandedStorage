@@ -10,6 +10,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.Tuple;
 import ninjaphenix.expandedstorage.base.client.menu.widget.ScreenPickButton;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
+import ninjaphenix.expandedstorage.base.wrappers.ConfigWrapper;
 import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 import org.lwjgl.glfw.GLFW;
 
@@ -18,18 +19,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public final class PickScreen extends Screen {
     private static final Map<ResourceLocation, Tuple<ResourceLocation, Component>> BUTTON_SETTINGS = new HashMap<>();
     private final Set<ResourceLocation> options;
     private final Screen returnToScreen;
     private final List<ScreenPickButton> optionWidgets;
+    private final Consumer<ResourceLocation> onOptionPicked;
     private int topPadding;
 
-    public PickScreen(Set<ResourceLocation> options, Screen returnToScreen) {
+    public PickScreen(Set<ResourceLocation> options, Screen returnToScreen, Consumer<ResourceLocation> onOptionPicked) {
         super(new TranslatableComponent("screen.expandedstorage.screen_picker_title"));
         this.options = options;
         this.optionWidgets = new ArrayList<>(options.size());
+        this.onOptionPicked = onOptionPicked;
         this.returnToScreen = returnToScreen;
     }
 
@@ -73,18 +77,9 @@ public final class PickScreen extends Screen {
     }
 
     private void updatePlayerPreference(ResourceLocation selection) {
-        NetworkWrapper.getInstance().c2s_setSendTypePreference(selection);
+        ConfigWrapper.getInstance().setPreferredScreenType(selection);
+        onOptionPicked.accept(selection);
         this.onClose();
-    }
-
-    @Override
-    public boolean keyPressed(int key, int scanCode, int modifiers) {
-        if (key == GLFW.GLFW_KEY_ESCAPE && this.shouldCloseOnEsc()) {
-            NetworkWrapper.getInstance().c2s_removeTypeSelectCallback();
-            this.onClose();
-            return true;
-        }
-        return super.keyPressed(key, scanCode, modifiers);
     }
 
     @Override

@@ -110,6 +110,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
     public AbstractOpenableStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, ResourceLocation blockId) {
         super(blockEntityType, pos, state);
+        // todo: replace with custom impl, closing should be delayed a few ticks just in-case inventory is re-opened.
         this.observerCounter = new ContainerOpenersCounter() {
             @Override
             protected void onOpen(Level level, BlockPos pos, BlockState state) {
@@ -239,10 +240,6 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
     public NonNullList<ItemStack> getItems() {
         return this.inventory;
-    }
-
-    public int getSlotCount() {
-        return slots;
     }
 
     public boolean canContinueUse(Player player) {

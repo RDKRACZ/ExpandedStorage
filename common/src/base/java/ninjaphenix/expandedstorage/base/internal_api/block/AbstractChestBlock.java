@@ -35,6 +35,8 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 @Internal
 @Experimental
 public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockEntity> extends AbstractOpenableStorageBlock {
@@ -42,75 +44,6 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     public static final EnumProperty<FaceRotation> FACE_ROTATION = EnumProperty.create("face_rotation", FaceRotation.class);
     public static final EnumProperty<FaceRotation> PERP_ROTATION = EnumProperty.create("perp_rotation", FaceRotation.class);
     public static final EnumProperty<FaceRotation> Y_ROTATION = DirectionProperty.create("facing", FaceRotation.class);
-
-    private final Property<T, SyncedMenuFactory> menuProperty = new Property<>() {
-        @Override
-        public SyncedMenuFactory get(T first, T second) {
-            return new SyncedMenuFactory() {
-                @Override
-                public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
-                    buffer.writeBlockPos(first.getBlockPos()).writeInt(first.getSlotCount() + second.getSlotCount());
-                }
-
-                @Override
-                public Component getMenuTitle() {
-                    return first.hasCustomName() ? first.getName() : second.hasCustomName() ? second.getName() : Utils.translation("container.expandedstorage.generic_double", first.getName());
-                }
-
-                @Override
-                public boolean canPlayerOpen(ServerPlayer player) {
-                    if (first.canPlayerInteractWith(player) && second.canPlayerInteractWith(player)) {
-                        return true;
-                    }
-                    AbstractStorageBlockEntity.notifyBlockLocked(player, this.getMenuTitle());
-                    return false;
-                }
-
-                @Nullable
-                @Override
-                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, ServerPlayer player) {
-                    if (first.canContinueUse(player) && second.canContinueUse(player)) {
-                        CompoundContainer container = new CompoundContainer(first.getContainerWrapper(), second.getContainerWrapper());
-                        return NetworkWrapper.getInstance().createMenu(windowId, first.getBlockPos(), container, playerInventory, this.getMenuTitle());
-                    }
-                    return null;
-                }
-            };
-        }
-
-        @Override
-        public SyncedMenuFactory get(T single) {
-            return new SyncedMenuFactory() {
-                @Override
-                public void writeClientData(ServerPlayer player, FriendlyByteBuf buffer) {
-                    buffer.writeBlockPos(single.getBlockPos()).writeInt(single.getSlotCount());
-                }
-
-                @Override
-                public Component getMenuTitle() {
-                    return single.getName();
-                }
-
-                @Override
-                public boolean canPlayerOpen(ServerPlayer player) {
-                    if (single.canPlayerInteractWith(player)) {
-                        return true;
-                    }
-                    AbstractStorageBlockEntity.notifyBlockLocked(player, this.getMenuTitle());
-                    return false;
-                }
-
-                @Nullable
-                @Override
-                public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, ServerPlayer player) {
-                    if (single.canContinueUse(player)) {
-                        return NetworkWrapper.getInstance().createMenu(windowId, single.getBlockPos(), single.getContainerWrapper(), playerInventory, this.getMenuTitle());
-                    }
-                    return null;
-                }
-            };
-        }
-    };
 
     public AbstractChestBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier, ResourceLocation openingStat, int slots) {
         super(properties, blockId, blockTier, openingStat, slots);
@@ -281,9 +214,21 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         return false;
     }
 
-    @Nullable
     @Override
-    protected SyncedMenuFactory createMenuFactory(BlockState state, LevelAccessor level, BlockPos pos) {
-        return AbstractChestBlock.createPropertyRetriever(this, state, level, pos, false).get(menuProperty);
+    public List<AbstractOpenableStorageBlockEntity> getInventoryParts(Level level, BlockState state, BlockPos pos) {
+        if (state.getBlock() instanceof AbstractChestBlock<?> block) {
+            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, level, pos, false).get(new Property<AbstractOpenableStorageBlockEntity, List<AbstractOpenableStorageBlockEntity>>() {
+                @Override
+                public List<AbstractOpenableStorageBlockEntity> get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
+                    return List.of(first, second);
+                }
+
+                @Override
+                public List<AbstractOpenableStorageBlockEntity> get(AbstractOpenableStorageBlockEntity single) {
+                    return List.of(single);
+                }
+            });
+        }
+        return List.of();
     }
 }

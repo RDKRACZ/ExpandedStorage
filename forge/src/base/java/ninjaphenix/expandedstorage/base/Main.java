@@ -1,7 +1,6 @@
 package ninjaphenix.expandedstorage.base;
 
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
@@ -22,11 +21,8 @@ import ninjaphenix.expandedstorage.base.client.menu.PickScreen;
 import ninjaphenix.expandedstorage.base.client.menu.ScrollableScreen;
 import ninjaphenix.expandedstorage.base.client.menu.SingleScreen;
 import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
-import ninjaphenix.expandedstorage.base.internal_api.Utils;
+import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Mod("expandedstorage")
 public final class Main {
@@ -62,14 +58,12 @@ public final class Main {
 
     @OnlyIn(Dist.CLIENT)
     private void registerConfigGuiHandler() {
-
         ModLoadingContext.get().getActiveContainer().registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class,
                 () -> new ConfigGuiHandler.ConfigGuiFactory((minecraft, screen) -> {
-                    Set<ResourceLocation> values = new HashSet<>();
-                    values.add(Utils.SINGLE_SCREEN_TYPE);
-                    values.add(Utils.PAGED_SCREEN_TYPE);
-                    values.add(Utils.SCROLLABLE_SCREEN_TYPE);
-                    return new PickScreen(values, screen);
-                }));
+                    return new PickScreen(NetworkWrapper.getInstance().getScreenOptions(), screen, (selection) -> {
+                        NetworkWrapper.getInstance().c2s_sendTypePreference(selection);
+                    });
+                })
+        );
     }
 }

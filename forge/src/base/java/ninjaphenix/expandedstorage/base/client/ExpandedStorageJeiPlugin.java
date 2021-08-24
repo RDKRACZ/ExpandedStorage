@@ -6,7 +6,7 @@ import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
-import ninjaphenix.expandedstorage.base.client.menu.AbstractScreen;
+import ninjaphenix.expandedstorage.base.client.gui.AbstractScreen;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import org.jetbrains.annotations.NotNull;
 

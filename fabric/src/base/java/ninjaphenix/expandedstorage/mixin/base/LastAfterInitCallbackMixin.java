@@ -1,7 +1,7 @@
 package ninjaphenix.expandedstorage.mixin.base;
 
 import net.minecraft.client.gui.screens.Screen;
-import ninjaphenix.expandedstorage.base.client.menu.PagedScreen;
+import ninjaphenix.expandedstorage.base.client.gui.PagedScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

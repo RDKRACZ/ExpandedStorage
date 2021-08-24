@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.base.client.menu;
+package ninjaphenix.expandedstorage.base.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
-import ninjaphenix.expandedstorage.base.client.menu.widget.PageButton;
+import ninjaphenix.expandedstorage.base.client.gui.widget.PageButton;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.inventory.PagedMenu;
 import ninjaphenix.expandedstorage.base.inventory.screen.PagedScreenMeta;

@@ -2,7 +2,7 @@ package ninjaphenix.expandedstorage.base.client;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import ninjaphenix.expandedstorage.base.client.menu.PickScreen;
+import ninjaphenix.expandedstorage.base.client.gui.PickScreen;
 import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 
 public class ModMenuCompat implements ModMenuApi {

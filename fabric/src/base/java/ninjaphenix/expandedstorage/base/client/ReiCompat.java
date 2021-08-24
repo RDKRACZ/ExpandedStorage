@@ -5,7 +5,7 @@ import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.screen.ExclusionZones;
 import me.shedaniel.rei.api.common.util.CollectionUtils;
 import net.minecraft.client.renderer.Rect2i;
-import ninjaphenix.expandedstorage.base.client.menu.AbstractScreen;
+import ninjaphenix.expandedstorage.base.client.gui.AbstractScreen;
 
 public class ReiCompat implements REIClientPlugin {
     private static Rectangle asReiRectangle(Rect2i rect) {

@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.base.client.menu;
+package ninjaphenix.expandedstorage.base.client.gui;
 
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;

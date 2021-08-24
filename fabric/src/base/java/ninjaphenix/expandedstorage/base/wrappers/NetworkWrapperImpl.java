@@ -20,7 +20,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import ninjaphenix.expandedstorage.base.client.menu.PickScreen;
+import ninjaphenix.expandedstorage.base.client.gui.PickScreen;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerMenuFactory;
 import org.jetbrains.annotations.Nullable;

@@ -20,7 +20,7 @@ import net.minecraftforge.fmllegacy.network.NetworkHooks;
 import net.minecraftforge.fmllegacy.network.NetworkRegistry;
 import net.minecraftforge.fmllegacy.network.PacketDistributor;
 import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
-import ninjaphenix.expandedstorage.base.client.menu.PickScreen;
+import ninjaphenix.expandedstorage.base.client.gui.PickScreen;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerMenuFactory;
 import ninjaphenix.expandedstorage.base.network.NotifyServerOptionsMessage;
@@ -128,7 +128,7 @@ public final class NetworkWrapperImpl extends NetworkWrapper {
     }
 
     private static class Client {
-        private static Set<ResourceLocation> screenOptions;
+        private static Set<ResourceLocation> screenOptions = NetworkWrapperImpl.INSTANCE.menuFactories.keySet();
 
         private void initialize() {
             MinecraftForge.EVENT_BUS.addListener(Client::cOnPlayerDisconnected);

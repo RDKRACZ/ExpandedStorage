@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.base.client.menu;
+package ninjaphenix.expandedstorage.base.client.gui;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiComponent;
@@ -8,11 +8,9 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Tuple;
-import ninjaphenix.expandedstorage.base.client.menu.widget.ScreenPickButton;
+import ninjaphenix.expandedstorage.base.client.gui.widget.ScreenPickButton;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.wrappers.ConfigWrapper;
-import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.HashMap;

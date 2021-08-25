@@ -46,7 +46,7 @@ public final class BarrelBlock extends AbstractOpenableStorageBlock {
 
     @Override
     public BlockEntity newBlockEntity(BlockGetter blockGetter) {
-        return new BarrelBlockEntity(BarrelCommon.getBlockEntityType(), this.getBlockType());
+        return new BarrelBlockEntity(BarrelCommon.getBlockEntityType(), this.getBlockId());
     }
 
     @Override

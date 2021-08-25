@@ -55,6 +55,8 @@ subprojects {
     }
 
     dependencies {
+        annotationProcessor("net.java.dev.jna:jna:5.9.0")
+        annotationProcessor("net.java.dev.jna:jna-platform:5.9.0")
         annotationProcessor("com.github.bsideup.jabel:jabel-javac-plugin:0.4.1")
         compileOnly("com.github.bsideup.jabel:jabel-javac-plugin:0.4.1")
     }

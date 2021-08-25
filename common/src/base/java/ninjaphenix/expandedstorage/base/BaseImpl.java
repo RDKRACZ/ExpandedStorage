@@ -83,9 +83,9 @@ public final class BaseImpl implements BaseApi {
     }
 
     @Override
-    public void registerContainerButtonSettings(ResourceLocation screenType, ResourceLocation texture, Component text) {
+    public void registerContainerButtonSettings(ResourceLocation screenType, ResourceLocation texture, Component text, IntBiPredicate warnTest) {
         if (PlatformUtils.getInstance().isClient()) {
-            PickScreen.declareButtonSettings(screenType, texture, text);
+            PickScreen.declareButtonSettings(screenType, texture, text, warnTest);
         } else {
             throw new IllegalStateException("registerContainerButtonSettings is client only");
         }

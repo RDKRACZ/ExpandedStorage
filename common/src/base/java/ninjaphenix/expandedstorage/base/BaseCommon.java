@@ -38,13 +38,16 @@ public final class BaseCommon {
             ConfigWrapper.getInstance().initialise();
             BaseApi.getInstance().registerContainerButtonSettings(Utils.SINGLE_SCREEN_TYPE,
                     Utils.resloc("textures/gui/single_button.png"),
-                    Utils.translation("screen.expandedstorage.single_screen"));
+                    Utils.translation("screen.expandedstorage.single_screen"),
+                    (width, height) -> width < 370 || height < 386); // Smallest possible resolution a double netherite chest fits on.
             BaseApi.getInstance().registerContainerButtonSettings(Utils.SCROLLABLE_SCREEN_TYPE,
                     Utils.resloc("textures/gui/scrollable_button.png"),
-                    Utils.translation("screen.expandedstorage.scrollable_screen"));
+                    Utils.translation("screen.expandedstorage.scrollable_screen"),
+                    IntBiPredicate::never);
             BaseApi.getInstance().registerContainerButtonSettings(Utils.PAGED_SCREEN_TYPE,
                     Utils.resloc("textures/gui/paged_button.png"),
-                    Utils.translation("screen.expandedstorage.paged_screen"));
+                    Utils.translation("screen.expandedstorage.paged_screen"),
+                    IntBiPredicate::never);
         }
         NetworkWrapper.getInstance().initialise();
         BaseApi.getInstance().offerTabIcon(Items.CHEST, ICON_SUITABILITY);

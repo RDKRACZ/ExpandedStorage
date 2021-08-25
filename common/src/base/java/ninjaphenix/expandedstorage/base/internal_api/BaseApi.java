@@ -6,6 +6,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import ninjaphenix.expandedstorage.base.BaseImpl;
+import ninjaphenix.expandedstorage.base.IntBiPredicate;
+import ninjaphenix.expandedstorage.base.client.gui.PickScreen;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractStorageBlock;
 import ninjaphenix.expandedstorage.base.internal_api.item.BlockUpgradeBehaviour;
 import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
@@ -56,7 +58,7 @@ public interface BaseApi {
     @Internal
     @Deprecated
     @ScheduledForRemoval
-    void registerContainerButtonSettings(ResourceLocation screenType, ResourceLocation texture, Component text);
+    void registerContainerButtonSettings(ResourceLocation screenType, ResourceLocation texture, Component text, IntBiPredicate warnTest);
 
     /**
      * @deprecated Will be removed with no replacement.

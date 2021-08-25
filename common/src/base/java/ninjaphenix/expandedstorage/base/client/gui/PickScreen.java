@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -72,15 +73,16 @@ public final class PickScreen extends Screen {
             Button.OnTooltip tooltip;
             if (warn) {
                 tooltip = new Button.OnTooltip() {
-                    final Component warnText = Utils.translation("screen.expandedstorage.off_screen_warning").withStyle(ChatFormatting.GRAY);
+                    final MutableComponent warnText1 = Utils.translation("screen.expandedstorage.off_screen_warning_1").withStyle(ChatFormatting.GRAY);
+                    final Component warnText2 = Utils.translation("screen.expandedstorage.off_screen_warning_2").withStyle(ChatFormatting.GRAY);
                     @Override
                     public void onTooltip(Button button, PoseStack stack, int x, int y) {
-                        PickScreen.this.renderTooltip(stack, List.of(button.getMessage(), warnText), Optional.empty(), x, y);
+                        PickScreen.this.renderTooltip(stack, List.of(button.getMessage(), warnText1, warnText2), Optional.empty(), x, y);
                     }
 
                     @Override
                     public void narrateTooltip(Consumer<Component> consumer) {
-                        consumer.accept(warnText);
+                        consumer.accept(warnText1.append(warnText2));
                     }
                 };
             } else {

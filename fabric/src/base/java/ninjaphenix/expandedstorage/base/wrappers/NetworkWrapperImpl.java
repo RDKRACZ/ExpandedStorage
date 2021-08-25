@@ -26,7 +26,9 @@ import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerMenuFactory
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 final class NetworkWrapperImpl extends NetworkWrapper {
     private static final ResourceLocation UPDATE_PLAYER_PREFERENCE = Utils.resloc("update_player_preference");
@@ -123,11 +125,11 @@ final class NetworkWrapperImpl extends NetworkWrapper {
 
     private class Client {
         private static Client INSTANCE;
-        private Set<ResourceLocation> screenOptions = Set.copyOf(NetworkWrapperImpl.this.menuFactories.keySet());
+        private Set<ResourceLocation> screenOptions = NetworkWrapperImpl.this.menuFactories.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
 
         private void initialise() {
             ClientPlayConnectionEvents.INIT.register((listener_init, client) -> ClientPlayNetworking.registerReceiver(NetworkWrapperImpl.NOTIFY_SERVER_MENU_TYPES, this::handleServerMenuTypes));
-            ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> screenOptions = Set.copyOf(NetworkWrapperImpl.this.menuFactories.keySet()));
+            ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> screenOptions = NetworkWrapperImpl.this.menuFactories.keySet().stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new)));
             INSTANCE = this;
         }
 
@@ -139,7 +141,7 @@ final class NetworkWrapperImpl extends NetworkWrapper {
             }
             serverOptions.removeIf(option -> !NetworkWrapperImpl.this.menuFactories.containsKey(option));
             client.submit(() -> {
-                screenOptions = Set.copyOf(serverOptions);
+                screenOptions = serverOptions.stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
                 var option = ConfigWrapper.getInstance().getPreferredScreenType();
                 if (screenOptions.contains(option)) {
                     sender.sendPacket(NetworkWrapperImpl.UPDATE_PLAYER_PREFERENCE, new FriendlyByteBuf(Unpooled.buffer()).writeResourceLocation(option));

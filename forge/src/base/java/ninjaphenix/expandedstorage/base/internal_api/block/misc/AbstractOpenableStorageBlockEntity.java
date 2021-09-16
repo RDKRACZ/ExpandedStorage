@@ -7,6 +7,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
@@ -23,8 +24,9 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
+import ninjaphenix.container_library.api.OpenableBlockEntity;
+import ninjaphenix.container_library.internal.api.inventory.AbstractMenu;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractMenu;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +35,7 @@ import java.util.function.Supplier;
 
 @Internal
 @Experimental
-public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements ICapabilityProvider {
+public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements ICapabilityProvider, OpenableBlockEntity {
     private final ResourceLocation blockId;
     private final ContainerOpenersCounter observerCounter;
     protected Component menuTitle;
@@ -344,8 +346,24 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         return this.inventory;
     }
 
+    @Override
+    public boolean canBeUsedBy(ServerPlayer player) {
+        return this.canPlayerInteractWith(player);
+    }
+
+    @Override
     public boolean canContinueUse(Player player) {
         //noinspection ConstantConditions
         return level.getBlockEntity(worldPosition) == this && player.distanceToSqr(Vec3.atCenterOf(worldPosition)) <= 64;
+    }
+
+    @Override
+    public Container getInventory() {
+        return this.getContainerWrapper();
+    }
+
+    @Override
+    public Component getInventoryName() {
+        return this.getDisplayName();
     }
 }

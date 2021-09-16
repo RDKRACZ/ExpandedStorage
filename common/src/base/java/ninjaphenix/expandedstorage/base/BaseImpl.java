@@ -7,14 +7,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
-import ninjaphenix.expandedstorage.base.client.gui.PickScreen;
 import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractStorageBlock;
 import ninjaphenix.expandedstorage.base.internal_api.item.BlockUpgradeBehaviour;
 import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
 import ninjaphenix.expandedstorage.base.item.StorageConversionKit;
-import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
@@ -80,15 +78,6 @@ public final class BaseImpl implements BaseApi {
     @ApiStatus.Internal
     public void register(ResourceLocation itemId, Item item) {
         items.put(itemId, item);
-    }
-
-    @Override
-    public void registerContainerButtonSettings(ResourceLocation screenType, ResourceLocation texture, Component text, IntBiPredicate warnTest) {
-        if (PlatformUtils.getInstance().isClient()) {
-            PickScreen.declareButtonSettings(screenType, texture, text, warnTest);
-        } else {
-            throw new IllegalStateException("registerContainerButtonSettings is client only");
-        }
     }
 
     @Override

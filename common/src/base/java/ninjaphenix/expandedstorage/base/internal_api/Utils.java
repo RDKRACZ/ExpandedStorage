@@ -1,9 +1,5 @@
 package ninjaphenix.expandedstorage.base.internal_api;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.KeybindComponent;
@@ -13,17 +9,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import ninjaphenix.expandedstorage.base.config.ResourceLocationTypeAdapter;
 import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 @Internal
@@ -56,48 +46,6 @@ public final class Utils {
     // Item Cooldown
     public static final int QUARTER_SECOND = 5;
 
-    // Config related
-
-    @Internal
-    public static final Type MAP_TYPE = new TypeToken<Map<String, Object>>() {
-    }.getType();
-
-    @Internal
-    public static final Gson GSON = new GsonBuilder().registerTypeAdapter(ResourceLocation.class, new ResourceLocationTypeAdapter())
-                                                     .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                                                     .setPrettyPrinting()
-                                                     .setLenient()
-                                                     .create();
-
-    // Container Types
-    @Internal
-    public static final ResourceLocation UNSET_SCREEN_TYPE = Utils.resloc("auto");
-
-    @Internal
-    public static final ResourceLocation SINGLE_SCREEN_TYPE = Utils.resloc("single");
-
-    @Internal
-    public static final ResourceLocation PAGED_SCREEN_TYPE = Utils.resloc("page");
-
-    @Internal
-    public static final ResourceLocation SCROLLABLE_SCREEN_TYPE = Utils.resloc("scroll");
-
-    // Config paths
-    @Internal
-    public static final String FABRIC_LEGACY_CONFIG_PATH = "ninjaphenix-container-library.json";
-
-    @Internal
-    public static final String CONFIG_PATH = "expandedstorage.json";
-
-    @Internal
-    public static final int CONTAINER_HEADER_HEIGHT = 17;
-
-    @Internal
-    public static final int SLOT_SIZE = 18;
-
-    @Internal
-    public static final int CONTAINER_PADDING_WIDTH = 7;
-
     private Utils() {
 
     }
@@ -110,12 +58,5 @@ public final class Utils {
     @Internal
     public static MutableComponent translation(String key, Object... params) {
         return new TranslatableComponent(key, params);
-    }
-
-    @Internal
-    public static <K, V> Map<K, V> unmodifiableMap(Consumer<Map<K, V>> initialiser) {
-        Map<K, V> map = new HashMap<>();
-        initialiser.accept(map);
-        return Collections.unmodifiableMap(map);
     }
 }

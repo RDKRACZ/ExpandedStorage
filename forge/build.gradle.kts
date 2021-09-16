@@ -70,6 +70,9 @@ dependencies {
     minecraft(libs.minecraft.forge)
     val jei = (libs.jei.api as Provider<MinimalExternalModuleDependency>).get()
     compileOnly(fg.deobf("${jei.module.group}:${jei.module.name}:${jei.versionConstraint.displayName}"))
+    val cl = (libs.containerLibrary.forge as Provider<MinimalExternalModuleDependency>).get()
+    compileOnly (fg.deobf("${cl.module.group}:${cl.module.name}:${cl.versionConstraint.displayName}"))
+    runtimeOnly (fg.deobf("${cl.module.group}:${cl.module.name}:${cl.versionConstraint.displayName}"))
     implementation(libs.jetbrainAnnotations)
 }
 

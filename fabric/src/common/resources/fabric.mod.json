@@ -10,12 +10,6 @@
     "main": [
       "ninjaphenix.expandedstorage.base.Main"
     ],
-    "rei": [
-      "ninjaphenix.expandedstorage.base.client.ReiCompat"
-    ],
-    "modmenu": [
-      "ninjaphenix.expandedstorage.base.client.ModMenuCompat"
-    ],
     "expandedstorage-module": [
       "ninjaphenix.expandedstorage.barrel.Main",
       "ninjaphenix.expandedstorage.chest.Main",

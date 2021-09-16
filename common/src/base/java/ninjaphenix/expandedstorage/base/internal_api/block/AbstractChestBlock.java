@@ -2,6 +2,7 @@ package ninjaphenix.expandedstorage.base.internal_api.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
@@ -15,6 +16,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import ninjaphenix.container_library.api.OpenableBlockEntity;
+import ninjaphenix.container_library.api.helpers.OpenableBlockEntities;
+import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.FaceRotation;
@@ -204,20 +208,21 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     }
 
     @Override
-    public List<AbstractOpenableStorageBlockEntity> getInventoryParts(Level level, BlockState state, BlockPos pos) {
+    public OpenableBlockEntity getOpenableBlockEntity(Level level, BlockState state, BlockPos pos) {
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
-            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, level, pos, false).get(new Property<AbstractOpenableStorageBlockEntity, List<AbstractOpenableStorageBlockEntity>>() {
+            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, level, pos, false).get(new Property<AbstractOpenableStorageBlockEntity, OpenableBlockEntity>() {
                 @Override
-                public List<AbstractOpenableStorageBlockEntity> get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
-                    return List.of(first, second);
+                public OpenableBlockEntity get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
+                    Component name = first.hasCustomName() ? first.getDisplayName() : second.hasCustomName() ? second.getDisplayName() : Utils.translation("container.expandedstorage.generic_double", first.getDisplayName());
+                    return new OpenableBlockEntities(name, first, second);
                 }
 
                 @Override
-                public List<AbstractOpenableStorageBlockEntity> get(AbstractOpenableStorageBlockEntity single) {
-                    return List.of(single);
+                public OpenableBlockEntity get(AbstractOpenableStorageBlockEntity single) {
+                    return single;
                 }
             });
         }
-        return List.of();
+        return null;
     }
 }

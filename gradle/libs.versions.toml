@@ -1,5 +1,6 @@
 [versions]
 rei = "6.0.264-alpha"
+containerlib = "0.0.1-alpha.4"
 
 [libraries]
 # Common Deps
@@ -18,6 +19,8 @@ amecs-api = { group = "de.siphalor", name = "amecsapi-1.17", version = "1.1.+" }
 statement = { group = "com.github.Virtuoel", name = "Statement", version = "31a2c3f" }
 towelette = { group = "com.github.Virtuoel", name = "Towelette", version = "e5e39eb" }
 heyThatsMine = { group = "local", name = "htm", version = "dda0f76870e3a424af53416603ff489b1c733b3d" }
+containerLibrary-fabric = { group = "ninjaphenix.container_library", name = "fabric", version.ref = "containerlib" }
+containerLibrary-forge = { group = "ninjaphenix.container_library", name = "forge", version.ref = "containerlib" }
 
 [plugins]
 # Common Plugins

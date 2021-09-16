@@ -51,6 +51,7 @@ repositories {
         name = "Siphalor's Maven"
         url = uri("https://maven.siphalor.de/")
     }
+    mavenLocal()
 }
 
 val excludeFabric: (ExternalModuleDependency) -> Unit = {
@@ -77,6 +78,8 @@ dependencies {
     modRuntime(libs.modmenu)
 
     modCompileOnly(libs.amecs.api)
+
+    modImplementation(libs.containerLibrary.fabric)
 }
 
 tasks.withType<ProcessResources> {

@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -16,8 +17,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import ninjaphenix.container_library.api.OpenableBlockEntityProvider;
+import ninjaphenix.container_library.api.client.NCL_ClientApi;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
-import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +28,7 @@ import java.util.List;
 
 @Internal
 @Experimental
-public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock implements EntityBlock {
+public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock implements EntityBlock, OpenableBlockEntityProvider {
     private final ResourceLocation openingStat;
     private final int slots;
 
@@ -49,7 +51,7 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
     @SuppressWarnings("deprecation")
     public final InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide()) {
-            NetworkWrapper.getInstance().c_openInventoryAt(pos);
+            NCL_ClientApi.openInventoryAt(pos);
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.CONSUME;
@@ -73,14 +75,7 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
         }
     }
 
-    public void awardOpeningStat(Player player) {
+    public void onInitialOpen(ServerPlayer player) {
         player.awardStat(openingStat);
-    }
-
-    public List<AbstractOpenableStorageBlockEntity> getInventoryParts(Level level, BlockState state, BlockPos pos) {
-        if (level.getBlockEntity(pos) instanceof AbstractOpenableStorageBlockEntity entity) {
-            return List.of(entity);
-        }
-        return List.of();
     }
 }

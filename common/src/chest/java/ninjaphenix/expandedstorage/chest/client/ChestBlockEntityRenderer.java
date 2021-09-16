@@ -192,7 +192,7 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
         stack.translate(-0.5D, -0.5D, -0.5D);
         PropertyRetriever<ChestBlockEntity> retriever;
         if (entity.hasLevel()) {
-            retriever = PropertyRetriever.create();
+            retriever = AbstractChestBlock.createPropertyRetriever(block, state, entity.getLevel(), entity.getBlockPos(), true);
         } else {
             retriever = PropertyRetriever.createDirect(entity);
         }

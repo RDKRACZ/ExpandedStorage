@@ -9,8 +9,6 @@
     "chest.ToweletteSupport"
   ],
   "client": [
-    "base.AmecsCompatMixin",
-    "base.LastAfterInitCallbackMixin",
     "chest.ModelLayersMixin"
   ],
   "injectors": {

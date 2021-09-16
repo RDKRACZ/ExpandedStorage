@@ -5,9 +5,6 @@ import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.minecraft.core.Registry;
-import ninjaphenix.expandedstorage.base.client.gui.PagedScreen;
-import ninjaphenix.expandedstorage.base.client.gui.ScrollableScreen;
-import ninjaphenix.expandedstorage.base.client.gui.SingleScreen;
 import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.base.internal_api.ModuleInitializer;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
@@ -19,12 +16,6 @@ public final class Main implements ModInitializer {
     @Override
     public void onInitialize() {
         BaseCommon.initialize();
-        if (PlatformUtils.getInstance().isClient()) {
-            ScreenRegistry.register(BaseCommon.SCROLL_MENU_TYPE.get(), ScrollableScreen::new);
-            ScreenRegistry.register(BaseCommon.PAGE_MENU_TYPE.get(), PagedScreen::new);
-            ScreenRegistry.register(BaseCommon.SINGLE_MENU_TYPE.get(), SingleScreen::new);
-            PlatformUtils.getInstance().getConfigKey(); // Ensure key bind is registered, probably doesn't need to be done before in-game but just in case.
-        }
         BaseApi.getInstance().getAndClearItems().forEach((id, item) -> Registry.register(Registry.ITEM, id, item));
 
         List<EntrypointContainer<ModuleInitializer>> entries = FabricLoader.getInstance().getEntrypointContainers("expandedstorage-module", ModuleInitializer.class);
@@ -34,11 +25,8 @@ public final class Main implements ModInitializer {
 
         /* GOALS
          *
-         * WIP - Provide base implementation for openable storage blocks such as barrels, chests, and old chests.
          * Provide a centralised api for kubejs and java to register new tiers and therefore blocks.
-         * Provide base implementation for networking containers to and from client
-         *  note: will only support openable containers like barrels, chests, and old chests.
-         *
+         *  will probably make my own json loaded content at some point...
          * Probably a bunch of other stuff I can't think of.
          */
     }

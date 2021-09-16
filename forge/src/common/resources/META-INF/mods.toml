@@ -23,3 +23,10 @@ mandatory = true
 versionRange = "[1.17.1,)"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies.expandedstorage]]
+modId = "ninjaphenix_container_lib"
+mandatory = true
+versionRange = "[0.0.1,)"
+ordering = "NONE"
+side = "BOTH"

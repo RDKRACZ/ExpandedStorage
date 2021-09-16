@@ -13,7 +13,6 @@ public final class MixinPlugin implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassPath, String mixinClassPath) {
         String className = mixinClassPath.substring(34);
         return switch (className) {
-            case "base.AmecsCompatMixin" -> FabricLoader.getInstance().isModLoaded("amecs");
             case "base.HTMChestSupport", "base.HTMOpenableBlockEntitySupport" -> FabricLoader.getInstance().isModLoaded("htm");
             case "chest.ToweletteSupport" -> FabricLoader.getInstance().isModLoaded("towelette");
             default -> true;

@@ -35,6 +35,7 @@ public interface PropertyRetriever<A> {
     }
 
     // todo: decide params
+    // Should essentially be a copy of mojangs code except Function<BlockState, Direction> instead of a property.
     static <A> PropertyRetriever<A> create() {
         // todo: implement
         return null;

@@ -25,7 +25,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import ninjaphenix.container_library.api.OpenableBlockEntity;
-import ninjaphenix.container_library.internal.api.inventory.AbstractMenu;
+import ninjaphenix.container_library.api.inventory.AbstractMenu;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -133,8 +133,8 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
             @Override
             protected boolean isOwnContainer(Player player) {
-                if (player.containerMenu instanceof AbstractMenu<?>) {
-                    return AbstractOpenableStorageBlockEntity.this.isThis(((AbstractMenu<?>) player.containerMenu).getContainer());
+                if (player.containerMenu instanceof AbstractMenu menu) {
+                    return AbstractOpenableStorageBlockEntity.this.isThis(menu.getInventory());
                 } else {
                     return false;
                 }

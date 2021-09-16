@@ -1,13 +1,11 @@
 package ninjaphenix.expandedstorage.base;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.minecraft.core.Registry;
 import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.base.internal_api.ModuleInitializer;
-import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
 
 import java.util.Comparator;
 import java.util.List;

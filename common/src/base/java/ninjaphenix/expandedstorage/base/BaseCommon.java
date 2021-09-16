@@ -8,12 +8,8 @@ import net.minecraft.world.item.Items;
 import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.item.StorageMutator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.FormattedMessage;
 
 public final class BaseCommon {
-    public static final Logger LOGGER = LogManager.getLogger();
     private static final int ICON_SUITABILITY = 0;
 
     private BaseCommon() {
@@ -31,9 +27,5 @@ public final class BaseCommon {
         ResourceLocation rv = Registry.register(Registry.CUSTOM_STAT, stat, stat); // Forge doesn't provide registries for stats
         Stats.CUSTOM.get(rv);
         return rv;
-    }
-
-    public static void warnThrowableMessage(String message, Throwable cause, Object... messageParams) {
-        LOGGER.warn(new FormattedMessage(message, messageParams, cause));
     }
 }

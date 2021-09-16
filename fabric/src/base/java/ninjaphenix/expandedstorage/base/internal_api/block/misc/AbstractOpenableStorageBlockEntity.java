@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import ninjaphenix.container_library.api.OpenableBlockEntity;
-import ninjaphenix.container_library.internal.api.inventory.AbstractMenu;
+import ninjaphenix.container_library.api.inventory.AbstractMenu;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -131,8 +131,8 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
             @Override
             protected boolean isOwnContainer(Player player) {
-                if (player.containerMenu instanceof AbstractMenu<?>) {
-                    return AbstractOpenableStorageBlockEntity.this.isThis(((AbstractMenu<?>) player.containerMenu).getContainer());
+                if (player.containerMenu instanceof AbstractMenu menu) {
+                    return AbstractOpenableStorageBlockEntity.this.isThis(menu.getInventory());
                 } else {
                     return false;
                 }

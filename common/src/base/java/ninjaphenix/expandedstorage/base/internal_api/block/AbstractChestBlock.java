@@ -196,7 +196,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         //return DoubleBlockCombiner.combineWithNeigbour(block.getBlockEntityType(), AbstractChestBlock::getBlockType,
         //        AbstractChestBlock::getDirectionToAttached, AbstractChestBlock.Y_ROTATION, state, level, pos, isChestBlocked);
         // todo: reimplement
-        return PropertyRetriever.create();
+        return PropertyRetriever.create(level, state, pos);
     }
 
     protected abstract BlockEntityType<T> getBlockEntityType();

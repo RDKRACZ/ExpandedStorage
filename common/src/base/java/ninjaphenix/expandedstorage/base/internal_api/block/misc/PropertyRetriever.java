@@ -1,5 +1,17 @@
 package ninjaphenix.expandedstorage.base.internal_api.block.misc;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.DoubleBlockCombiner;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+
+import java.util.function.BiPredicate;
+import java.util.function.Function;
+
 public interface PropertyRetriever<A> {
 
     <B> B get(Property<A, B> property);
@@ -36,9 +48,8 @@ public interface PropertyRetriever<A> {
 
     // todo: decide params
     // Should essentially be a copy of mojangs code except Function<BlockState, Direction> instead of a property.
-    static <A> PropertyRetriever<A> create() {
-        // todo: implement
-        return null;
+    static <A extends BlockEntity> PropertyRetriever<A> create(LevelAccessor level, BlockState state, BlockPos pos) {
+        return PropertyRetriever.createDirect((A) level.getBlockEntity(pos));
     }
 
     static <A> PropertyRetriever<A> createDirect(A single) {

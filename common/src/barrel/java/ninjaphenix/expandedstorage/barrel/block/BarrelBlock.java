@@ -4,7 +4,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.WorldlyContainerHolder;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,7 +19,7 @@ import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStora
 
 import java.util.Random;
 
-public final class BarrelBlock extends AbstractOpenableStorageBlock {
+public final class BarrelBlock extends AbstractOpenableStorageBlock implements WorldlyContainerHolder {
     public BarrelBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier, ResourceLocation openingStat, int slots) {
         super(properties, blockId, blockTier, openingStat, slots);
         this.registerDefaultState(this.getStateDefinition().any().setValue(BlockStateProperties.FACING, Direction.NORTH).setValue(BlockStateProperties.OPEN, false));
@@ -50,5 +53,13 @@ public final class BarrelBlock extends AbstractOpenableStorageBlock {
         if (level.getBlockEntity(pos) instanceof BarrelBlockEntity entity) {
             entity.recountObservers();
         }
+    }
+
+    @Override
+    public WorldlyContainer getContainer(BlockState state, LevelAccessor level, BlockPos pos) {
+        if (level.getBlockEntity(pos) instanceof BarrelBlockEntity entity) {
+            return entity.getContainerWrapper();
+        }
+        return null;
     }
 }

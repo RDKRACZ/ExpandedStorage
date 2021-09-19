@@ -1,6 +1,6 @@
 [versions]
 rei = "6.0.264-alpha"
-containerlib = "1.0.0-beta.1+1.17.1"
+containerlib = "1.0.0+1.17.1"
 
 [libraries]
 # Common Deps

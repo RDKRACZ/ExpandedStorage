@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -25,7 +26,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import ninjaphenix.container_library.api.OpenableBlockEntity;
-import ninjaphenix.container_library.api.inventory.AbstractMenu;
+import ninjaphenix.container_library.api.inventory.AbstractHandler;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -42,7 +43,24 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     private int slots;
     private NonNullList<ItemStack> inventory;
     private LazyOptional<IItemHandlerModifiable> itemHandler;
-    private final Supplier<Container> container = Suppliers.memoize(() -> new Container() {
+    private final Supplier<WorldlyContainer> container = Suppliers.memoize(() -> new WorldlyContainer() {
+        private final int[] slotsForFace = AbstractOpenableStorageBlockEntity.createSlotsForFaceArray(this.getContainerSize());
+
+        @Override
+        public int[] getSlotsForFace(Direction direction) {
+            return slotsForFace;
+        }
+
+        @Override
+        public boolean canPlaceItemThroughFace(int i, ItemStack itemStack, @Nullable Direction direction) {
+            return true;
+        }
+
+        @Override
+        public boolean canTakeItemThroughFace(int i, ItemStack itemStack, Direction direction) {
+            return true;
+        }
+
         @Override
         public int getContainerSize() {
             return slots;
@@ -112,9 +130,16 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         }
     });
 
+    private static int[] createSlotsForFaceArray(int containerSize) {
+        int[] arr = new int[containerSize];
+        for (int i = 0; i < containerSize; i++) {
+            arr[i] = i;
+        }
+        return arr;
+    }
+
     public AbstractOpenableStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, ResourceLocation blockId) {
         super(blockEntityType, pos, state);
-        // todo: replace with custom impl, closing should be delayed a few ticks just in-case inventory is re-opened.
         this.observerCounter = new ContainerOpenersCounter() {
             @Override
             protected void onOpen(Level level, BlockPos pos, BlockState state) {
@@ -133,7 +158,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
             @Override
             protected boolean isOwnContainer(Player player) {
-                if (player.containerMenu instanceof AbstractMenu menu) {
+                if (player.containerMenu instanceof AbstractHandler menu) {
                     return AbstractOpenableStorageBlockEntity.this.isThis(menu.getInventory());
                 } else {
                     return false;
@@ -352,18 +377,12 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     }
 
     @Override
-    public boolean canContinueUse(Player player) {
-        //noinspection ConstantConditions
-        return level.getBlockEntity(worldPosition) == this && player.distanceToSqr(Vec3.atCenterOf(worldPosition)) <= 64;
-    }
-
-    @Override
     public Container getInventory() {
         return this.getContainerWrapper();
     }
 
     @Override
-    public Component getInventoryName() {
+    public Component getInventoryTitle() {
         return this.getDisplayName();
     }
 }

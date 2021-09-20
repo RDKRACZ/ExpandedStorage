@@ -16,16 +16,6 @@
   "item.expandedstorage.wood_to_iron_conversion_kit": "Wood to Iron upgrade",
   "item.expandedstorage.wood_to_netherite_conversion_kit": "Wood to Netherite upgrade",
   "item.expandedstorage.wood_to_obsidian_conversion_kit": "Wood to Obsidian upgrade",
-  "screen.expandedstorage.change_screen_button": "Change Screen Type",
-  "screen.expandedstorage.screen_picker_title": "Select Screen Type",
-  "screen.expandedstorage.paged_screen": "Paginated Screen",
-  "screen.expandedstorage.scrollable_screen": "Scrollable Screen",
-  "screen.expandedstorage.single_screen": "Single Page Screen",
-  "screen.expandedstorage.next_page": "Next Page",
-  "screen.expandedstorage.prev_page": "Previous Page",
-  "screen.expandedstorage.page_x_y": "%d/%d",
-  "screen.expandedstorage.off_screen_warning_1": "Part of the screen may not be visible",
-  "screen.expandedstorage.off_screen_warning_2": " if you pick this option.",
   "container.expandedstorage.generic_double": "Large %s",
   "tooltip.expandedstorage.alt_use": "%1$s + %2$s",
   "tooltip.expandedstorage.storage_mutator.tool_mode": "Tool Mode: %s",
@@ -107,6 +97,5 @@
   "stat.expandedstorage.open_old_gold_chest": "[ES] Old Gold Chests Opened",
   "stat.expandedstorage.open_old_diamond_chest": "[ES] Old Diamond Chests Opened",
   "stat.expandedstorage.open_old_obsidian_chest": "[ES] Old Obsidian Chests Opened",
-  "stat.expandedstorage.open_old_netherite_chest": "[ES] Old Netherite Chests Opened",
-  "key.expandedstorage.config": "[ES] Open Screen Select"
+  "stat.expandedstorage.open_old_netherite_chest": "[ES] Old Netherite Chests Opened"
 }

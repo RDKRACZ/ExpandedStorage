@@ -1,5 +1,4 @@
 import com.gitlab.ninjaphenix.gradle.api.task.MinifyJsonTask
-import com.gitlab.ninjaphenix.gradle.api.task.ParamLocalObfuscatorTask
 import org.gradle.jvm.tasks.Jar
 
 plugins {
@@ -52,27 +51,14 @@ minecraft {
 }
 
 repositories {
-    //maven {
-    //    // JEI maven
-    //    name = "Progwml6 maven"
-    //    url = uri("https://dvs1.progwml6.com/files/maven/")
-    //}
-    //maven {
-    //    // JEI maven - fallback
-    //    name = "ModMaven"
-    //    url = uri("https://modmaven.k-4u.nl")
-    //}
-    mavenCentral()
     mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
     minecraft(libs.minecraft.forge)
-    val jei = (libs.jei.api as Provider<MinimalExternalModuleDependency>).get()
-    compileOnly(fg.deobf("${jei.module.group}:${jei.module.name}:${jei.versionConstraint.displayName}"))
     val cl = (libs.containerLibrary.forge as Provider<MinimalExternalModuleDependency>).get()
-    compileOnly(fg.deobf("${cl.module.group}:${cl.module.name}:${cl.versionConstraint.displayName}"))
-    runtimeOnly(fg.deobf("${cl.module.group}:${cl.module.name}:${cl.versionConstraint.displayName}"))
+    implementation(fg.deobf("${cl.module.group}:${cl.module.name}:${cl.versionConstraint.displayName}"))
     implementation(libs.jetbrainAnnotations)
 }
 
@@ -85,24 +71,22 @@ tasks.withType<ProcessResources> {
 }
 
 val jarTask = tasks.getByName<Jar>("jar") {
-    archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}-fat.jar")
-}
+    archiveClassifier.set("fat")
 
-jarTask.finalizedBy("reobfJar")
+    manifest.attributes(mapOf(
+            "Automatic-Module-Name" to "ninjaphenix.expandedstorage",
+    ))
+
+    this.finalizedBy("reobfJar")
+}
 
 val minifyJarTask = tasks.register<MinifyJsonTask>("minJar") {
     input.set(jarTask.outputs.files.singleFile)
-    archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}-min.jar")
+    archiveClassifier.set("")
+    from(rootDir.resolve("LICENSE"))
     dependsOn(jarTask)
 }
 
-val releaseJarTask = tasks.register<ParamLocalObfuscatorTask>("releaseJar") {
-    input.set(minifyJarTask.get().outputs.files.singleFile)
-    archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}.jar")
-    from(rootDir.resolve("LICENSE"))
-    dependsOn(minifyJarTask)
-}
-
 tasks.getByName("build") {
-    dependsOn(releaseJarTask)
+    dependsOn(minifyJarTask)
 }

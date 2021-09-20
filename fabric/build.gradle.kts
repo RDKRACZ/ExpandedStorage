@@ -1,5 +1,4 @@
 import com.gitlab.ninjaphenix.gradle.api.task.MinifyJsonTask
-import com.gitlab.ninjaphenix.gradle.api.task.ParamLocalObfuscatorTask
 import net.fabricmc.loom.task.RemapJarTask
 
 plugins {
@@ -15,6 +14,10 @@ loom {
         named("server") {
             ideConfigGenerated(false)
         }
+    }
+
+    mixin {
+        useLegacyMixinAp.set(true)
     }
 
     accessWidenerPath.set(file("src/common/resources/expandedstorage.accessWidener"))
@@ -54,32 +57,23 @@ repositories {
     mavenLocal()
 }
 
-val excludeFabric: (ExternalModuleDependency) -> Unit = {
+val excludeFabric: (ModuleDependency) -> Unit = {
     it.exclude("net.fabricmc")
+    it.exclude("net.fabricmc.fabric-api")
 }
 
 dependencies {
     minecraft(libs.minecraft.fabric)
-    mappings(loom.layered(nputils::applySilentMojangMappings))
+    mappings(loom.officialMojangMappings())
 
     modImplementation(libs.fabric.loader)
     modApi(libs.fabric.api)
+    modImplementation(libs.containerLibrary.fabric)
 
     // For chest module
     modCompileOnly(libs.statement, excludeFabric)
     modCompileOnly(libs.towelette, excludeFabric)
     modCompileOnly(libs.heyThatsMine)
-
-    // For base module
-    modCompileOnly(libs.rei.api, excludeFabric)
-    modRuntime(libs.rei)
-
-    modCompileOnly(libs.modmenu, excludeFabric)
-    modRuntime(libs.modmenu)
-
-    modCompileOnly(libs.amecs.api)
-
-    modImplementation(libs.containerLibrary.fabric)
 }
 
 tasks.withType<ProcessResources> {
@@ -90,27 +84,45 @@ tasks.withType<ProcessResources> {
     }
 }
 
-val remapJarTask : RemapJarTask = tasks.getByName<RemapJarTask>("remapJar") {
-    archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}-fat.jar")
+val updateForgeSources = tasks.register<net.fabricmc.loom.task.MigrateMappingsTask>("updateForgeSources") {
+    setInputDir(rootDir.toPath().resolve("common/fabricSrc/main/java").toString())
+    setOutputDir(rootDir.toPath().resolve("common/forgeSrc/main/java").toString())
+    setMappings("net.minecraft:mappings:${properties["minecraft_version"]}")
+}
+if (hasProperty("yv")) {
+    val updateCommonSources = tasks.register<net.fabricmc.loom.task.MigrateMappingsTask>("updateCommonSources") {
+        setInputDir(rootDir.toPath().resolve("common/fabricSrc/main/java").toString())
+        setOutputDir(rootDir.toPath().resolve("common/fabricSrc/main/java").toString())
+        setMappings("net.fabricmc:yarn:" + findProperty("yv") as String)
+    }
+
+    val updateFabricSources = tasks.register<net.fabricmc.loom.task.MigrateMappingsTask>("updateFabricSources") {
+        dependsOn(updateCommonSources)
+
+        setInputDir(rootDir.toPath().resolve("fabric/src/main/java").toString())
+        setOutputDir(rootDir.toPath().resolve("fabric/src/main/java").toString())
+        setMappings("net.fabricmc:yarn:" + findProperty("yv") as String)
+    }
 }
 
-tasks.getByName<Jar>("jar") {
-    archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}-dev.jar")
-}
+afterEvaluate {
+    val jarTask: Jar = tasks.getByName<Jar>("jar") {
+        archiveClassifier.set("dev")
+    }
 
-val minifyJarTask = tasks.register<MinifyJsonTask>("minJar") {
-    input.set(remapJarTask.outputs.files.singleFile)
-    archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}-min.jar")
-    dependsOn(remapJarTask)
-}
+    val remapJarTask: RemapJarTask = tasks.getByName<RemapJarTask>("remapJar") {
+        archiveClassifier.set("fat")
+        dependsOn(jarTask)
+    }
 
-val releaseJarTask = tasks.register<ParamLocalObfuscatorTask>("releaseJar") {
-    input.set(minifyJarTask.get().outputs.files.singleFile)
-    archiveFileName.set("${properties["archivesBaseName"]}-${properties["mod_version"]}+${properties["minecraft_version"]}.jar")
-    from(rootDir.resolve("LICENSE"))
-    dependsOn(minifyJarTask)
-}
+    val minifyJarTask = tasks.register<MinifyJsonTask>("minJar") {
+        input.set(remapJarTask.outputs.files.singleFile)
+        archiveClassifier.set("")
+        from(rootDir.resolve("LICENSE"))
+        dependsOn(remapJarTask)
+    }
 
-tasks.getByName("build") {
-    dependsOn(releaseJarTask)
+    tasks.getByName("build") {
+        dependsOn(minifyJarTask)
+    }
 }

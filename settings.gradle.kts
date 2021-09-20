@@ -6,6 +6,9 @@ pluginManagement {
             if (requested.id.toString() == "net.minecraftforge.gradle") {
                 useModule("net.minecraftforge.gradle:ForgeGradle:${requested.version}")
             }
+            if (requested.id.toString() == "ninjaphenix.minecraftforge.gradle") {
+                useModule("ninjaphenix.minecraftforge.gradle:ForgeGradle:${requested.version}")
+            }
         }
     }
     repositories {

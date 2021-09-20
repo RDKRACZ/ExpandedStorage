@@ -57,8 +57,8 @@ repositories {
 
 dependencies {
     minecraft(libs.minecraft.forge)
-    val cl = (libs.containerLibrary.forge as Provider<MinimalExternalModuleDependency>).get()
-    implementation(fg.deobf("${cl.module.group}:${cl.module.name}:${cl.versionConstraint.displayName}"))
+    implementation(fg.deobf(libs.containerLibrary.forge.asProvider()))
+    runtimeOnly(libs.containerLibrary.forge.runtime)
     implementation(libs.jetbrainAnnotations)
 }
 
@@ -73,16 +73,17 @@ tasks.withType<ProcessResources> {
 val jarTask = tasks.getByName<Jar>("jar") {
     archiveClassifier.set("fat")
 
-    manifest.attributes(mapOf(
-            "Automatic-Module-Name" to "ninjaphenix.expandedstorage",
-    ))
-
     this.finalizedBy("reobfJar")
 }
 
 val minifyJarTask = tasks.register<MinifyJsonTask>("minJar") {
     input.set(jarTask.outputs.files.singleFile)
     archiveClassifier.set("")
+
+    manifest.attributes(mapOf(
+            "Automatic-Module-Name" to "ninjaphenix.expandedstorage",
+    ))
+
     from(rootDir.resolve("LICENSE"))
     dependsOn(jarTask)
 }

@@ -20,7 +20,7 @@ loom {
         useLegacyMixinAp.set(true)
     }
 
-    accessWidenerPath.set(file("src/common/resources/expandedstorage.accessWidener"))
+    accessWidenerPath.set(file("src/main/resources/expandedstorage.accessWidener"))
 }
 
 repositories {

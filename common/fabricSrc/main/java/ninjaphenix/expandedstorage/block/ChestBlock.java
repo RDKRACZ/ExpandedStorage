@@ -72,11 +72,11 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState otherState, WorldAccess level, BlockPos pos, BlockPos otherPos) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState otherState, WorldAccess world, BlockPos pos, BlockPos otherPos) {
         if (state.get(Properties.WATERLOGGED)) {
-            level.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(level));
+            world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        return super.getStateForNeighborUpdate(state, direction, otherState, level, pos, otherPos);
+        return super.getStateForNeighborUpdate(state, direction, otherState, world, pos, otherPos);
     }
 
     @Override
@@ -86,22 +86,22 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World level, BlockState state, BlockEntityType<T> blockEntityType) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> blockEntityType) {
         boolean correctBET = blockEntityType == ChestCommon.getBlockEntityType();
-        return level.isClient() && correctBET ? (level1, pos, state1, entity) -> ChestBlockEntity.progressLidAnimation(level1, pos, state1, (ChestBlockEntity) entity) : null;
+        return world.isClient() && correctBET ? (world1, pos, state1, entity) -> ChestBlockEntity.progressLidAnimation(world1, pos, state1, (ChestBlockEntity) entity) : null;
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void scheduledTick(BlockState state, ServerWorld level, BlockPos pos, Random random) {
-        if (level.getBlockEntity(pos) instanceof ChestBlockEntity entity) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (world.getBlockEntity(pos) instanceof ChestBlockEntity entity) {
             entity.recountObservers();
         }
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getOutlineShape(BlockState state, BlockView getter, BlockPos pos, ShapeContext context) {
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext context) {
         CursedChestType type = state.get(AbstractChestBlock.CURSED_CHEST_TYPE);
         if (type == CursedChestType.TOP) {
             return ChestBlock.SHAPES[4];
@@ -133,21 +133,21 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean onSyncedBlockEvent(BlockState state, World level, BlockPos pos, int event, int value) {
-        super.onSyncedBlockEvent(state, level, pos, event, value);
-        BlockEntity blockEntity = level.getBlockEntity(pos);
+    public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int event, int value) {
+        super.onSyncedBlockEvent(state, world, pos, event, value);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         return blockEntity != null && blockEntity.onSyncedBlockEvent(event, value);
     }
 
     @Override
-    protected boolean isAccessBlocked(WorldAccess level, BlockPos pos) {
-        BlockState state = level.getBlockState(pos);
+    protected boolean isAccessBlocked(WorldAccess world, BlockPos pos) {
+        BlockState state = world.getBlockState(pos);
         BlockPos abovePos = pos.offset(FaceRotation.getRelativeDirection(Direction.UP, state.get(FACE_ROTATION), state.get(Y_ROTATION), state.get(PERP_ROTATION)));
-        return ChestBlock.isSolidBlockAt(level, abovePos) || ChestBlock.isCatSittingAt(level, pos, abovePos);
+        return ChestBlock.isSolidBlockAt(world, abovePos) || ChestBlock.isCatSittingAt(world, pos, abovePos);
     }
 
-    private static boolean isCatSittingAt(WorldAccess level, BlockPos chestPos, BlockPos abovePos) {
-        List<CatEntity> cats = level.getNonSpectatingEntities(CatEntity.class, new Box(chestPos, abovePos));
+    private static boolean isCatSittingAt(WorldAccess world, BlockPos chestPos, BlockPos abovePos) {
+        List<CatEntity> cats = world.getNonSpectatingEntities(CatEntity.class, new Box(chestPos, abovePos));
         for (CatEntity cat : cats) {
             if (cat.isInSittingPose()) {
                 return true;
@@ -156,7 +156,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
         return false;
     }
 
-    private static boolean isSolidBlockAt(WorldAccess level, BlockPos abovePos) {
-        return level.getBlockState(abovePos).isSolidBlock(level, abovePos);
+    private static boolean isSolidBlockAt(WorldAccess world, BlockPos abovePos) {
+        return world.getBlockState(abovePos).isSolidBlock(world, abovePos);
     }
 }

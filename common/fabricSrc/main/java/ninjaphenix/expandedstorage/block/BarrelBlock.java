@@ -50,16 +50,16 @@ public final class BarrelBlock extends AbstractOpenableStorageBlock implements I
 
     @Override
     @SuppressWarnings("deprecation")
-    public void scheduledTick(BlockState state, ServerWorld level, BlockPos pos, Random random) {
-        if (level.getBlockEntity(pos) instanceof BarrelBlockEntity entity) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (world.getBlockEntity(pos) instanceof BarrelBlockEntity entity) {
             entity.recountObservers();
         }
     }
 
     @Override
-    public SidedInventory getInventory(BlockState state, WorldAccess level, BlockPos pos) {
-        if (level.getBlockEntity(pos) instanceof BarrelBlockEntity entity) {
-            return entity.getContainerWrapper();
+    public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof BarrelBlockEntity entity) {
+            return entity.getInventory();
         }
         return null;
     }

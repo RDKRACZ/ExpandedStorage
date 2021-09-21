@@ -13,28 +13,27 @@ import java.util.function.UnaryOperator;
 @SuppressWarnings("ClassCanBeRecord")
 public class Tier {
     private final Identifier id;
-    private final UnaryOperator<Item.Settings> itemProperties;
-    private final UnaryOperator<AbstractBlock.Settings> blockProperties;
+    private final UnaryOperator<Item.Settings> itemSettings;
+    private final UnaryOperator<AbstractBlock.Settings> blockSettings;
     private final int slots;
 
-    public Tier(Identifier id, int slots, UnaryOperator<AbstractBlock.Settings> blockProperties,
-                UnaryOperator<Item.Settings> itemProperties) {
+    public Tier(Identifier id, int slots, UnaryOperator<AbstractBlock.Settings> blockSettings, UnaryOperator<Item.Settings> itemSettings) {
         this.id = id;
         this.slots = slots;
-        this.itemProperties = itemProperties;
-        this.blockProperties = blockProperties;
+        this.blockSettings = blockSettings;
+        this.itemSettings = itemSettings;
     }
 
     public final Identifier getId() {
         return id;
     }
 
-    public final UnaryOperator<Item.Settings> getItemProperties() {
-        return itemProperties;
+    public final UnaryOperator<Item.Settings> getItemSettings() {
+        return itemSettings;
     }
 
-    public UnaryOperator<AbstractBlock.Settings> getBlockProperties() {
-        return blockProperties;
+    public UnaryOperator<AbstractBlock.Settings> getBlockSettings() {
+        return blockSettings;
     }
 
     public final int getSlotCount() {

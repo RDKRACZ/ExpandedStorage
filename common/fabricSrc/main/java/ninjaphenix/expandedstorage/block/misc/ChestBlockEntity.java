@@ -61,8 +61,8 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
     }
 
     @Override
-    protected boolean isThis(Inventory container) {
-        return super.isThis(container) || container instanceof DoubleInventory compoundContainer && compoundContainer.isPart(this.getContainerWrapper());
+    protected boolean isThis(Inventory inventory) {
+        return super.isThis(inventory) || inventory instanceof DoubleInventory compoundContainer && compoundContainer.isPart(this.getInventory());
     }
 
     @Override

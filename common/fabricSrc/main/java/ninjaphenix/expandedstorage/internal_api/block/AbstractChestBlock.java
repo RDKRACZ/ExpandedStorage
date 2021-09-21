@@ -110,7 +110,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     @NotNull
     @Override
     public BlockState getPlacementState(ItemPlacementContext context) {
-        World level = context.getWorld();
+        World world = context.getWorld();
         BlockPos pos = context.getBlockPos();
         CursedChestType chestType = CursedChestType.SINGLE;
         Direction direction_1 = context.getPlayerFacing().getOpposite();
@@ -118,7 +118,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         if (context.shouldCancelInteraction()) {
             BlockState state;
             if (direction_2.getAxis().isVertical()) {
-                state = level.getBlockState(pos.offset(direction_2.getOpposite()));
+                state = world.getBlockState(pos.offset(direction_2.getOpposite()));
                 if (state.getBlock() == this && state.get(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
                     Direction direction_3 = state.get(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y);
                     if (direction_3.getAxis() != direction_2.getAxis() && direction_3 == direction_1) {
@@ -127,12 +127,12 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                 }
             } else {
                 Direction offsetDir = direction_2.getOpposite();
-                BlockState clickedBlock = level.getBlockState(pos.offset(offsetDir));
+                BlockState clickedBlock = world.getBlockState(pos.offset(offsetDir));
                 if (clickedBlock.getBlock() == this && clickedBlock.get(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
                     if (clickedBlock.get(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y) == direction_2 && clickedBlock.get(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y) == direction_1) {
                         chestType = CursedChestType.FRONT;
                     } else {
-                        state = level.getBlockState(pos.offset(direction_2.getOpposite()));
+                        state = world.getBlockState(pos.offset(direction_2.getOpposite()));
                         if (state.get(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y).getHorizontal() < 2) {
                             offsetDir = offsetDir.getOpposite();
                         }
@@ -144,7 +144,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
             }
         } else {
             for (Direction dir : Direction.values()) {
-                BlockState state = level.getBlockState(pos.offset(dir));
+                BlockState state = world.getBlockState(pos.offset(dir));
                 if (state.getBlock() != this || state.get(AbstractChestBlock.CURSED_CHEST_TYPE) != CursedChestType.SINGLE || state.get(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y) != direction_1) {
                     continue;
                 }
@@ -160,7 +160,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
 
     @Override
     @SuppressWarnings("deprecation")
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction offset, BlockState offsetState, WorldAccess level,
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction offset, BlockState offsetState, WorldAccess world,
                                                 BlockPos pos, BlockPos offsetPos) {
         DoubleBlockProperties.Type mergeType = AbstractChestBlock.getBlockType(state);
         if (mergeType == DoubleBlockProperties.Type.SINGLE) {
@@ -172,10 +172,10 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
             if (offsetState.get(AbstractChestBlock.CURSED_CHEST_TYPE) == newType.getOpposite() && facing == offsetState.get(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y)) {
                 return state.with(AbstractChestBlock.CURSED_CHEST_TYPE, newType);
             }
-        } else if (level.getBlockState(pos.offset(AbstractChestBlock.getDirectionToAttached(state))).getBlock() != this) {
+        } else if (world.getBlockState(pos.offset(AbstractChestBlock.getDirectionToAttached(state))).getBlock() != this) {
             return state.with(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE);
         }
-        return super.getStateForNeighborUpdate(state, offset, offsetState, level, pos, offsetPos);
+        return super.getStateForNeighborUpdate(state, offset, offsetState, world, pos, offsetPos);
     }
 
     protected void appendAdditionalStateDefinitions(StateManager.Builder<Block, BlockState> builder) {
@@ -194,27 +194,27 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         return state.with(AbstractChestBlock.Y_ROTATION, state.get(AbstractChestBlock.Y_ROTATION).rotated(rotation));
     }
 
-    public static <A extends AbstractOpenableStorageBlockEntity> PropertyRetriever<A> createPropertyRetriever(AbstractChestBlock<A> block, BlockState state, WorldAccess level, BlockPos pos, boolean alwaysOpen) {
-        //BiPredicate<LevelAccessor, BlockPos> isChestBlocked = alwaysOpen ? (_level, _pos) -> false : block::isAccessBlocked;
+    public static <A extends AbstractOpenableStorageBlockEntity> PropertyRetriever<A> createPropertyRetriever(AbstractChestBlock<A> block, BlockState state, WorldAccess world, BlockPos pos, boolean alwaysOpen) {
+        //BiPredicate<WorldAccessor, BlockPos> isChestBlocked = alwaysOpen ? (_world, _pos) -> false : block::isAccessBlocked;
         //return DoubleBlockCombiner.combineWithNeigbour(block.getBlockEntityType(), AbstractChestBlock::getBlockType,
-        //        AbstractChestBlock::getDirectionToAttached, AbstractChestBlock.Y_ROTATION, state, level, pos, isChestBlocked);
+        //        AbstractChestBlock::getDirectionToAttached, AbstractChestBlock.Y_ROTATION, state, world, pos, isChestBlocked);
         // todo: reimplement
-        return PropertyRetriever.create(level, state, pos);
+        return PropertyRetriever.create(world, state, pos);
     }
 
     protected abstract BlockEntityType<T> getBlockEntityType();
 
-    protected boolean isAccessBlocked(WorldAccess level, BlockPos pos) {
+    protected boolean isAccessBlocked(WorldAccess world, BlockPos pos) {
         return false;
     }
 
     @Override
-    public OpenableBlockEntity getOpenableBlockEntity(World level, BlockState state, BlockPos pos) {
+    public OpenableBlockEntity getOpenableBlockEntity(World world, BlockState state, BlockPos pos) {
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
-            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, level, pos, false).get(new Property<>() {
+            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, world, pos, false).get(new Property<>() {
                 @Override
                 public OpenableBlockEntity get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
-                    Text name = first.hasCustomName() ? first.getDisplayName() : second.hasCustomName() ? second.getDisplayName() : Utils.translation("container.expandedstorage.generic_double", first.getDisplayName());
+                    Text name = first.hasCustomTitle() ? first.getTitle() : second.hasCustomTitle() ? second.getTitle() : Utils.translation("container.expandedstorage.generic_double", first.getTitle());
                     return new OpenableBlockEntities(name, first, second);
                 }
 
@@ -228,17 +228,17 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     }
 
     @Override
-    public SidedInventory getInventory(BlockState state, WorldAccess level, BlockPos pos) {
+    public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
-            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, level, pos, false).get(new Property<>() {
+            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, world, pos, false).get(new Property<>() {
                 @Override
                 public SidedInventory get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
-                    return VariableSidedInventory.of(first.getContainerWrapper(), second.getContainerWrapper());
+                    return VariableSidedInventory.of(first.getInventory(), second.getInventory());
                 }
 
                 @Override
                 public SidedInventory get(AbstractOpenableStorageBlockEntity single) {
-                    return single.getContainerWrapper();
+                    return single.getInventory();
                 }
             });
         }

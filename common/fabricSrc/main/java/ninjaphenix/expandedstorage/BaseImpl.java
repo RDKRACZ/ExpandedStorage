@@ -18,7 +18,6 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 public final class BaseImpl implements BaseApi {
@@ -41,13 +40,13 @@ public final class BaseImpl implements BaseApi {
     }
 
     @Override
-    public Optional<BlockUpgradeBehaviour> getBlockUpgradeBehaviour(Block block) {
+    public BlockUpgradeBehaviour getBlockUpgradeBehaviour(Block block) {
         for (Map.Entry<Predicate<Block>, BlockUpgradeBehaviour> entry : BLOCK_UPGRADE_BEHAVIOURS.entrySet()) {
             if (entry.getKey().test(block)) {
-                return Optional.of(entry.getValue());
+                return entry.getValue();
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     @Override
@@ -62,10 +61,10 @@ public final class BaseImpl implements BaseApi {
             Tier fromTier = tiers[fromIndex];
             for (int toIndex = fromIndex + 1; toIndex < numTiers; toIndex++) {
                 Tier toTier = tiers[toIndex];
-                Identifier itemId = Utils.resloc(fromTier.getId().getPath() + "_to_" + toTier.getId().getPath() + "_conversion_kit");
+                Identifier itemId = Utils.id(fromTier.getId().getPath() + "_to_" + toTier.getId().getPath() + "_conversion_kit");
                 if (!items.containsKey(itemId)) {
-                    Item.Settings properties = fromTier.getItemProperties()
-                                                       .andThen(toTier.getItemProperties())
+                    Item.Settings properties = fromTier.getItemSettings()
+                                                       .andThen(toTier.getItemSettings())
                                                        .apply(new Item.Settings().group(Utils.TAB).maxCount(16));
                     Item kit = new StorageConversionKit(properties, fromTier.getId(), toTier.getId());
                     this.register(itemId, kit);

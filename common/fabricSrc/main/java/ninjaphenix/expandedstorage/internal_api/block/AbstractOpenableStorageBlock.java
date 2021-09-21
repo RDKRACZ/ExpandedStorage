@@ -33,9 +33,9 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
     private final Identifier openingStat;
     private final int slots;
 
-    public AbstractOpenableStorageBlock(AbstractBlock.Settings properties, Identifier blockId, Identifier blockTier,
+    public AbstractOpenableStorageBlock(AbstractBlock.Settings settings, Identifier blockId, Identifier blockTier,
                                         Identifier openingStat, int slots) {
-        super(properties, blockId, blockTier);
+        super(settings, blockId, blockTier);
         this.openingStat = openingStat;
         this.slots = slots;
     }
@@ -44,14 +44,14 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
         return slots;
     }
 
-    public final Text getMenuTitle() {
+    public final Text getInventoryTitle() {
         return new TranslatableText(this.getTranslationKey());
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public final ActionResult onUse(BlockState state, World level, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (level.isClient()) {
+    public final ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (world.isClient()) {
             NCL_ClientApi.openInventoryAt(pos);
             return ActionResult.SUCCESS;
         }
@@ -59,20 +59,20 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable BlockView getter, List<Text> tooltip, TooltipContext flag) {
-        super.appendTooltip(stack, getter, tooltip, flag);
+    public void appendTooltip(ItemStack stack, @Nullable BlockView view, List<Text> tooltip, TooltipContext flag) {
+        super.appendTooltip(stack, view, tooltip, flag);
         tooltip.add(new TranslatableText("tooltip.expandedstorage.stores_x_stacks", slots).formatted(Formatting.GRAY));
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void onStateReplaced(BlockState state, World level, BlockPos pos, BlockState newState, boolean bl) {
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean bl) {
         if (!state.isOf(newState.getBlock())) {
-            if (level.getBlockEntity(pos) instanceof AbstractOpenableStorageBlockEntity entity) {
-                ItemScatterer.spawn(level, pos, entity.getItems());
-                level.updateComparators(pos, this);
+            if (world.getBlockEntity(pos) instanceof AbstractOpenableStorageBlockEntity entity) {
+                ItemScatterer.spawn(world, pos, entity.getItems());
+                world.updateComparators(pos, this);
             }
-            super.onStateReplaced(state, level, pos, newState, bl);
+            super.onStateReplaced(state, world, pos, newState, bl);
         }
     }
 

@@ -27,7 +27,7 @@ public final class Utils {
             new KeybindText("key.sneak").formatted(Formatting.GOLD),
             new KeybindText("key.use").formatted(Formatting.GOLD));
 
-    // Slots for Storage Tiers
+    // Slots for storage tiers
     public static final int WOOD_STACK_COUNT = 27;
     public static final int IRON_STACK_COUNT = 54;
     public static final int GOLD_STACK_COUNT = 81;
@@ -35,13 +35,13 @@ public final class Utils {
     public static final int OBSIDIAN_STACK_COUNT = 108;
     public static final int NETHERITE_STACK_COUNT = 135;
 
-    // Default tiers which all modules can, but don't need to, specify blocks for.
-    public static final Tier WOOD_TIER = new Tier(Utils.resloc("wood"), WOOD_STACK_COUNT, UnaryOperator.identity(), UnaryOperator.identity());
-    public static final Tier IRON_TIER = new Tier(Utils.resloc("iron"), IRON_STACK_COUNT, AbstractBlock.Settings::requiresTool, UnaryOperator.identity());
-    public static final Tier GOLD_TIER = new Tier(Utils.resloc("gold"), GOLD_STACK_COUNT, AbstractBlock.Settings::requiresTool, UnaryOperator.identity());
-    public static final Tier DIAMOND_TIER = new Tier(Utils.resloc("diamond"), DIAMOND_STACK_COUNT, AbstractBlock.Settings::requiresTool, UnaryOperator.identity());
-    public static final Tier OBSIDIAN_TIER = new Tier(Utils.resloc("obsidian"), OBSIDIAN_STACK_COUNT, AbstractBlock.Settings::requiresTool, UnaryOperator.identity());
-    public static final Tier NETHERITE_TIER = new Tier(Utils.resloc("netherite"), NETHERITE_STACK_COUNT, AbstractBlock.Settings::requiresTool, Item.Settings::fireproof);
+    // Default tiers
+    public static final Tier WOOD_TIER = new Tier(Utils.id("wood"), WOOD_STACK_COUNT, UnaryOperator.identity(), UnaryOperator.identity());
+    public static final Tier IRON_TIER = new Tier(Utils.id("iron"), IRON_STACK_COUNT, AbstractBlock.Settings::requiresTool, UnaryOperator.identity());
+    public static final Tier GOLD_TIER = new Tier(Utils.id("gold"), GOLD_STACK_COUNT, AbstractBlock.Settings::requiresTool, UnaryOperator.identity());
+    public static final Tier DIAMOND_TIER = new Tier(Utils.id("diamond"), DIAMOND_STACK_COUNT, AbstractBlock.Settings::requiresTool, UnaryOperator.identity());
+    public static final Tier OBSIDIAN_TIER = new Tier(Utils.id("obsidian"), OBSIDIAN_STACK_COUNT, AbstractBlock.Settings::requiresTool, UnaryOperator.identity());
+    public static final Tier NETHERITE_TIER = new Tier(Utils.id("netherite"), NETHERITE_STACK_COUNT, AbstractBlock.Settings::requiresTool, Item.Settings::fireproof);
 
     // Item Cooldown
     public static final int QUARTER_SECOND = 5;
@@ -51,7 +51,7 @@ public final class Utils {
     }
 
     @Internal
-    public static Identifier resloc(String path) {
+    public static Identifier id(String path) {
         return new Identifier(Utils.MOD_ID, path);
     }
 

@@ -2,7 +2,7 @@ package ninjaphenix.expandedstorage;
 
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.util.Identifier;
-import ninjaphenix.expandedstorage.internal_api.ChestApi;
+import ninjaphenix.expandedstorage.client.ChestApi;
 import ninjaphenix.expandedstorage.internal_api.block.misc.CursedChestType;
 
 import java.util.HashMap;

@@ -42,7 +42,7 @@ public abstract class HTMOpenableBlockEntitySupport extends AbstractStorageBlock
     }
 
     @Override
-    public boolean canPlayerInteractWith(ServerPlayerEntity player) {
+    public boolean usableBy(ServerPlayerEntity player) {
         return htmLock.canOpen(player);
     }
 

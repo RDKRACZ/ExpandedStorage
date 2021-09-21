@@ -26,7 +26,6 @@ import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
-import ninjaphenix.expandedstorage.internal_api.ChestApi;
 import ninjaphenix.expandedstorage.internal_api.Utils;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
 import ninjaphenix.expandedstorage.internal_api.block.misc.CursedChestType;
@@ -36,14 +35,14 @@ import ninjaphenix.expandedstorage.internal_api.block.misc.PropertyRetriever;
 
 public final class ChestBlockEntityRenderer implements BlockEntityRenderer<ChestBlockEntity> {
     // todo: hopefully we can remove this mess once *hopefully* this is all json, 1.18
-    public static final EntityModelLayer SINGLE_LAYER = new EntityModelLayer(Utils.resloc("single_chest"), "main");
-    public static final EntityModelLayer LEFT_LAYER = new EntityModelLayer(Utils.resloc("left_chest"), "main");
-    public static final EntityModelLayer RIGHT_LAYER = new EntityModelLayer(Utils.resloc("right_chest"), "main");
-    public static final EntityModelLayer TOP_LAYER = new EntityModelLayer(Utils.resloc("top_chest"), "main");
-    public static final EntityModelLayer BOTTOM_LAYER = new EntityModelLayer(Utils.resloc("bottom_chest"), "main");
-    public static final EntityModelLayer FRONT_LAYER = new EntityModelLayer(Utils.resloc("front_chest"), "main");
-    public static final EntityModelLayer BACK_LAYER = new EntityModelLayer(Utils.resloc("back_chest"), "main");
-    private static final BlockState DEFAULT_STATE = Registry.BLOCK.get(Utils.resloc("wood_chest")).getDefaultState();
+    public static final EntityModelLayer SINGLE_LAYER = new EntityModelLayer(Utils.id("single_chest"), "main");
+    public static final EntityModelLayer LEFT_LAYER = new EntityModelLayer(Utils.id("left_chest"), "main");
+    public static final EntityModelLayer RIGHT_LAYER = new EntityModelLayer(Utils.id("right_chest"), "main");
+    public static final EntityModelLayer TOP_LAYER = new EntityModelLayer(Utils.id("top_chest"), "main");
+    public static final EntityModelLayer BOTTOM_LAYER = new EntityModelLayer(Utils.id("bottom_chest"), "main");
+    public static final EntityModelLayer FRONT_LAYER = new EntityModelLayer(Utils.id("front_chest"), "main");
+    public static final EntityModelLayer BACK_LAYER = new EntityModelLayer(Utils.id("back_chest"), "main");
+    private static final BlockState DEFAULT_STATE = Registry.BLOCK.get(Utils.id("wood_chest")).getDefaultState();
 
     private static final Property<ChestBlockEntity, Float2FloatFunction> LID_OPENNESS_FUNCTION_GETTER = new Property<>() {
         @Override

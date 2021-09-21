@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public final class BarrelCommon {
-    public static final Identifier BLOCK_TYPE = Utils.resloc("barrel");
+    public static final Identifier BLOCK_TYPE = Utils.id("barrel");
     private static final int ICON_SUITABILITY = 998;
     private static BlockEntityType<BarrelBlockEntity> blockEntityType;
 
@@ -55,11 +55,11 @@ public final class BarrelCommon {
                                 Consumer<BlockEntityType<BarrelBlockEntity>> blockEntityTypeConsumer,
                                 net.minecraft.tag.Tag<Block> woodenBarrelTag) {
         // Init and register opening stats
-        Identifier ironOpenStat = BaseCommon.registerStat(Utils.resloc("open_iron_barrel"));
-        Identifier goldOpenStat = BaseCommon.registerStat(Utils.resloc("open_gold_barrel"));
-        Identifier diamondOpenStat = BaseCommon.registerStat(Utils.resloc("open_diamond_barrel"));
-        Identifier obsidianOpenStat = BaseCommon.registerStat(Utils.resloc("open_obsidian_barrel"));
-        Identifier netheriteOpenStat = BaseCommon.registerStat(Utils.resloc("open_netherite_barrel"));
+        Identifier ironOpenStat = BaseCommon.registerStat(Utils.id("open_iron_barrel"));
+        Identifier goldOpenStat = BaseCommon.registerStat(Utils.id("open_gold_barrel"));
+        Identifier diamondOpenStat = BaseCommon.registerStat(Utils.id("open_diamond_barrel"));
+        Identifier obsidianOpenStat = BaseCommon.registerStat(Utils.id("open_obsidian_barrel"));
+        Identifier netheriteOpenStat = BaseCommon.registerStat(Utils.id("open_netherite_barrel"));
         // Init block properties
         AbstractBlock.Settings ironProperties = AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN)
                                                                       .strength(5.0F, 6.0F)
@@ -77,11 +77,11 @@ public final class BarrelCommon {
                                                                            .strength(50.0F, 1200.0F)
                                                                            .sounds(BlockSoundGroup.WOOD);
         // Init blocks
-        BarrelBlock ironBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("iron_barrel"), ironOpenStat, Utils.IRON_TIER, ironProperties);
-        BarrelBlock goldBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("gold_barrel"), goldOpenStat, Utils.GOLD_TIER, goldProperties);
-        BarrelBlock diamondBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("diamond_barrel"), diamondOpenStat, Utils.DIAMOND_TIER, diamondProperties);
-        BarrelBlock obsidianBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("obsidian_barrel"), obsidianOpenStat, Utils.OBSIDIAN_TIER, obsidianProperties);
-        BarrelBlock netheriteBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("netherite_barrel"), netheriteOpenStat, Utils.NETHERITE_TIER, netheriteProperties);
+        BarrelBlock ironBarrelBlock = BarrelCommon.barrelBlock(Utils.id("iron_barrel"), ironOpenStat, Utils.IRON_TIER, ironProperties);
+        BarrelBlock goldBarrelBlock = BarrelCommon.barrelBlock(Utils.id("gold_barrel"), goldOpenStat, Utils.GOLD_TIER, goldProperties);
+        BarrelBlock diamondBarrelBlock = BarrelCommon.barrelBlock(Utils.id("diamond_barrel"), diamondOpenStat, Utils.DIAMOND_TIER, diamondProperties);
+        BarrelBlock obsidianBarrelBlock = BarrelCommon.barrelBlock(Utils.id("obsidian_barrel"), obsidianOpenStat, Utils.OBSIDIAN_TIER, obsidianProperties);
+        BarrelBlock netheriteBarrelBlock = BarrelCommon.barrelBlock(Utils.id("netherite_barrel"), netheriteOpenStat, Utils.NETHERITE_TIER, netheriteProperties);
         Set<BarrelBlock> blocks = ImmutableSet.copyOf(new BarrelBlock[]{ironBarrelBlock, goldBarrelBlock, diamondBarrelBlock, obsidianBarrelBlock, netheriteBarrelBlock});
         blockReg.accept(blocks);
         // Init items
@@ -103,24 +103,24 @@ public final class BarrelCommon {
     }
 
     private static BarrelBlock barrelBlock(Identifier blockId, Identifier stat, Tier tier, AbstractBlock.Settings properties) {
-        BarrelBlock block = new BarrelBlock(tier.getBlockProperties().apply(properties), blockId, tier.getId(), stat, tier.getSlotCount());
+        BarrelBlock block = new BarrelBlock(tier.getBlockSettings().apply(properties), blockId, tier.getId(), stat, tier.getSlotCount());
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
     }
 
     private static BlockItem barrelItem(Tier tier, BarrelBlock block) {
-        return new BlockItem(block, tier.getItemProperties().apply(new Item.Settings().group(Utils.TAB)));
+        return new BlockItem(block, tier.getItemSettings().apply(new Item.Settings().group(Utils.TAB)));
     }
 
     private static boolean tryUpgradeBlock(ItemUsageContext context, Identifier from, Identifier to) {
-        World level = context.getWorld();
+        World world = context.getWorld();
         BlockPos pos = context.getBlockPos();
-        BlockState state = level.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
         boolean isExpandedStorageBarrel = block instanceof BarrelBlock;
         int containerSize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : ((BarrelBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, ((BarrelBlock) block).getBlockTier())).getSlotCount();
         if (isExpandedStorageBarrel && ((BarrelBlock) block).getBlockTier() == from || !isExpandedStorageBarrel && from == Utils.WOOD_TIER.getId()) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
+            BlockEntity blockEntity = world.getBlockEntity(pos);
             //noinspection ConstantConditions
             NbtCompound tag = blockEntity.writeNbt(new NbtCompound());
             boolean verifiedSize = blockEntity instanceof Inventory container && container.size() == containerSize;
@@ -137,10 +137,10 @@ public final class BarrelCommon {
                 DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
                 ContainerLock code = ContainerLock.fromNbt(tag);
                 Inventories.readNbt(tag, inventory);
-                level.removeBlockEntity(pos);
+                world.removeBlockEntity(pos);
                 BlockState newState = toBlock.getDefaultState().with(Properties.FACING, state.get(Properties.FACING));
-                if (level.setBlockState(pos, newState)) {
-                    BlockEntity newEntity = level.getBlockEntity(pos);
+                if (world.setBlockState(pos, newState)) {
+                    BlockEntity newEntity = world.getBlockEntity(pos);
                     //noinspection ConstantConditions
                     NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
                     Inventories.writeNbt(newTag, inventory);

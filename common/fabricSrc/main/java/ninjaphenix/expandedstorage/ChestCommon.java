@@ -30,7 +30,7 @@ import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.internal_api.BaseApi;
-import ninjaphenix.expandedstorage.internal_api.ChestApi;
+import ninjaphenix.expandedstorage.client.ChestApi;
 import ninjaphenix.expandedstorage.internal_api.Utils;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.internal_api.block.misc.CursedChestType;
@@ -45,7 +45,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public final class ChestCommon {
-    public static final Identifier BLOCK_TYPE = Utils.resloc("cursed_chest");
+    public static final Identifier BLOCK_TYPE = Utils.id("cursed_chest");
     private static final int ICON_SUITABILITY = 1000;
     private static BlockEntityType<ChestBlockEntity> blockEntityType;
 
@@ -59,14 +59,14 @@ public final class ChestCommon {
                                 net.minecraft.tag.Tag<Block> woodenChestTag,
                                 BiFunction<Block, Item.Settings, BlockItem> blockItemMaker) {
         // Init and register opening stats
-        Identifier woodOpenStat = BaseCommon.registerStat(Utils.resloc("open_wood_chest"));
-        Identifier pumpkinOpenStat = BaseCommon.registerStat(Utils.resloc("open_pumpkin_chest"));
-        Identifier christmasOpenStat = BaseCommon.registerStat(Utils.resloc("open_christmas_chest"));
-        Identifier ironOpenStat = BaseCommon.registerStat(Utils.resloc("open_iron_chest"));
-        Identifier goldOpenStat = BaseCommon.registerStat(Utils.resloc("open_gold_chest"));
-        Identifier diamondOpenStat = BaseCommon.registerStat(Utils.resloc("open_diamond_chest"));
-        Identifier obsidianOpenStat = BaseCommon.registerStat(Utils.resloc("open_obsidian_chest"));
-        Identifier netheriteOpenStat = BaseCommon.registerStat(Utils.resloc("open_netherite_chest"));
+        Identifier woodOpenStat = BaseCommon.registerStat(Utils.id("open_wood_chest"));
+        Identifier pumpkinOpenStat = BaseCommon.registerStat(Utils.id("open_pumpkin_chest"));
+        Identifier christmasOpenStat = BaseCommon.registerStat(Utils.id("open_christmas_chest"));
+        Identifier ironOpenStat = BaseCommon.registerStat(Utils.id("open_iron_chest"));
+        Identifier goldOpenStat = BaseCommon.registerStat(Utils.id("open_gold_chest"));
+        Identifier diamondOpenStat = BaseCommon.registerStat(Utils.id("open_diamond_chest"));
+        Identifier obsidianOpenStat = BaseCommon.registerStat(Utils.id("open_obsidian_chest"));
+        Identifier netheriteOpenStat = BaseCommon.registerStat(Utils.id("open_netherite_chest"));
         // Init block properties
         AbstractBlock.Settings woodProperties = AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN)
                                                                       .strength(2.5F)
@@ -92,14 +92,14 @@ public final class ChestCommon {
                                                                            .strength(50.0F, 1200.0F)
                                                                            .sounds(BlockSoundGroup.NETHERITE);
         // Init and register blocks
-        ChestBlock woodChestBlock = ChestCommon.chestBlock(Utils.resloc("wood_chest"), woodOpenStat, Utils.WOOD_TIER, woodProperties);
-        ChestBlock pumpkinChestBlock = ChestCommon.chestBlock(Utils.resloc("pumpkin_chest"), pumpkinOpenStat, Utils.WOOD_TIER, pumpkinProperties);
-        ChestBlock christmasChestBlock = ChestCommon.chestBlock(Utils.resloc("christmas_chest"), christmasOpenStat, Utils.WOOD_TIER, christmasProperties);
-        ChestBlock ironChestBlock = ChestCommon.chestBlock(Utils.resloc("iron_chest"), ironOpenStat, Utils.IRON_TIER, ironProperties);
-        ChestBlock goldChestBlock = ChestCommon.chestBlock(Utils.resloc("gold_chest"), goldOpenStat, Utils.GOLD_TIER, goldProperties);
-        ChestBlock diamondChestBlock = ChestCommon.chestBlock(Utils.resloc("diamond_chest"), diamondOpenStat, Utils.DIAMOND_TIER, diamondProperties);
-        ChestBlock obsidianChestBlock = ChestCommon.chestBlock(Utils.resloc("obsidian_chest"), obsidianOpenStat, Utils.OBSIDIAN_TIER, obsidianProperties);
-        ChestBlock netheriteChestBlock = ChestCommon.chestBlock(Utils.resloc("netherite_chest"), netheriteOpenStat, Utils.NETHERITE_TIER, netheriteProperties);
+        ChestBlock woodChestBlock = ChestCommon.chestBlock(Utils.id("wood_chest"), woodOpenStat, Utils.WOOD_TIER, woodProperties);
+        ChestBlock pumpkinChestBlock = ChestCommon.chestBlock(Utils.id("pumpkin_chest"), pumpkinOpenStat, Utils.WOOD_TIER, pumpkinProperties);
+        ChestBlock christmasChestBlock = ChestCommon.chestBlock(Utils.id("christmas_chest"), christmasOpenStat, Utils.WOOD_TIER, christmasProperties);
+        ChestBlock ironChestBlock = ChestCommon.chestBlock(Utils.id("iron_chest"), ironOpenStat, Utils.IRON_TIER, ironProperties);
+        ChestBlock goldChestBlock = ChestCommon.chestBlock(Utils.id("gold_chest"), goldOpenStat, Utils.GOLD_TIER, goldProperties);
+        ChestBlock diamondChestBlock = ChestCommon.chestBlock(Utils.id("diamond_chest"), diamondOpenStat, Utils.DIAMOND_TIER, diamondProperties);
+        ChestBlock obsidianChestBlock = ChestCommon.chestBlock(Utils.id("obsidian_chest"), obsidianOpenStat, Utils.OBSIDIAN_TIER, obsidianProperties);
+        ChestBlock netheriteChestBlock = ChestCommon.chestBlock(Utils.id("netherite_chest"), netheriteOpenStat, Utils.NETHERITE_TIER, netheriteProperties);
         Set<ChestBlock> blocks = ImmutableSet.copyOf(new ChestBlock[]{woodChestBlock, pumpkinChestBlock, christmasChestBlock, ironChestBlock, goldChestBlock, diamondChestBlock, obsidianChestBlock, netheriteChestBlock});
         blockReg.accept(blocks);
         // Init and register items
@@ -128,13 +128,13 @@ public final class ChestCommon {
     }
 
     private static ChestBlock chestBlock(Identifier blockId, Identifier stat, Tier tier, AbstractBlock.Settings properties) {
-        ChestBlock block = new ChestBlock(tier.getBlockProperties().apply(properties.dynamicBounds()), blockId, tier.getId(), stat, tier.getSlotCount());
+        ChestBlock block = new ChestBlock(tier.getBlockSettings().apply(properties.dynamicBounds()), blockId, tier.getId(), stat, tier.getSlotCount());
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
     }
 
     private static BlockItem chestItem(Tier tier, ChestBlock block, BiFunction<Block, Item.Settings, BlockItem> blockItemMaker) {
-        return blockItemMaker.apply(block, tier.getItemProperties().apply(new Item.Settings().group(Utils.TAB)));
+        return blockItemMaker.apply(block, tier.getItemSettings().apply(new Item.Settings().group(Utils.TAB)));
     }
 
     static Set<Identifier> getChestTextures(Set<ChestBlock> blocks) {
@@ -152,45 +152,45 @@ public final class ChestCommon {
         for (ChestBlock block : blocks) {
             Identifier blockId = block.getBlockId();
             ChestApi.INSTANCE.declareChestTextures(
-                    blockId, Utils.resloc("entity/" + blockId.getPath() + "/single"),
-                    Utils.resloc("entity/" + blockId.getPath() + "/left"),
-                    Utils.resloc("entity/" + blockId.getPath() + "/right"),
-                    Utils.resloc("entity/" + blockId.getPath() + "/top"),
-                    Utils.resloc("entity/" + blockId.getPath() + "/bottom"),
-                    Utils.resloc("entity/" + blockId.getPath() + "/front"),
-                    Utils.resloc("entity/" + blockId.getPath() + "/back"));
+                    blockId, Utils.id("entity/" + blockId.getPath() + "/single"),
+                    Utils.id("entity/" + blockId.getPath() + "/left"),
+                    Utils.id("entity/" + blockId.getPath() + "/right"),
+                    Utils.id("entity/" + blockId.getPath() + "/top"),
+                    Utils.id("entity/" + blockId.getPath() + "/bottom"),
+                    Utils.id("entity/" + blockId.getPath() + "/front"),
+                    Utils.id("entity/" + blockId.getPath() + "/back"));
         }
     }
 
     private static boolean tryUpgradeBlock(ItemUsageContext context, Identifier from, Identifier to) {
-        World level = context.getWorld();
+        World world = context.getWorld();
         BlockPos pos = context.getBlockPos();
-        BlockState state = level.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
         PlayerEntity player = context.getPlayer();
         ItemStack handStack = context.getStack();
         if (state.getBlock() instanceof ChestBlock) {
             if (ChestBlock.getBlockType(state) == DoubleBlockProperties.Type.SINGLE) {
-                ChestCommon.upgradeSingleBlock(level, state, pos, from, to);
+                ChestCommon.upgradeSingleBlock(world, state, pos, from, to);
                 handStack.decrement(1);
                 return true;
             } else if (handStack.getCount() > 1 || (player != null && player.isCreative())) {
                 BlockPos otherPos = pos.offset(ChestBlock.getDirectionToAttached(state));
-                BlockState otherState = level.getBlockState(otherPos);
-                ChestCommon.upgradeSingleBlock(level, state, pos, from, to);
-                ChestCommon.upgradeSingleBlock(level, otherState, otherPos, from, to);
+                BlockState otherState = world.getBlockState(otherPos);
+                ChestCommon.upgradeSingleBlock(world, state, pos, from, to);
+                ChestCommon.upgradeSingleBlock(world, otherState, otherPos, from, to);
                 handStack.decrement(2);
                 return true;
             }
         } else {
             if (net.minecraft.block.ChestBlock.getDoubleBlockType(state) == DoubleBlockProperties.Type.SINGLE) {
-                ChestCommon.upgradeSingleBlock(level, state, pos, from, to);
+                ChestCommon.upgradeSingleBlock(world, state, pos, from, to);
                 handStack.decrement(1);
                 return true;
             } else if (handStack.getCount() > 1 || (player != null && player.isCreative())) {
                 BlockPos otherPos = pos.offset(net.minecraft.block.ChestBlock.getFacing(state));
-                BlockState otherState = level.getBlockState(otherPos);
-                ChestCommon.upgradeSingleBlock(level, state, pos, from, to);
-                ChestCommon.upgradeSingleBlock(level, otherState, otherPos, from, to);
+                BlockState otherState = world.getBlockState(otherPos);
+                ChestCommon.upgradeSingleBlock(world, state, pos, from, to);
+                ChestCommon.upgradeSingleBlock(world, otherState, otherPos, from, to);
                 handStack.decrement(2);
                 return true;
             }
@@ -199,12 +199,12 @@ public final class ChestCommon {
         return false;
     }
 
-    private static void upgradeSingleBlock(World level, BlockState state, BlockPos pos, Identifier from, Identifier to) {
+    private static void upgradeSingleBlock(World world, BlockState state, BlockPos pos, Identifier from, Identifier to) {
         Block block = state.getBlock();
         boolean isExpandedStorageChest = block instanceof ChestBlock;
         int containerSize = !isExpandedStorageChest ? Utils.WOOD_STACK_COUNT : ((ChestBlock) BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, ((ChestBlock) block).getBlockTier())).getSlotCount();
         if (isExpandedStorageChest && ((ChestBlock) block).getBlockTier() == from || !isExpandedStorageChest && from == Utils.WOOD_TIER.getId()) {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
+            BlockEntity blockEntity = world.getBlockEntity(pos);
             //noinspection ConstantConditions
             NbtCompound tag = blockEntity.writeNbt(new NbtCompound());
             boolean verifiedSize = blockEntity instanceof Inventory container && container.size() == containerSize;
@@ -221,7 +221,7 @@ public final class ChestCommon {
                 DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
                 ContainerLock code = ContainerLock.fromNbt(tag);
                 Inventories.readNbt(tag, inventory);
-                level.removeBlockEntity(pos);
+                world.removeBlockEntity(pos);
                 // Needs fixing up to check for vanilla states.
                 BlockState newState = toBlock.getDefaultState()
                                              .with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING))
@@ -232,8 +232,8 @@ public final class ChestCommon {
                     ChestType type = state.get(Properties.CHEST_TYPE);
                     newState = newState.with(ChestBlock.CURSED_CHEST_TYPE, type == ChestType.LEFT ? CursedChestType.RIGHT : type == ChestType.RIGHT ? CursedChestType.LEFT : CursedChestType.SINGLE);
                 }
-                if (level.setBlockState(pos, newState)) {
-                    BlockEntity newEntity = level.getBlockEntity(pos);
+                if (world.setBlockState(pos, newState)) {
+                    BlockEntity newEntity = world.getBlockEntity(pos);
                     //noinspection ConstantConditions
                     NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
                     Inventories.writeNbt(newTag, inventory);

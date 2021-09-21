@@ -14,7 +14,6 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 @Internal
@@ -42,7 +41,7 @@ public interface BaseApi {
     @Internal
     ItemStack tabIcon();
 
-    Optional<BlockUpgradeBehaviour> getBlockUpgradeBehaviour(Block block);
+    BlockUpgradeBehaviour getBlockUpgradeBehaviour(Block block);
 
     void defineBlockUpgradeBehaviour(Predicate<Block> target, BlockUpgradeBehaviour behaviour);
 

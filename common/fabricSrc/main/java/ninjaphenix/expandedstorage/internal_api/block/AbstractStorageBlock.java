@@ -18,8 +18,8 @@ public abstract class AbstractStorageBlock extends Block {
     private final Identifier blockId;
     private final Identifier blockTier;
 
-    public AbstractStorageBlock(Settings properties, Identifier blockId, Identifier blockTier) {
-        super(properties);
+    public AbstractStorageBlock(Settings settings, Identifier blockId, Identifier blockTier) {
+        super(settings);
         this.blockId = blockId;
         this.blockTier = blockTier;
     }
@@ -37,7 +37,7 @@ public abstract class AbstractStorageBlock extends Block {
     @Override
     public void onPlaced(World level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         if (level.getBlockEntity(pos) instanceof AbstractStorageBlockEntity entity && stack.hasCustomName()) {
-            entity.setMenuTitle(stack.getName());
+            entity.setTitle(stack.getName());
         }
     }
 }

@@ -8,17 +8,15 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
-import org.jetbrains.annotations.Nullable;
 
 @Internal
 @Experimental
-public abstract class AbstractStorageBlockEntity extends BlockEntity implements Nameable {
+public abstract class AbstractStorageBlockEntity extends BlockEntity {
     private ContainerLock lockKey;
-    private Text menuTitle;
+    private Text title;
 
     public AbstractStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state) {
         super(blockEntityType, pos, state);
@@ -30,7 +28,7 @@ public abstract class AbstractStorageBlockEntity extends BlockEntity implements 
         super.readNbt(tag);
         lockKey = ContainerLock.fromNbt(tag);
         if (tag.contains("CustomName", NbtElement.STRING_TYPE)) {
-            menuTitle = Text.Serializer.fromJson(tag.getString("CustomName"));
+            title = Text.Serializer.fromJson(tag.getString("CustomName"));
         }
     }
 
@@ -38,35 +36,27 @@ public abstract class AbstractStorageBlockEntity extends BlockEntity implements 
     public NbtCompound writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
         lockKey.writeNbt(tag);
-        if (menuTitle != null) {
-            tag.putString("CustomName", Text.Serializer.toJson(menuTitle));
+        if (title != null) {
+            tag.putString("CustomName", Text.Serializer.toJson(title));
         }
         return tag;
     }
 
-    public boolean canPlayerInteractWith(ServerPlayerEntity player) {
+    public boolean usableBy(ServerPlayerEntity player) {
         return lockKey == ContainerLock.EMPTY || !player.isSpectator() && lockKey.canOpen(player.getMainHandStack());
     }
 
-    @Override
-    public final Text getName() {
-        return this.hasCustomName() ? menuTitle : this.getDefaultTitle();
+    public final Text getTitle() {
+        return this.hasCustomTitle() ? title : this.getDefaultTitle();
     }
 
-    public abstract Text getDefaultTitle();
+    protected abstract Text getDefaultTitle();
 
-    @Override
-    public final boolean hasCustomName() {
-        return menuTitle != null;
+    public final boolean hasCustomTitle() {
+        return title != null;
     }
 
-    @Nullable
-    @Override
-    public final Text getCustomName() {
-        return menuTitle;
-    }
-
-    public final void setMenuTitle(Text title) {
-        menuTitle = title;
+    public final void setTitle(Text title) {
+        this.title = title;
     }
 }

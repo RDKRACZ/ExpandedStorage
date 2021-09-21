@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.internal_api;
+package ninjaphenix.expandedstorage.client;
 
 import net.minecraft.util.Identifier;
 import ninjaphenix.expandedstorage.ChestImpl;

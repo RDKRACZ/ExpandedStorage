@@ -29,23 +29,21 @@ public final class StorageConversionKit extends Item {
         super(properties);
         this.from = from;
         this.to = to;
-        this.instructionsFirst = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_1", Utils.ALT_USE)
-                                      .formatted(Formatting.GRAY);
-        this.instructionsSecond = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_2", Utils.ALT_USE)
-                                       .formatted(Formatting.GRAY);
+        this.instructionsFirst = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_1", Utils.ALT_USE).formatted(Formatting.GRAY);
+        this.instructionsSecond = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_2", Utils.ALT_USE).formatted(Formatting.GRAY);
     }
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        World level = context.getWorld();
+        World world = context.getWorld();
         PlayerEntity player = context.getPlayer();
         if (player != null && player.isSneaking()) {
-            Block block = level.getBlockState(context.getBlockPos()).getBlock();
-            Optional<BlockUpgradeBehaviour> maybeBehaviour = BaseApi.getInstance().getBlockUpgradeBehaviour(block);
-            if (maybeBehaviour.isPresent()) {
-                if (level.isClient()) {
+            Block block = world.getBlockState(context.getBlockPos()).getBlock();
+            BlockUpgradeBehaviour behaviour = BaseApi.getInstance().getBlockUpgradeBehaviour(block);
+            if (behaviour != null) {
+                if (world.isClient()) {
                     return ActionResult.CONSUME;
-                } else if (maybeBehaviour.get().tryUpgradeBlock(context, from, to)) {
+                } else if (behaviour.tryUpgradeBlock(context, from, to)) {
                     return ActionResult.SUCCESS;
                 }
             }

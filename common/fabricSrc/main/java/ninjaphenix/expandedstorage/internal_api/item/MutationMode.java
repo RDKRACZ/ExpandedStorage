@@ -25,11 +25,6 @@ public enum MutationMode {
         return (byte) ordinal();
     }
 
-    @Override
-    public String toString() {
-        return name().toLowerCase(Locale.ROOT);
-    }
-
     public MutationMode next() {
         return MutationMode.VALUES[(ordinal() + 1) % MutationMode.VALUES.length];
     }

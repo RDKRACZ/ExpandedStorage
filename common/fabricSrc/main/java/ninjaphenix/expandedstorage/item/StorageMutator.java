@@ -78,7 +78,7 @@ public class StorageMutator extends Item {
 
     protected ActionResult useOnBlock(ItemUsageContext context, BlockState state, BlockPos pos) {
         ItemStack stack = context.getStack();
-        World level = context.getWorld();
+        World world = context.getWorld();
         PlayerEntity player = context.getPlayer();
         Block block = state.getBlock();
         if (block instanceof net.minecraft.block.AbstractChestBlock) {
@@ -86,18 +86,18 @@ public class StorageMutator extends Item {
                 if (state.contains(CHEST_TYPE)) {
                     ChestType chestType = state.get(CHEST_TYPE);
                     if (chestType != ChestType.SINGLE) {
-                        if (!level.isClient()) {
+                        if (!world.isClient()) {
                             BlockPos otherPos = pos.offset(net.minecraft.block.ChestBlock.getFacing(state));
-                            BlockState otherState = level.getBlockState(otherPos);
-                            level.setBlockState(pos, state.rotate(CLOCKWISE_180).with(CHEST_TYPE, state.get(CHEST_TYPE).getOpposite()));
-                            level.setBlockState(otherPos, otherState.rotate(CLOCKWISE_180).with(CHEST_TYPE, otherState.get(CHEST_TYPE).getOpposite()));
+                            BlockState otherState = world.getBlockState(otherPos);
+                            world.setBlockState(pos, state.rotate(CLOCKWISE_180).with(CHEST_TYPE, state.get(CHEST_TYPE).getOpposite()));
+                            world.setBlockState(otherPos, otherState.rotate(CLOCKWISE_180).with(CHEST_TYPE, otherState.get(CHEST_TYPE).getOpposite()));
                         }
                         //noinspection ConstantConditions
                         player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                         return ActionResult.SUCCESS;
                     }
                 }
-                level.setBlockState(pos, state.rotate(CLOCKWISE_90));
+                world.setBlockState(pos, state.rotate(CLOCKWISE_90));
                 //noinspection ConstantConditions
                 player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                 return ActionResult.SUCCESS;
@@ -109,18 +109,18 @@ public class StorageMutator extends Item {
                 NbtCompound tag = stack.getOrCreateNbt();
                 if (tag.contains("pos")) {
                     BlockPos otherPos = NbtHelper.toBlockPos(tag.getCompound("pos"));
-                    BlockState otherState = level.getBlockState(otherPos);
+                    BlockState otherState = world.getBlockState(otherPos);
                     if (otherState.getBlock() == state.getBlock() &&
                             otherState.get(HORIZONTAL_FACING) == state.get(HORIZONTAL_FACING) &&
                             otherState.get(CHEST_TYPE) == ChestType.SINGLE) {
-                        if (!level.isClient()) {
+                        if (!world.isClient()) {
                             BlockPos offset = otherPos.subtract(pos);
                             Direction direction = Direction.fromVector(offset.getX(), offset.getY(), offset.getZ());
                             if (direction != null) {
                                 CursedChestType type = ChestBlock.getChestType(state.get(AbstractChestBlock.Y_ROTATION), state.get(AbstractChestBlock.FACE_ROTATION), state.get(AbstractChestBlock.PERP_ROTATION), direction);
                                 Predicate<BlockEntity> isRandomizable = b -> b instanceof LootableContainerBlockEntity;
-                                this.convertBlock(level, state, pos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type, isRandomizable);
-                                this.convertBlock(level, otherState, otherPos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type.getOpposite(), isRandomizable);
+                                this.convertBlock(world, state, pos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type, isRandomizable);
+                                this.convertBlock(world, otherState, otherPos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type.getOpposite(), isRandomizable);
                                 tag.remove("pos");
                                 //noinspection ConstantConditions
                                 player.sendMessage(new TranslatableText("tooltip.expandedstorage.storage_mutator.merge_end"), true);
@@ -131,7 +131,7 @@ public class StorageMutator extends Item {
                         return ActionResult.SUCCESS;
                     }
                 } else {
-                    if (!level.isClient()) {
+                    if (!world.isClient()) {
                         tag.put("pos", NbtHelper.fromBlockPos(pos));
                         //noinspection ConstantConditions
                         player.sendMessage(new TranslatableText("tooltip.expandedstorage.storage_mutator.merge_start"), true);
@@ -143,20 +143,20 @@ public class StorageMutator extends Item {
             } else if (mode == MutationMode.SPLIT) {
                 ChestType chestType = state.get(CHEST_TYPE);
                 if (chestType != ChestType.SINGLE) {
-                    if (!level.isClient()) {
+                    if (!world.isClient()) {
                         BlockPos otherPos = pos.offset(net.minecraft.block.ChestBlock.getFacing(state));
-                        BlockState otherState = level.getBlockState(otherPos);
-                        level.setBlockState(pos, state.with(CHEST_TYPE, ChestType.SINGLE));
-                        level.setBlockState(otherPos, otherState.with(CHEST_TYPE, ChestType.SINGLE));
+                        BlockState otherState = world.getBlockState(otherPos);
+                        world.setBlockState(pos, state.with(CHEST_TYPE, ChestType.SINGLE));
+                        world.setBlockState(otherPos, otherState.with(CHEST_TYPE, ChestType.SINGLE));
                     }
                     return ActionResult.SUCCESS;
                 }
             }
         } else if (block instanceof net.minecraft.block.BarrelBlock) {
             if (StorageMutator.getMode(stack) == MutationMode.ROTATE) {
-                if (!level.isClient()) {
+                if (!world.isClient()) {
                     Direction direction = state.get(FACING);
-                    level.setBlockState(pos, state.with(FACING, Direction.byId(direction.getId() + 1)));
+                    world.setBlockState(pos, state.with(FACING, Direction.byId(direction.getId() + 1)));
                 }
                 //noinspection ConstantConditions
                 player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
@@ -166,13 +166,13 @@ public class StorageMutator extends Item {
         return ActionResult.FAIL;
     }
 
-    private void convertBlock(World level, BlockState state, BlockPos pos, Block block, int slotCount, @Nullable CursedChestType type, Predicate<BlockEntity> check) {
-        BlockEntity targetBlockEntity = level.getBlockEntity(pos);
+    private void convertBlock(World world, BlockState state, BlockPos pos, Block block, int slotCount, @Nullable CursedChestType type, Predicate<BlockEntity> check) {
+        BlockEntity targetBlockEntity = world.getBlockEntity(pos);
         if (check.test(targetBlockEntity)) {
             DefaultedList<ItemStack> invData = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
             //noinspection ConstantConditions
             Inventories.readNbt(targetBlockEntity.writeNbt(new NbtCompound()), invData);
-            level.removeBlockEntity(pos);
+            world.removeBlockEntity(pos);
             BlockState newState = block.getDefaultState();
             if (state.contains(WATERLOGGED)) {
                 newState = newState.with(WATERLOGGED, state.get(WATERLOGGED));
@@ -185,15 +185,15 @@ public class StorageMutator extends Item {
             if (type != null) {
                 newState = newState.with(ChestBlock.CURSED_CHEST_TYPE, type);
             }
-            level.setBlockState(pos, newState);
-            BlockEntity newEntity = level.getBlockEntity(pos);
+            world.setBlockState(pos, newState);
+            BlockEntity newEntity = world.getBlockEntity(pos);
             //noinspection ConstantConditions
             newEntity.readNbt(Inventories.writeNbt(newEntity.writeNbt(new NbtCompound()), invData));
         }
     }
 
     protected ActionResult useModifierOnBlock(ItemUsageContext context, BlockState state, BlockPos pos, @SuppressWarnings("unused") Type type) {
-        World level = context.getWorld();
+        World world = context.getWorld();
         PlayerEntity player = context.getPlayer();
         ItemStack stack = context.getStack();
         Block block = state.getBlock();
@@ -203,19 +203,19 @@ public class StorageMutator extends Item {
                 NbtCompound tag = stack.getOrCreateNbt();
                 if (tag.contains("pos")) {
                     BlockPos otherPos = NbtHelper.toBlockPos(tag.getCompound("pos"));
-                    BlockState otherState = level.getBlockState(otherPos);
+                    BlockState otherState = world.getBlockState(otherPos);
                     Direction facing = state.get(HORIZONTAL_FACING);
                     if (block == otherState.getBlock()
                             && facing == otherState.get(HORIZONTAL_FACING)
                             && otherState.get(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
-                        if (!level.isClient()) {
+                        if (!world.isClient()) {
                             BlockPos offset = otherPos.subtract(pos);
                             Direction direction = Direction.fromVector(offset.getX(), offset.getY(), offset.getZ());
                             if (direction != null) {
                                 CursedChestType chestType = AbstractChestBlock.getChestType(state.get(AbstractChestBlock.Y_ROTATION), state.get(AbstractChestBlock.FACE_ROTATION), state.get(AbstractChestBlock.PERP_ROTATION), direction);
                                 Predicate<BlockEntity> isStorage = b -> b instanceof AbstractOpenableStorageBlockEntity;
-                                this.convertBlock(level, state, pos, block, chestBlock.getSlotCount(), chestType, isStorage);
-                                this.convertBlock(level, otherState, otherPos, block, chestBlock.getSlotCount(), chestType.getOpposite(), isStorage);
+                                this.convertBlock(world, state, pos, block, chestBlock.getSlotCount(), chestType, isStorage);
+                                this.convertBlock(world, otherState, otherPos, block, chestBlock.getSlotCount(), chestType.getOpposite(), isStorage);
                                 tag.remove("pos");
                                 //noinspection ConstantConditions
                                 player.sendMessage(new TranslatableText("tooltip.expandedstorage.storage_mutator.merge_end"), true);
@@ -226,7 +226,7 @@ public class StorageMutator extends Item {
                         return ActionResult.SUCCESS;
                     }
                 } else {
-                    if (!level.isClient()) {
+                    if (!world.isClient()) {
                         tag.put("pos", NbtHelper.fromBlockPos(pos));
                         //noinspection ConstantConditions
                         player.sendMessage(new TranslatableText("tooltip.expandedstorage.storage_mutator.merge_start"), true);
@@ -238,11 +238,11 @@ public class StorageMutator extends Item {
             }
         } else if (mode == MutationMode.SPLIT) {
             if (block instanceof AbstractChestBlock && state.get(AbstractChestBlock.CURSED_CHEST_TYPE) != CursedChestType.SINGLE) {
-                if (!level.isClient()) {
+                if (!world.isClient()) {
                     BlockPos otherPos = pos.offset(AbstractChestBlock.getDirectionToAttached(state));
-                    BlockState otherState = level.getBlockState(otherPos);
-                    level.setBlockState(pos, state.with(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE));
-                    level.setBlockState(otherPos, otherState.with(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE));
+                    BlockState otherState = world.getBlockState(otherPos);
+                    world.setBlockState(pos, state.with(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE));
+                    world.setBlockState(otherPos, otherState.with(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE));
                 }
                 //noinspection ConstantConditions
                 player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
@@ -250,29 +250,29 @@ public class StorageMutator extends Item {
             }
         } else if (mode == MutationMode.ROTATE) {
             if (state.contains(FACING)) {
-                if (!level.isClient()) {
+                if (!world.isClient()) {
                     Direction direction = state.get(FACING);
-                    level.setBlockState(pos, state.with(FACING, Direction.byId(direction.getId() + 1)));
+                    world.setBlockState(pos, state.with(FACING, Direction.byId(direction.getId() + 1)));
                 }
                 //noinspection ConstantConditions
                 player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                 return ActionResult.SUCCESS;
             } else if (state.contains(HORIZONTAL_FACING)) {
                 if (block instanceof AbstractChestBlock) {
-                    if (!level.isClient()) {
+                    if (!world.isClient()) {
                         CursedChestType value = state.get(AbstractChestBlock.CURSED_CHEST_TYPE);
                         if (value == CursedChestType.SINGLE) {
-                            level.setBlockState(pos, state.rotate(CLOCKWISE_90));
+                            world.setBlockState(pos, state.rotate(CLOCKWISE_90));
                         } else if (value == CursedChestType.TOP || value == CursedChestType.BOTTOM) {
-                            level.setBlockState(pos, state.rotate(CLOCKWISE_90));
+                            world.setBlockState(pos, state.rotate(CLOCKWISE_90));
                             BlockPos otherPos = pos.offset(AbstractChestBlock.getDirectionToAttached(state));
-                            BlockState otherState = level.getBlockState(otherPos);
-                            level.setBlockState(otherPos, otherState.rotate(CLOCKWISE_90));
+                            BlockState otherState = world.getBlockState(otherPos);
+                            world.setBlockState(otherPos, otherState.rotate(CLOCKWISE_90));
                         } else if (value == CursedChestType.FRONT || value == CursedChestType.BACK || value == CursedChestType.LEFT || value == CursedChestType.RIGHT) {
-                            level.setBlockState(pos, state.rotate(CLOCKWISE_180).with(AbstractChestBlock.CURSED_CHEST_TYPE, state.get(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
+                            world.setBlockState(pos, state.rotate(CLOCKWISE_180).with(AbstractChestBlock.CURSED_CHEST_TYPE, state.get(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
                             BlockPos otherPos = pos.offset(AbstractChestBlock.getDirectionToAttached(state));
-                            BlockState otherState = level.getBlockState(otherPos);
-                            level.setBlockState(otherPos, otherState.rotate(CLOCKWISE_180).with(AbstractChestBlock.CURSED_CHEST_TYPE, otherState.get(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
+                            BlockState otherState = world.getBlockState(otherPos);
+                            world.setBlockState(otherPos, otherState.rotate(CLOCKWISE_180).with(AbstractChestBlock.CURSED_CHEST_TYPE, otherState.get(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
                         }
                     }
                     //noinspection ConstantConditions
@@ -285,15 +285,15 @@ public class StorageMutator extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand) {
-        TypedActionResult<ItemStack> result = this.useModifierInAir(level, player, hand);
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        TypedActionResult<ItemStack> result = this.useModifierInAir(world, player, hand);
         if (result.getResult() == ActionResult.SUCCESS) {
             player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
         }
         return result;
     }
 
-    private TypedActionResult<ItemStack> useModifierInAir(World level, PlayerEntity player, Hand hand) {
+    private TypedActionResult<ItemStack> useModifierInAir(World world, PlayerEntity player, Hand hand) {
         if (player.isSneaking()) {
             ItemStack stack = player.getStackInHand(hand);
             NbtCompound tag = stack.getOrCreateNbt();
@@ -302,7 +302,7 @@ public class StorageMutator extends Item {
             if (tag.contains("pos")) {
                 tag.remove("pos");
             }
-            if (!level.isClient()) {
+            if (!world.isClient()) {
                 player.sendMessage(new TranslatableText("tooltip.expandedstorage.storage_mutator.description_" + nextMode, Utils.ALT_USE), true);
             }
             return TypedActionResult.success(stack);
@@ -311,8 +311,8 @@ public class StorageMutator extends Item {
     }
 
     @Override
-    public void onCraft(ItemStack stack, World level, PlayerEntity player) {
-        super.onCraft(stack, level, player);
+    public void onCraft(ItemStack stack, World world, PlayerEntity player) {
+        super.onCraft(stack, world, player);
         StorageMutator.getMode(stack);
     }
 
@@ -341,7 +341,7 @@ public class StorageMutator extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World level, List<Text> list, TooltipContext flag) {
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext flag) {
         MutationMode mode = StorageMutator.getMode(stack);
         list.add(this.getToolModeText(mode).formatted(Formatting.GRAY));
         list.add(Utils.translation("tooltip.expandedstorage.storage_mutator.description_" + mode, Utils.ALT_USE).formatted(Formatting.GRAY));

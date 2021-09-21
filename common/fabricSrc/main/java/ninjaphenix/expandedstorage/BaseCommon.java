@@ -20,7 +20,7 @@ public final class BaseCommon {
         BaseApi.getInstance().offerTabIcon(Items.CHEST, ICON_SUITABILITY);
         BaseApi.getInstance().defineTierUpgradePath(Utils.translation("itemGroup.expandedstorage"), Utils.WOOD_TIER, Utils.IRON_TIER,
                 Utils.GOLD_TIER, Utils.DIAMOND_TIER, Utils.OBSIDIAN_TIER, Utils.NETHERITE_TIER);
-        BaseApi.getInstance().register(Utils.resloc("chest_mutator"), new StorageMutator(new Item.Settings().maxCount(1).group(Utils.TAB)));
+        BaseApi.getInstance().register(Utils.id("chest_mutator"), new StorageMutator(new Item.Settings().maxCount(1).group(Utils.TAB)));
     }
 
     public static Identifier registerStat(Identifier stat) {

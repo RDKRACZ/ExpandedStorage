@@ -2,12 +2,13 @@ package ninjaphenix.expandedstorage.mixin.base;
 
 import com.github.fabricservertools.htm.HTMContainerLock;
 import com.github.fabricservertools.htm.api.LockableObject;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractStorageBlockEntity;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.FabricChestProperties;
@@ -25,23 +26,23 @@ public abstract class HTMOpenableBlockEntitySupport extends AbstractStorageBlock
         super(blockEntityType, pos, state);
     }
 
-    @Inject(method = "load(Lnet/minecraft/nbt/CompoundTag;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/ContainerHelper;loadAllItems(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/core/NonNullList;)V"))
-    private void loadHTMLock(CompoundTag tag, CallbackInfo ci) {
-        if (tag.contains(FabricChestProperties.LOCK_TAG_KEY, Tag.TAG_COMPOUND)) {
+    @Inject(method = "readNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Inventories;loadAllItems(Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/util/collection/DefaultedList;)V"))
+    private void readHTMLock(NbtCompound tag, CallbackInfo ci) {
+        if (tag.contains(FabricChestProperties.LOCK_TAG_KEY, NbtElement.COMPOUND_TYPE)) {
             htmLock.fromTag(tag.getCompound(FabricChestProperties.LOCK_TAG_KEY));
         }
     }
 
-    @Inject(method = "save(Lnet/minecraft/nbt/CompoundTag;)Lnet/minecraft/nbt/CompoundTag;", at = @At("RETURN"), cancellable = true)
-    private void saveHTMLock(CompoundTag tag, CallbackInfoReturnable<CompoundTag> cir) {
-        CompoundTag subTag = new CompoundTag();
+    @Inject(method = "writeNbt(Lnet/minecraft/nbt/NbtCompound;)Lnet/minecraft/nbt/NbtCompound;", at = @At("RETURN"), cancellable = true)
+    private void writeHTMLock(NbtCompound tag, CallbackInfoReturnable<NbtCompound> cir) {
+        NbtCompound subTag = new NbtCompound();
         htmLock.toTag(subTag);
         tag.put(FabricChestProperties.LOCK_TAG_KEY, subTag);
         cir.setReturnValue(tag);
     }
 
     @Override
-    public boolean canPlayerInteractWith(ServerPlayer player) {
+    public boolean canPlayerInteractWith(ServerPlayerEntity player) {
         return htmLock.canOpen(player);
     }
 

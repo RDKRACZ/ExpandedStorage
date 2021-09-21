@@ -1,27 +1,29 @@
 package ninjaphenix.expandedstorage.barrel;
 
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.LockCode;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.Material;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.inventory.ContainerLock;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.barrel.block.BarrelBlock;
 import ninjaphenix.expandedstorage.barrel.block.misc.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.base.BaseCommon;
@@ -38,7 +40,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public final class BarrelCommon {
-    public static final ResourceLocation BLOCK_TYPE = Utils.resloc("barrel");
+    public static final Identifier BLOCK_TYPE = Utils.resloc("barrel");
     private static final int ICON_SUITABILITY = 998;
     private static BlockEntityType<BarrelBlockEntity> blockEntityType;
 
@@ -53,29 +55,29 @@ public final class BarrelCommon {
     static void registerContent(Consumer<Set<BarrelBlock>> blockReg,
                                 Consumer<Set<BlockItem>> itemReg,
                                 Consumer<BlockEntityType<BarrelBlockEntity>> blockEntityTypeConsumer,
-                                net.minecraft.tags.Tag<Block> woodenBarrelTag) {
+                                net.minecraft.tag.Tag<Block> woodenBarrelTag) {
         // Init and register opening stats
-        ResourceLocation ironOpenStat = BaseCommon.registerStat(Utils.resloc("open_iron_barrel"));
-        ResourceLocation goldOpenStat = BaseCommon.registerStat(Utils.resloc("open_gold_barrel"));
-        ResourceLocation diamondOpenStat = BaseCommon.registerStat(Utils.resloc("open_diamond_barrel"));
-        ResourceLocation obsidianOpenStat = BaseCommon.registerStat(Utils.resloc("open_obsidian_barrel"));
-        ResourceLocation netheriteOpenStat = BaseCommon.registerStat(Utils.resloc("open_netherite_barrel"));
+        Identifier ironOpenStat = BaseCommon.registerStat(Utils.resloc("open_iron_barrel"));
+        Identifier goldOpenStat = BaseCommon.registerStat(Utils.resloc("open_gold_barrel"));
+        Identifier diamondOpenStat = BaseCommon.registerStat(Utils.resloc("open_diamond_barrel"));
+        Identifier obsidianOpenStat = BaseCommon.registerStat(Utils.resloc("open_obsidian_barrel"));
+        Identifier netheriteOpenStat = BaseCommon.registerStat(Utils.resloc("open_netherite_barrel"));
         // Init block properties
-        BlockBehaviour.Properties ironProperties = BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
-                                                                            .strength(5.0F, 6.0F)
-                                                                            .sound(SoundType.WOOD);
-        BlockBehaviour.Properties goldProperties = BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
-                                                                            .strength(3.0F, 6.0F)
-                                                                            .sound(SoundType.WOOD);
-        BlockBehaviour.Properties diamondProperties = BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
-                                                                               .strength(5.0F, 6.0F)
-                                                                               .sound(SoundType.WOOD);
-        BlockBehaviour.Properties obsidianProperties = BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
-                                                                                .strength(50.0F, 1200.0F)
-                                                                                .sound(SoundType.WOOD);
-        BlockBehaviour.Properties netheriteProperties = BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
-                                                                                 .strength(50.0F, 1200.0F)
-                                                                                 .sound(SoundType.WOOD);
+        AbstractBlock.Settings ironProperties = AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN)
+                                                                      .strength(5.0F, 6.0F)
+                                                                      .sounds(BlockSoundGroup.WOOD);
+        AbstractBlock.Settings goldProperties = AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN)
+                                                                      .strength(3.0F, 6.0F)
+                                                                      .sounds(BlockSoundGroup.WOOD);
+        AbstractBlock.Settings diamondProperties = AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN)
+                                                                         .strength(5.0F, 6.0F)
+                                                                         .sounds(BlockSoundGroup.WOOD);
+        AbstractBlock.Settings obsidianProperties = AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN)
+                                                                          .strength(50.0F, 1200.0F)
+                                                                          .sounds(BlockSoundGroup.WOOD);
+        AbstractBlock.Settings netheriteProperties = AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN)
+                                                                           .strength(50.0F, 1200.0F)
+                                                                           .sounds(BlockSoundGroup.WOOD);
         // Init blocks
         BarrelBlock ironBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("iron_barrel"), ironOpenStat, Utils.IRON_TIER, ironProperties);
         BarrelBlock goldBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("gold_barrel"), goldOpenStat, Utils.GOLD_TIER, goldProperties);
@@ -98,55 +100,55 @@ public final class BarrelCommon {
         blockEntityTypeConsumer.accept(blockEntityType);
         // Register chest module icon & upgrade behaviours
         BaseApi.getInstance().offerTabIcon(netheriteBarrelItem, BarrelCommon.ICON_SUITABILITY);
-        Predicate<Block> isUpgradableBarrelBlock = (block) -> block instanceof BarrelBlock || block instanceof net.minecraft.world.level.block.BarrelBlock || woodenBarrelTag.contains(block);
+        Predicate<Block> isUpgradableBarrelBlock = (block) -> block instanceof BarrelBlock || block instanceof net.minecraft.block.BarrelBlock || woodenBarrelTag.contains(block);
         BaseApi.getInstance().defineBlockUpgradeBehaviour(isUpgradableBarrelBlock, BarrelCommon::tryUpgradeBlock);
     }
 
-    private static BarrelBlock barrelBlock(ResourceLocation blockId, ResourceLocation stat, Tier tier, BlockBehaviour.Properties properties) {
+    private static BarrelBlock barrelBlock(Identifier blockId, Identifier stat, Tier tier, AbstractBlock.Settings properties) {
         BarrelBlock block = new BarrelBlock(tier.getBlockProperties().apply(properties), blockId, tier.getId(), stat, tier.getSlotCount());
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
     }
 
     private static BlockItem barrelItem(Tier tier, BarrelBlock block) {
-        return new BlockItem(block, tier.getItemProperties().apply(new Item.Properties().tab(Utils.TAB)));
+        return new BlockItem(block, tier.getItemProperties().apply(new Item.Settings().group(Utils.TAB)));
     }
 
-    public static boolean tryUpgradeBlock(UseOnContext context, ResourceLocation from, ResourceLocation to) {
-        Level level = context.getLevel();
-        BlockPos pos = context.getClickedPos();
+    public static boolean tryUpgradeBlock(ItemUsageContext context, Identifier from, Identifier to) {
+        World level = context.getWorld();
+        BlockPos pos = context.getBlockPos();
         BlockState state = level.getBlockState(pos);
         Block block = state.getBlock();
         boolean isExpandedStorageBarrel = block instanceof BarrelBlock;
-        var containerSize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : ((BarrelBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, ((BarrelBlock) block).getBlockTier())).getSlotCount();
+        int containerSize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : ((BarrelBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, ((BarrelBlock) block).getBlockTier())).getSlotCount();
         if (isExpandedStorageBarrel && ((BarrelBlock) block).getBlockTier() == from || !isExpandedStorageBarrel && from == Utils.WOOD_TIER.getId()) {
-            var blockEntity = level.getBlockEntity(pos);
+            BlockEntity blockEntity = level.getBlockEntity(pos);
             //noinspection ConstantConditions
-            var tag = blockEntity.save(new CompoundTag());
-            boolean verifiedSize = blockEntity instanceof Container container && container.getContainerSize() == containerSize;
+            NbtCompound tag = blockEntity.writeNbt(new NbtCompound());
+            boolean verifiedSize = blockEntity instanceof Inventory container && container.size() == containerSize;
             if (!verifiedSize) { // Cannot verify container size, we'll let it upgrade if it has or has less than 27 items
-                if (tag.contains("Items", Tag.TAG_LIST)) {
-                    var items = tag.getList("Items", Tag.TAG_COMPOUND);
+                if (tag.contains("Items", NbtElement.LIST_TYPE)) {
+                    NbtList items = tag.getList("Items", NbtElement.COMPOUND_TYPE);
                     if (items.size() <= containerSize) {
                         verifiedSize = true;
                     }
                 }
             }
             if (verifiedSize) {
-                var toBlock = (AbstractOpenableStorageBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, to);
-                var inventory = NonNullList.withSize(toBlock.getSlotCount(), ItemStack.EMPTY);
-                var code = LockCode.fromTag(tag);
-                ContainerHelper.loadAllItems(tag, inventory);
+                AbstractOpenableStorageBlock toBlock = (AbstractOpenableStorageBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, to);
+                DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
+                ContainerLock code = ContainerLock.fromNbt(tag);
+                Inventories.readNbt(tag, inventory);
                 level.removeBlockEntity(pos);
-                var newState = toBlock.defaultBlockState().setValue(BlockStateProperties.FACING, state.getValue(BlockStateProperties.FACING));
-                if (level.setBlockAndUpdate(pos, newState)) {
-                    var newEntity = (AbstractOpenableStorageBlockEntity) level.getBlockEntity(pos);
+                BlockState newState = toBlock.getDefaultState().with(Properties.FACING, state.get(Properties.FACING));
+                if (level.setBlockState(pos, newState)) {
+                    BlockEntity newEntity = level.getBlockEntity(pos);
                     //noinspection ConstantConditions
-                    var newTag = newEntity.save(new CompoundTag());
-                    ContainerHelper.saveAllItems(newTag, inventory);
-                    code.addToTag(newTag);
-                    newEntity.load(newTag);
-                    context.getItemInHand().shrink(1);
+                    NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
+                    Inventories.writeNbt(newTag, inventory);
+                    code.writeNbt(newTag);
+                    newEntity.readNbt(newTag);
+                    context.getStack().decrement(1);
                     return true;
                 }
             }

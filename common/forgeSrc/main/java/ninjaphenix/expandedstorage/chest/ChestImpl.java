@@ -1,12 +1,12 @@
 package ninjaphenix.expandedstorage.chest;
 
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.chest.internal_api.ChestApi;
 
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
 
 public final class ChestImpl implements ChestApi {
     private static ChestImpl instance;
@@ -31,7 +31,6 @@ public final class ChestImpl implements ChestApi {
         } else {
             throw new IllegalArgumentException("Tried registering chest textures for \"" + block + "\" which already has textures.");
         }
-
     }
 
     @Override

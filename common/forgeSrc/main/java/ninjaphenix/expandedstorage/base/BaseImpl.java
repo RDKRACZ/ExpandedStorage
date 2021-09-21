@@ -1,25 +1,25 @@
 package ninjaphenix.expandedstorage.base;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
 import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractStorageBlock;
 import ninjaphenix.expandedstorage.base.internal_api.item.BlockUpgradeBehaviour;
 import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
 import ninjaphenix.expandedstorage.base.item.StorageConversionKit;
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 
 public final class BaseImpl implements BaseApi {
     private static BaseImpl instance;
@@ -65,8 +65,8 @@ public final class BaseImpl implements BaseApi {
                 ResourceLocation itemId = Utils.resloc(fromTier.getId().getPath() + "_to_" + toTier.getId().getPath() + "_conversion_kit");
                 if (!items.containsKey(itemId)) {
                     Item.Properties properties = fromTier.getItemProperties()
-                                                         .andThen(toTier.getItemProperties())
-                                                         .apply(new Item.Properties().tab(Utils.TAB).stacksTo(16));
+                                                       .andThen(toTier.getItemProperties())
+                                                       .apply(new Item.Properties().tab(Utils.TAB).stacksTo(16));
                     Item kit = new StorageConversionKit(properties, fromTier.getId(), toTier.getId());
                     this.register(itemId, kit);
                 }
@@ -75,7 +75,7 @@ public final class BaseImpl implements BaseApi {
     }
 
     @Override
-    @ApiStatus.Internal
+    @Internal
     public void register(ResourceLocation itemId, Item item) {
         items.put(itemId, item);
     }
@@ -91,7 +91,7 @@ public final class BaseImpl implements BaseApi {
     }
 
     @Override
-    @ApiStatus.Internal
+    @Internal
     public Map<ResourceLocation, Item> getAndClearItems() {
         Map<ResourceLocation, Item> items = this.items;
         this.items = null;
@@ -107,7 +107,7 @@ public final class BaseImpl implements BaseApi {
     }
 
     @Override
-    @ApiStatus.Internal
+    @Internal
     public ItemStack tabIcon() {
         return new ItemStack(tabIcon);
     }

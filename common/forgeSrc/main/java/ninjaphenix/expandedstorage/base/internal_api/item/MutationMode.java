@@ -3,22 +3,16 @@ package ninjaphenix.expandedstorage.base.internal_api.item;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
+import java.util.Locale;
+
 @Internal
 @Experimental
 public enum MutationMode {
-    MERGE("merge", 0),
-    SPLIT("split", 1),
-    ROTATE("rotate", 2);
+    MERGE,
+    SPLIT,
+    ROTATE;
 
     private static final MutationMode[] VALUES = MutationMode.values();
-    private final String name;
-    private final int index;
-
-    MutationMode(String name, int index) {
-        // todo: can maybe replace name with accessing Enum's name() private field
-        this.name = name;
-        this.index = index;
-    }
 
     public static MutationMode from(byte index) {
         if (index >= 0 && index < MutationMode.VALUES.length) {
@@ -28,15 +22,15 @@ public enum MutationMode {
     }
 
     public byte toByte() {
-        return (byte) index;
+        return (byte) ordinal();
     }
 
     @Override
     public String toString() {
-        return name;
+        return name().toLowerCase(Locale.ROOT);
     }
 
     public MutationMode next() {
-        return MutationMode.VALUES[(index + 1) % MutationMode.VALUES.length];
+        return MutationMode.VALUES[(ordinal() + 1) % MutationMode.VALUES.length];
     }
 }

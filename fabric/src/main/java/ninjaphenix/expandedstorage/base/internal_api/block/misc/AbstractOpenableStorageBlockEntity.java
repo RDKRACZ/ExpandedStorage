@@ -4,24 +4,24 @@ import com.google.common.base.Suppliers;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.ViewerCountManager;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 import ninjaphenix.container_library.api.OpenableBlockEntity;
 import ninjaphenix.container_library.api.inventory.AbstractHandler;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
@@ -34,32 +34,32 @@ import java.util.function.Supplier;
 @Internal
 @Experimental
 public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements OpenableBlockEntity {
-    private final ResourceLocation blockId;
-    private final ContainerOpenersCounter observerCounter;
-    protected Component menuTitle;
+    private final Identifier blockId;
+    private final ViewerCountManager observerCounter;
+    protected Text menuTitle;
     private int slots;
-    private NonNullList<ItemStack> inventory;
+    private DefaultedList<ItemStack> inventory;
     private Supplier<Storage<ItemVariant>> itemStorage;
-    private final Supplier<WorldlyContainer> container = Suppliers.memoize(() -> new WorldlyContainer() {
-        private final int[] slotsForFace = AbstractOpenableStorageBlockEntity.createSlotsForFaceArray(this.getContainerSize());
+    private final Supplier<SidedInventory> container = Suppliers.memoize(() -> new SidedInventory() {
+        private final int[] slotsForFace = AbstractOpenableStorageBlockEntity.createSlotsForFaceArray(this.size());
 
         @Override
-        public int[] getSlotsForFace(Direction direction) {
+        public int[] getAvailableSlots(Direction direction) {
             return slotsForFace;
         }
 
         @Override
-        public boolean canPlaceItemThroughFace(int i, ItemStack itemStack, @Nullable Direction direction) {
+        public boolean canInsert(int i, ItemStack itemStack, @Nullable Direction direction) {
             return true;
         }
 
         @Override
-        public boolean canTakeItemThroughFace(int i, ItemStack itemStack, Direction direction) {
+        public boolean canExtract(int i, ItemStack itemStack, Direction direction) {
             return true;
         }
 
         @Override
-        public int getContainerSize() {
+        public int size() {
             return slots;
         }
 
@@ -74,55 +74,55 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         }
 
         @Override
-        public ItemStack getItem(int slot) {
+        public ItemStack getStack(int slot) {
             return inventory.get(slot);
         }
 
         @Override
-        public ItemStack removeItem(int slot, int amount) {
-            ItemStack stack = ContainerHelper.removeItem(inventory, slot, amount);
+        public ItemStack removeStack(int slot, int amount) {
+            ItemStack stack = Inventories.splitStack(inventory, slot, amount);
             if (!stack.isEmpty()) {
-                this.setChanged();
+                this.markDirty();
             }
             return stack;
         }
 
         @Override
-        public ItemStack removeItemNoUpdate(int slot) {
-            return ContainerHelper.takeItem(inventory, slot);
+        public ItemStack removeStack(int slot) {
+            return Inventories.removeStack(inventory, slot);
         }
 
         @Override
-        public void setItem(int slot, ItemStack stack) {
+        public void setStack(int slot, ItemStack stack) {
             inventory.set(slot, stack);
-            if (stack.getCount() > this.getMaxStackSize()) {
-                stack.setCount(this.getMaxStackSize());
+            if (stack.getCount() > this.getMaxCountPerStack()) {
+                stack.setCount(this.getMaxCountPerStack());
             }
-            this.setChanged();
+            this.markDirty();
         }
 
         @Override
-        public void setChanged() {
-            AbstractOpenableStorageBlockEntity.this.setChanged();
+        public void markDirty() {
+            AbstractOpenableStorageBlockEntity.this.markDirty();
         }
 
         @Override
-        public boolean stillValid(Player player) {
+        public boolean canPlayerUse(PlayerEntity player) {
             return AbstractOpenableStorageBlockEntity.this.canContinueUse(player);
         }
 
         @Override
-        public void clearContent() {
+        public void clear() {
             inventory.clear();
         }
 
         @Override
-        public void startOpen(Player player) {
+        public void onOpen(PlayerEntity player) {
             AbstractOpenableStorageBlockEntity.this.playerStartUsing(player);
         }
 
         @Override
-        public void stopOpen(Player player) {
+        public void onClose(PlayerEntity player) {
             AbstractOpenableStorageBlockEntity.this.playerStopUsing(player);
         }
     });
@@ -135,27 +135,27 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         return arr;
     }
 
-    public AbstractOpenableStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, ResourceLocation blockId) {
+    public AbstractOpenableStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, Identifier blockId) {
         super(blockEntityType, pos, state);
-        this.observerCounter = new ContainerOpenersCounter() {
+        this.observerCounter = new ViewerCountManager() {
             @Override
-            protected void onOpen(Level level, BlockPos pos, BlockState state) {
+            protected void onContainerOpen(World level, BlockPos pos, BlockState state) {
                 AbstractOpenableStorageBlockEntity.this.onOpen(level, pos, state);
             }
 
             @Override
-            protected void onClose(Level level, BlockPos pos, BlockState state) {
+            protected void onContainerClose(World level, BlockPos pos, BlockState state) {
                 AbstractOpenableStorageBlockEntity.this.onClose(level, pos, state);
             }
 
             @Override
-            protected void openerCountChanged(Level level, BlockPos pos, BlockState state, int oldCount, int newCount) {
+            protected void onViewerCountUpdate(World level, BlockPos pos, BlockState state, int oldCount, int newCount) {
                 AbstractOpenableStorageBlockEntity.this.onObserverCountChanged(level, pos, state, oldCount, newCount);
             }
 
             @Override
-            protected boolean isOwnContainer(Player player) {
-                if (player.containerMenu instanceof AbstractHandler menu) {
+            protected boolean isPlayerViewing(PlayerEntity player) {
+                if (player.currentScreenHandler instanceof AbstractHandler menu) {
                     return AbstractOpenableStorageBlockEntity.this.isThis(menu.getInventory());
                 } else {
                     return false;
@@ -170,9 +170,9 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         return InventoryStorage.of(entity.getContainerWrapper(), null);
     }
 
-    public static Storage<ItemVariant> getItemStorage(Level level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction direction) {
+    public static Storage<ItemVariant> getItemStorage(World level, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction direction) {
         if (blockEntity != null) {
-            var entity = (AbstractOpenableStorageBlockEntity) blockEntity;
+            AbstractOpenableStorageBlockEntity entity = (AbstractOpenableStorageBlockEntity) blockEntity;
             if (entity.itemStorage == null) {
                 entity.itemStorage = Suppliers.memoize(() -> entity.createItemStorage(level, state, pos, direction));
             }
@@ -182,104 +182,104 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
     }
 
-    private void playerStartUsing(Player player) {
+    private void playerStartUsing(PlayerEntity player) {
         if (!player.isSpectator()) {
-            observerCounter.incrementOpeners(player, this.getLevel(), this.getBlockPos(), this.getBlockState());
+            observerCounter.openContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
         }
     }
 
-    private void playerStopUsing(Player player) {
+    private void playerStopUsing(PlayerEntity player) {
         if (!player.isSpectator()) {
-            observerCounter.decrementOpeners(player, this.getLevel(), this.getBlockPos(), this.getBlockState());
+            observerCounter.closeContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
         }
     }
 
-    protected boolean isThis(Container container) {
+    protected boolean isThis(Inventory container) {
         return container == this.container.get();
     }
 
-    protected void onObserverCountChanged(Level level, BlockPos pos, BlockState state, int i, int j) {
+    protected void onObserverCountChanged(World level, BlockPos pos, BlockState state, int i, int j) {
 
     }
 
-    protected void onOpen(Level level, BlockPos pos, BlockState state) {
+    protected void onOpen(World level, BlockPos pos, BlockState state) {
 
     }
 
-    protected void onClose(Level level, BlockPos pos, BlockState state) {
+    protected void onClose(World level, BlockPos pos, BlockState state) {
 
     }
 
     public final void recountObservers() {
-        observerCounter.recheckOpeners(this.getLevel(), this.getBlockPos(), this.getBlockState());
+        observerCounter.updateViewerCount(this.getWorld(), this.getPos(), this.getCachedState());
     }
 
-    public WorldlyContainer getContainerWrapper() {
+    public SidedInventory getContainerWrapper() {
         return container.get();
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void setBlockState(BlockState state) {
-        super.setBlockState(state);
+    public void setCachedState(BlockState state) {
+        super.setCachedState(state);
         this.itemStorage = null;
     }
 
-    protected Storage<ItemVariant> createItemStorage(Level level, BlockState state, BlockPos pos, @Nullable Direction side) {
+    protected Storage<ItemVariant> createItemStorage(World level, BlockState state, BlockPos pos, @Nullable Direction side) {
         return AbstractOpenableStorageBlockEntity.createGenericItemStorage(this);
     }
 
-    private void initialise(ResourceLocation blockId) {
+    private void initialise(Identifier blockId) {
         if (Registry.BLOCK.get(blockId) instanceof AbstractOpenableStorageBlock block) {
             slots = block.getSlotCount();
-            inventory = NonNullList.withSize(slots, ItemStack.EMPTY);
+            inventory = DefaultedList.ofSize(slots, ItemStack.EMPTY);
             menuTitle = block.getMenuTitle();
         }
     }
 
     @Override
-    public Component getDefaultTitle() {
+    public Text getDefaultTitle() {
         return menuTitle;
     }
 
-    public final ResourceLocation getBlockId() {
+    public final Identifier getBlockId() {
         return blockId;
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        if (this.getBlockState().getBlock() instanceof AbstractOpenableStorageBlock block) {
+    public void readNbt(NbtCompound tag) {
+        super.readNbt(tag);
+        if (this.getCachedState().getBlock() instanceof AbstractOpenableStorageBlock block) {
             this.initialise(block.getBlockId());
-            ContainerHelper.loadAllItems(tag, inventory);
+            Inventories.readNbt(tag, inventory);
         } else {
             throw new IllegalStateException("Block Entity attached to wrong block.");
         }
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
-        super.save(tag);
-        ContainerHelper.saveAllItems(tag, inventory);
+    public NbtCompound writeNbt(NbtCompound tag) {
+        super.writeNbt(tag);
+        Inventories.writeNbt(tag, inventory);
         return tag;
     }
 
-    public NonNullList<ItemStack> getItems() {
+    public DefaultedList<ItemStack> getItems() {
         return this.inventory;
     }
 
     @Override
-    public boolean canBeUsedBy(ServerPlayer player) {
+    public boolean canBeUsedBy(ServerPlayerEntity player) {
         return this.canPlayerInteractWith(player);
     }
 
     @Override
-    public Container getInventory() {
+    public Inventory getInventory() {
         return this.getContainerWrapper();
     }
 
     @Override
-    public Component getInventoryTitle() {
+    public Text getInventoryTitle() {
         return this.getDisplayName();
     }
 }

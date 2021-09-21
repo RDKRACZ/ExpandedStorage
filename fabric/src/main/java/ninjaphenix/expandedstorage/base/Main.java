@@ -3,7 +3,7 @@ package ninjaphenix.expandedstorage.base;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
-import net.minecraft.core.Registry;
+import net.minecraft.util.registry.Registry;
 import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.base.internal_api.ModuleInitializer;
 

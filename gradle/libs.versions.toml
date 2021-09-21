@@ -4,7 +4,7 @@ containerlib = "1.0.0+1.17.1"
 
 [libraries]
 # Common Deps
-jetbrainAnnotations = { group = "org.jetbrains", name = "annotations", version = "21.0.1" }
+jetbrainAnnotations = { group = "org.jetbrains", name = "annotations", version = "22.0.0" }
 # Forge Deps
 minecraft-forge = { group = "net.minecraftforge", name = "forge", version = "1.17.1-37.0.19" }
 containerLibrary-forge = { group = "ninjaphenix.container_library", name = "forge", version.ref = "containerlib" }

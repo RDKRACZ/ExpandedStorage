@@ -1,5 +1,18 @@
 package ninjaphenix.expandedstorage.base.item;
 
+import ninjaphenix.expandedstorage.barrel.block.BarrelBlock;
+import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
+import ninjaphenix.expandedstorage.base.internal_api.Utils;
+import ninjaphenix.expandedstorage.base.internal_api.block.AbstractChestBlock;
+import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
+import ninjaphenix.expandedstorage.base.internal_api.item.MutationMode;
+import ninjaphenix.expandedstorage.chest.ChestCommon;
+import ninjaphenix.expandedstorage.chest.block.ChestBlock;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.function.Predicate;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -27,26 +40,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
-import ninjaphenix.expandedstorage.barrel.block.BarrelBlock;
-import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
-import ninjaphenix.expandedstorage.base.internal_api.Utils;
-import ninjaphenix.expandedstorage.base.internal_api.block.AbstractChestBlock;
-import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
-import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
-import ninjaphenix.expandedstorage.base.internal_api.item.MutationMode;
-import ninjaphenix.expandedstorage.chest.ChestCommon;
-import ninjaphenix.expandedstorage.chest.block.ChestBlock;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.function.Predicate;
-
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.*;
 import static net.minecraft.world.level.block.Rotation.CLOCKWISE_180;
 import static net.minecraft.world.level.block.Rotation.CLOCKWISE_90;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.CHEST_TYPE;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class StorageMutator extends Item {
     public StorageMutator(Item.Properties properties) {

@@ -1,15 +1,15 @@
 package ninjaphenix.expandedstorage.base.internal_api.block.misc;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.LockCode;
-import net.minecraft.world.Nameable;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.inventory.ContainerLock;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Nameable;
+import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -17,43 +17,43 @@ import org.jetbrains.annotations.Nullable;
 @Internal
 @Experimental
 public abstract class AbstractStorageBlockEntity extends BlockEntity implements Nameable {
-    private LockCode lockKey;
-    private Component menuTitle;
+    private ContainerLock lockKey;
+    private Text menuTitle;
 
     public AbstractStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state) {
         super(blockEntityType, pos, state);
-        lockKey = LockCode.NO_LOCK;
+        lockKey = ContainerLock.EMPTY;
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        lockKey = LockCode.fromTag(tag);
-        if (tag.contains("CustomName", Tag.TAG_STRING)) {
-            menuTitle = Component.Serializer.fromJson(tag.getString("CustomName"));
+    public void readNbt(NbtCompound tag) {
+        super.readNbt(tag);
+        lockKey = ContainerLock.fromNbt(tag);
+        if (tag.contains("CustomName", NbtElement.STRING_TYPE)) {
+            menuTitle = Text.Serializer.fromJson(tag.getString("CustomName"));
         }
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag) {
-        super.save(tag);
-        lockKey.addToTag(tag);
+    public NbtCompound writeNbt(NbtCompound tag) {
+        super.writeNbt(tag);
+        lockKey.writeNbt(tag);
         if (menuTitle != null) {
-            tag.putString("CustomName", Component.Serializer.toJson(menuTitle));
+            tag.putString("CustomName", Text.Serializer.toJson(menuTitle));
         }
         return tag;
     }
 
-    public boolean canPlayerInteractWith(ServerPlayer player) {
-        return lockKey == LockCode.NO_LOCK || !player.isSpectator() && lockKey.unlocksWith(player.getMainHandItem());
+    public boolean canPlayerInteractWith(ServerPlayerEntity player) {
+        return lockKey == ContainerLock.EMPTY || !player.isSpectator() && lockKey.canOpen(player.getMainHandStack());
     }
 
     @Override
-    public final Component getName() {
+    public final Text getName() {
         return this.hasCustomName() ? menuTitle : this.getDefaultTitle();
     }
 
-    public abstract Component getDefaultTitle();
+    public abstract Text getDefaultTitle();
 
     @Override
     public final boolean hasCustomName() {
@@ -62,11 +62,11 @@ public abstract class AbstractStorageBlockEntity extends BlockEntity implements 
 
     @Nullable
     @Override
-    public final Component getCustomName() {
+    public final Text getCustomName() {
         return menuTitle;
     }
 
-    public final void setMenuTitle(Component title) {
+    public final void setMenuTitle(Text title) {
         menuTitle = title;
     }
 }

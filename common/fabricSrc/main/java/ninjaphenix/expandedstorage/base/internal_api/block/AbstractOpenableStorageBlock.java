@@ -1,22 +1,23 @@
 package ninjaphenix.expandedstorage.base.internal_api.block;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockEntityProvider;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import ninjaphenix.container_library.api.OpenableBlockEntityProvider;
 import ninjaphenix.container_library.api.client.NCL_ClientApi;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
@@ -28,12 +29,12 @@ import java.util.List;
 
 @Internal
 @Experimental
-public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock implements EntityBlock, OpenableBlockEntityProvider {
-    private final ResourceLocation openingStat;
+public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock implements BlockEntityProvider, OpenableBlockEntityProvider {
+    private final Identifier openingStat;
     private final int slots;
 
-    public AbstractOpenableStorageBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier,
-                                        ResourceLocation openingStat, int slots) {
+    public AbstractOpenableStorageBlock(AbstractBlock.Settings properties, Identifier blockId, Identifier blockTier,
+                                        Identifier openingStat, int slots) {
         super(properties, blockId, blockTier);
         this.openingStat = openingStat;
         this.slots = slots;
@@ -43,39 +44,39 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
         return slots;
     }
 
-    public final Component getMenuTitle() {
-        return new TranslatableComponent(this.getDescriptionId());
+    public final Text getMenuTitle() {
+        return new TranslatableText(this.getTranslationKey());
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public final InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide()) {
+    public final ActionResult onUse(BlockState state, World level, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (level.isClient()) {
             NCL_ClientApi.openInventoryAt(pos);
-            return InteractionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
-        return InteractionResult.CONSUME;
+        return ActionResult.CONSUME;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter getter, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, getter, tooltip, flag);
-        tooltip.add(new TranslatableComponent("tooltip.expandedstorage.stores_x_stacks", slots).withStyle(ChatFormatting.GRAY));
+    public void appendTooltip(ItemStack stack, @Nullable BlockView getter, List<Text> tooltip, TooltipContext flag) {
+        super.appendTooltip(stack, getter, tooltip, flag);
+        tooltip.add(new TranslatableText("tooltip.expandedstorage.stores_x_stacks", slots).formatted(Formatting.GRAY));
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean bl) {
-        if (!state.is(newState.getBlock())) {
+    public void onStateReplaced(BlockState state, World level, BlockPos pos, BlockState newState, boolean bl) {
+        if (!state.isOf(newState.getBlock())) {
             if (level.getBlockEntity(pos) instanceof AbstractOpenableStorageBlockEntity entity) {
-                Containers.dropContents(level, pos, entity.getItems());
-                level.updateNeighbourForOutputSignal(pos, this);
+                ItemScatterer.spawn(level, pos, entity.getItems());
+                level.updateComparators(pos, this);
             }
-            super.onRemove(state, level, pos, newState, bl);
+            super.onStateReplaced(state, level, pos, newState, bl);
         }
     }
 
-    public void onInitialOpen(ServerPlayer player) {
-        player.awardStat(openingStat);
+    public void onInitialOpen(ServerPlayerEntity player) {
+        player.incrementStat(openingStat);
     }
 }

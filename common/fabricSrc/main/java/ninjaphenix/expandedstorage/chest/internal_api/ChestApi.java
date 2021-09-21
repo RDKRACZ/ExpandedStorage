@@ -1,6 +1,6 @@
 package ninjaphenix.expandedstorage.chest.internal_api;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Identifier;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.chest.ChestImpl;
 import org.jetbrains.annotations.ApiStatus.Experimental;
@@ -14,14 +14,14 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 public interface ChestApi {
     ChestApi INSTANCE = ChestImpl.getInstance();
 
-    void declareChestTextures(ResourceLocation block,
-                              ResourceLocation singleTexture,
-                              ResourceLocation leftTexture,
-                              ResourceLocation rightTexture,
-                              ResourceLocation topTexture,
-                              ResourceLocation bottomTexture,
-                              ResourceLocation frontTexture,
-                              ResourceLocation backTexture);
+    void declareChestTextures(Identifier block,
+                              Identifier singleTexture,
+                              Identifier leftTexture,
+                              Identifier rightTexture,
+                              Identifier topTexture,
+                              Identifier bottomTexture,
+                              Identifier frontTexture,
+                              Identifier backTexture);
 
-    ResourceLocation getChestTexture(ResourceLocation block, CursedChestType chestType);
+    Identifier getChestTexture(Identifier block, CursedChestType chestType);
 }

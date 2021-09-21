@@ -1,10 +1,10 @@
 package ninjaphenix.expandedstorage.base.internal_api.block.misc;
 
-import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.util.Locale;
+import net.minecraft.util.StringRepresentable;
 
 @Internal
 @Experimental

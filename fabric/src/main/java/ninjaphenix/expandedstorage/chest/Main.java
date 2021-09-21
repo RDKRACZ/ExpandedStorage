@@ -5,15 +5,15 @@ import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.tag.TagFactory;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.renderer.Sheets;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.TexturedRenderLayers;
+import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.item.BlockItem;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import ninjaphenix.expandedstorage.base.internal_api.ModuleInitializer;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
@@ -41,35 +41,35 @@ public final class Main implements ModuleInitializer {
         };
         Consumer<BlockEntityType<ChestBlockEntity>> registerBET = (blockEntityType) -> {
             Registry.register(Registry.BLOCK_ENTITY_TYPE, ChestCommon.BLOCK_TYPE, blockEntityType);
-            ItemStorage.SIDED.registerForBlocks(AbstractOpenableStorageBlockEntity::getItemStorage, blockEntityType.validBlocks.toArray(Block[]::new));
+            ItemStorage.SIDED.registerForBlocks(AbstractOpenableStorageBlockEntity::getItemStorage, blockEntityType.blocks.toArray(Block[]::new));
             if (PlatformUtils.getInstance().isClient()) {
                 Client.registerChestTextures(b.get());
                 Client.registerItemRenderers(i.get());
             }
         };
-        ChestCommon.registerContent(registerBlocks, registerItems, registerBET, TagFactory.BLOCK.create(new ResourceLocation("c", "wooden_chests")), BlockItem::new);
+        ChestCommon.registerContent(registerBlocks, registerItems, registerBET, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new);
     }
 
     private static class Client {
         public static void registerChestTextures(Set<ChestBlock> blocks) {
             ChestCommon.registerChestTextures(blocks);
-            ClientSpriteRegistryCallback.event(Sheets.CHEST_SHEET).register((atlasTexture, registry) -> ChestCommon.getChestTextures(blocks).forEach(registry::register));
+            ClientSpriteRegistryCallback.event(TexturedRenderLayers.CHEST_ATLAS_TEXTURE).register((atlasTexture, registry) -> ChestCommon.getChestTextures(blocks).forEach(registry::register));
             BlockEntityRendererRegistry.register(ChestCommon.getBlockEntityType(), ChestBlockEntityRenderer::new);
         }
 
         public static void registerItemRenderers(Set<BlockItem> items) {
             items.forEach(item -> {
-                ChestBlockEntity renderEntity = new ChestBlockEntity(ChestCommon.getBlockEntityType(), BlockPos.ZERO, item.getBlock().defaultBlockState());
+                ChestBlockEntity renderEntity = new ChestBlockEntity(ChestCommon.getBlockEntityType(), BlockPos.ORIGIN, item.getBlock().getDefaultState());
                 BuiltinItemRendererRegistry.INSTANCE.register(item, (itemStack, transform, stack, source, light, overlay) ->
-                        Minecraft.getInstance().getBlockEntityRenderDispatcher().renderItem(renderEntity, stack, source, light, overlay));
+                        MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(renderEntity, stack, source, light, overlay));
             });
-            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.SINGLE_LAYER);
-            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.LEFT_LAYER);
-            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.RIGHT_LAYER);
-            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.TOP_LAYER);
-            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.BOTTOM_LAYER);
-            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.FRONT_LAYER);
-            ModelLayers.ALL_MODELS.add(ChestBlockEntityRenderer.BACK_LAYER);
+            EntityModelLayers.LAYERS.add(ChestBlockEntityRenderer.SINGLE_LAYER);
+            EntityModelLayers.LAYERS.add(ChestBlockEntityRenderer.LEFT_LAYER);
+            EntityModelLayers.LAYERS.add(ChestBlockEntityRenderer.RIGHT_LAYER);
+            EntityModelLayers.LAYERS.add(ChestBlockEntityRenderer.TOP_LAYER);
+            EntityModelLayers.LAYERS.add(ChestBlockEntityRenderer.BOTTOM_LAYER);
+            EntityModelLayers.LAYERS.add(ChestBlockEntityRenderer.FRONT_LAYER);
+            EntityModelLayers.LAYERS.add(ChestBlockEntityRenderer.BACK_LAYER);
         }
     }
 }

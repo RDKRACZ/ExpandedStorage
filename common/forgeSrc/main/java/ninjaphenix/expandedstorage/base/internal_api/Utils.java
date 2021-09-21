@@ -1,5 +1,11 @@
 package ninjaphenix.expandedstorage.base.internal_api;
 
+import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
+import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
+import org.jetbrains.annotations.ApiStatus.Experimental;
+import org.jetbrains.annotations.ApiStatus.Internal;
+
+import java.util.function.UnaryOperator;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.KeybindComponent;
@@ -9,12 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
-import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
-import org.jetbrains.annotations.ApiStatus.Experimental;
-import org.jetbrains.annotations.ApiStatus.Internal;
-
-import java.util.function.UnaryOperator;
 
 @Internal
 @Experimental

@@ -16,29 +16,10 @@ loom {
         }
     }
 
-    mixin {
-        useLegacyMixinAp.set(true)
-    }
-
     accessWidenerPath.set(file("src/main/resources/expandedstorage.accessWidener"))
 }
 
 repositories {
-    maven {
-        name = "Shedaniel"
-        url = uri("https://maven.shedaniel.me/")
-    }
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = "TerraformersMC"
-                url = uri("https://maven.terraformersmc.com/")
-            }
-        }
-        filter {
-            includeGroup("com.terraformersmc")
-        }
-    }
     exclusiveContent {
         forRepository {
             maven {
@@ -50,10 +31,6 @@ repositories {
             includeGroup("com.github.Virtuoel")
         }
     }
-    maven {
-        name = "Siphalor's Maven"
-        url = uri("https://maven.siphalor.de/")
-    }
     mavenLocal()
 }
 
@@ -64,7 +41,7 @@ val excludeFabric: (ModuleDependency) -> Unit = {
 
 dependencies {
     minecraft(libs.minecraft.fabric)
-    mappings(loom.officialMojangMappings())
+    mappings("net.fabricmc:yarn:1.17.1+build.61")
 
     modImplementation(libs.fabric.loader)
     modApi(libs.fabric.api)
@@ -84,7 +61,7 @@ tasks.withType<ProcessResources> {
     }
 }
 
-val updateForgeSources = tasks.register<net.fabricmc.loom.task.MigrateMappingsTask>("updateForgeSources") {
+tasks.register<net.fabricmc.loom.task.MigrateMappingsTask>("updateForgeSources") {
     setInputDir(rootDir.toPath().resolve("common/fabricSrc/main/java").toString())
     setOutputDir(rootDir.toPath().resolve("common/forgeSrc/main/java").toString())
     setMappings("net.minecraft:mappings:${properties["minecraft_version"]}")
@@ -96,7 +73,7 @@ if (hasProperty("yv")) {
         setMappings("net.fabricmc:yarn:" + findProperty("yv") as String)
     }
 
-    val updateFabricSources = tasks.register<net.fabricmc.loom.task.MigrateMappingsTask>("updateFabricSources") {
+    tasks.register<net.fabricmc.loom.task.MigrateMappingsTask>("updateFabricSources") {
         dependsOn(updateCommonSources)
 
         setInputDir(rootDir.toPath().resolve("fabric/src/main/java").toString())

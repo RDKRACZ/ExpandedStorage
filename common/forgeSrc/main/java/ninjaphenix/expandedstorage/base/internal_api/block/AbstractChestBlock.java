@@ -2,7 +2,6 @@ package ninjaphenix.expandedstorage.base.internal_api.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.WorldlyContainerHolder;
@@ -42,10 +41,10 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     public AbstractChestBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier, ResourceLocation openingStat, int slots) {
         super(properties, blockId, blockTier, openingStat, slots);
         this.registerDefaultState(this.getStateDefinition().any()
-                                      .setValue(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE)
-                                      .setValue(AbstractChestBlock.PERP_ROTATION, FaceRotation.NORTH)
-                                      .setValue(AbstractChestBlock.FACE_ROTATION, FaceRotation.NORTH)
-                                      .setValue(AbstractChestBlock.Y_ROTATION, FaceRotation.NORTH));
+                                 .setValue(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE)
+                                 .setValue(AbstractChestBlock.PERP_ROTATION, FaceRotation.NORTH)
+                                 .setValue(AbstractChestBlock.FACE_ROTATION, FaceRotation.NORTH)
+                                 .setValue(AbstractChestBlock.Y_ROTATION, FaceRotation.NORTH));
     }
 
     public static Direction getDirectionToAttached(BlockState state) {
@@ -80,8 +79,8 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     }
 
     public static CursedChestType getChestType(FaceRotation yRotation, FaceRotation faceRotation, FaceRotation perpRotation, Direction offset) {
-        var definitiveFacing = yRotation.asDirection(Direction.Axis.Y);
-        var definitiveOffset = FaceRotation.getDefinitiveDirection(offset, faceRotation, yRotation, perpRotation);
+        Direction definitiveFacing = yRotation.asDirection(Direction.Axis.Y);
+        Direction definitiveOffset = FaceRotation.getDefinitiveDirection(offset, faceRotation, yRotation, perpRotation);
         if (definitiveOffset == Direction.DOWN) {
             return CursedChestType.TOP;
         } else if (definitiveOffset == Direction.UP) {
@@ -161,7 +160,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     @Override
     @SuppressWarnings("deprecation")
     public BlockState updateShape(BlockState state, Direction offset, BlockState offsetState, LevelAccessor level,
-                                  BlockPos pos, BlockPos offsetPos) {
+                                                BlockPos pos, BlockPos offsetPos) {
         DoubleBlockCombiner.BlockType mergeType = AbstractChestBlock.getBlockType(state);
         if (mergeType == DoubleBlockCombiner.BlockType.SINGLE) {
             Direction facing = state.getValue(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y);
@@ -214,7 +213,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
             return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, level, pos, false).get(new Property<>() {
                 @Override
                 public OpenableBlockEntity get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
-                    Component name = first.hasCustomName() ? first.getDisplayName() : second.hasCustomName() ? second.getDisplayName() : Utils.translation("container.expandedstorage.generic_double", first.getDisplayName());
+                    Text name = first.hasCustomName() ? first.getDisplayName() : second.hasCustomName() ? second.getDisplayName() : Utils.translation("container.expandedstorage.generic_double", first.getDisplayName());
                     return new OpenableBlockEntities(name, first, second);
                 }
 
@@ -232,12 +231,12 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
             return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, level, pos, false).get(new Property<>() {
                 @Override
-                public WorldlyContainer get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
+                public SidedInventory get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
                     return VariableSidedInventory.of(first.getContainerWrapper(), second.getContainerWrapper());
                 }
 
                 @Override
-                public WorldlyContainer get(AbstractOpenableStorageBlockEntity single) {
+                public SidedInventory get(AbstractOpenableStorageBlockEntity single) {
                     return single.getContainerWrapper();
                 }
             });

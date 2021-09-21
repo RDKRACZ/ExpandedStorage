@@ -5,10 +5,10 @@ import com.github.fabricservertools.htm.api.LockableObject;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.CombinedStorage;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractChestBlock;
 
 import java.util.List;
@@ -68,7 +68,7 @@ public final class FabricChestProperties {
     };
 
 
-    public static Optional<Storage<ItemVariant>> createItemStorage(Level level, BlockState state, BlockPos pos) {
+    public static Optional<Storage<ItemVariant>> createItemStorage(World level, BlockState state, BlockPos pos) {
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
             return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, level, pos, true).get(FabricChestProperties.INVENTORY_GETTER);
         }

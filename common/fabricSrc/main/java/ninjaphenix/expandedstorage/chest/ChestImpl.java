@@ -1,7 +1,7 @@
 package ninjaphenix.expandedstorage.chest;
 
-import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.texture.MissingSprite;
+import net.minecraft.util.Identifier;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.chest.internal_api.ChestApi;
 
@@ -10,7 +10,7 @@ import java.util.Map;
 
 public final class ChestImpl implements ChestApi {
     private static ChestImpl instance;
-    private final Map<ResourceLocation, TextureCollection> textures = new HashMap<>();
+    private final Map<Identifier, TextureCollection> textures = new HashMap<>();
 
     private ChestImpl() {
 
@@ -24,22 +24,21 @@ public final class ChestImpl implements ChestApi {
     }
 
     @Override
-    public void declareChestTextures(ResourceLocation block, ResourceLocation singleTexture, ResourceLocation leftTexture, ResourceLocation rightTexture, ResourceLocation topTexture, ResourceLocation bottomTexture, ResourceLocation frontTexture, ResourceLocation backTexture) {
+    public void declareChestTextures(Identifier block, Identifier singleTexture, Identifier leftTexture, Identifier rightTexture, Identifier topTexture, Identifier bottomTexture, Identifier frontTexture, Identifier backTexture) {
         if (!textures.containsKey(block)) {
             TextureCollection collection = new TextureCollection(singleTexture, leftTexture, rightTexture, topTexture, bottomTexture, frontTexture, backTexture);
             textures.put(block, collection);
         } else {
             throw new IllegalArgumentException("Tried registering chest textures for \"" + block + "\" which already has textures.");
         }
-
     }
 
     @Override
-    public ResourceLocation getChestTexture(ResourceLocation block, CursedChestType chestType) {
+    public Identifier getChestTexture(Identifier block, CursedChestType chestType) {
         if (textures.containsKey(block)) {
             return textures.get(block).getTexture(chestType);
         } else {
-            return MissingTextureAtlasSprite.getLocation();
+            return MissingSprite.getMissingSpriteId();
         }
     }
 }

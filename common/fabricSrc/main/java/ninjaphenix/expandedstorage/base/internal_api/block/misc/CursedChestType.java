@@ -1,6 +1,6 @@
 package ninjaphenix.expandedstorage.base.internal_api.block.misc;
 
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.StringIdentifiable;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
@@ -8,7 +8,7 @@ import java.util.Locale;
 
 @Internal
 @Experimental
-public enum CursedChestType implements StringRepresentable {
+public enum CursedChestType implements StringIdentifiable {
     TOP(-1),
     BOTTOM(-1),
     FRONT(0),
@@ -26,7 +26,7 @@ public enum CursedChestType implements StringRepresentable {
     }
 
     @Override
-    public String getSerializedName() {
+    public String asString() {
         return name;
     }
 

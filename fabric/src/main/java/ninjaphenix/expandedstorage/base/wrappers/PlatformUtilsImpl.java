@@ -4,14 +4,14 @@ import com.mojang.datafixers.types.Type;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 
 import java.util.Set;
@@ -24,11 +24,11 @@ public final class PlatformUtilsImpl extends PlatformUtils {
     }
 
     @Override
-    public CreativeModeTab createTab(Supplier<ItemStack> icon) {
-        FabricItemGroupBuilder.build(new ResourceLocation("dummy"), null); // Fabric API is dumb.
-        return new CreativeModeTab(CreativeModeTab.TABS.length - 1, Utils.MOD_ID) {
+    public ItemGroup createTab(Supplier<ItemStack> icon) {
+        FabricItemGroupBuilder.build(new Identifier("dummy"), null); // Fabric API is dumb.
+        return new ItemGroup(ItemGroup.GROUPS.length - 1, Utils.MOD_ID) {
             @Override
-            public ItemStack makeIcon() {
+            public ItemStack createIcon() {
                 return icon.get();
             }
         };

@@ -1,28 +1,28 @@
 package ninjaphenix.expandedstorage.chest.block;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.animal.Cat;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.block.Waterloggable;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.passive.CatEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractChestBlock;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.FaceRotation;
@@ -34,66 +34,66 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements SimpleWaterloggedBlock {
+public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements Waterloggable {
     public static final int SET_OBSERVER_COUNT_EVENT = 1;
     private static final VoxelShape[] SHAPES = {
-            Block.box(1, 0, 0, 15, 14, 15), // Horizontal shapes, depends on orientation and chest type.
-            Block.box(1, 0, 1, 16, 14, 15),
-            Block.box(1, 0, 1, 15, 14, 16),
-            Block.box(0, 0, 1, 15, 14, 15),
-            Block.box(1, 0, 1, 15, 14, 15), // Top shape.
-            Block.box(1, 0, 1, 15, 16, 15), // Bottom shape.
-            Block.box(1, 0, 1, 15, 14, 15)  // Single shape.
+            Block.createCuboidShape(1, 0, 0, 15, 14, 15), // Horizontal shapes, depends on orientation and chest type.
+            Block.createCuboidShape(1, 0, 1, 16, 14, 15),
+            Block.createCuboidShape(1, 0, 1, 15, 14, 16),
+            Block.createCuboidShape(0, 0, 1, 15, 14, 15),
+            Block.createCuboidShape(1, 0, 1, 15, 14, 15), // Top shape.
+            Block.createCuboidShape(1, 0, 1, 15, 16, 15), // Bottom shape.
+            Block.createCuboidShape(1, 0, 1, 15, 14, 15)  // Single shape.
     };
 
-    public ChestBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier,
-                      ResourceLocation openingStat, int slots) {
+    public ChestBlock(Settings properties, Identifier blockId, Identifier blockTier,
+                      Identifier openingStat, int slots) {
         super(properties, blockId, blockTier, openingStat, slots);
-        this.registerDefaultState(this.defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, false));
+        this.setDefaultState(this.getDefaultState().with(Properties.WATERLOGGED, false));
     }
 
     @NotNull
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context) {
-        FluidState fluidState = context.getLevel().getFluidState(context.getClickedPos());
-        return super.getStateForPlacement(context).setValue(BlockStateProperties.WATERLOGGED, fluidState.getType() == Fluids.WATER);
+    public BlockState getPlacementState(ItemPlacementContext context) {
+        FluidState fluidState = context.getWorld().getFluidState(context.getBlockPos());
+        return super.getPlacementState(context).with(Properties.WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public FluidState getFluidState(BlockState state) {
-        return state.getValue(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
+        return state.get(Properties.WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState otherState, LevelAccessor level, BlockPos pos, BlockPos otherPos) {
-        if (state.getValue(BlockStateProperties.WATERLOGGED)) {
-            level.getLiquidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState otherState, WorldAccess level, BlockPos pos, BlockPos otherPos) {
+        if (state.get(Properties.WATERLOGGED)) {
+            level.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(level));
         }
-        return super.updateShape(state, direction, otherState, level, pos, otherPos);
+        return super.getStateForNeighborUpdate(state, direction, otherState, level, pos, otherPos);
     }
 
     @Override
-    public ResourceLocation getBlockType() {
+    public Identifier getBlockType() {
         return ChestCommon.BLOCK_TYPE;
     }
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World level, BlockState state, BlockEntityType<T> blockEntityType) {
         boolean correctBET = blockEntityType == ChestCommon.getBlockEntityType();
-        return level.isClientSide() && correctBET ? (level1, pos, state1, entity) -> ChestBlockEntity.progressLidAnimation(level1, pos, state1, (ChestBlockEntity) entity) : null;
+        return level.isClient() && correctBET ? (level1, pos, state1, entity) -> ChestBlockEntity.progressLidAnimation(level1, pos, state1, (ChestBlockEntity) entity) : null;
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void tick(BlockState state, ServerLevel level, BlockPos pos, Random random) {
+    public void scheduledTick(BlockState state, ServerWorld level, BlockPos pos, Random random) {
         if (level.getBlockEntity(pos) instanceof ChestBlockEntity entity) {
             entity.recountObservers();
         }
@@ -101,8 +101,8 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
 
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getShape(BlockState state, BlockGetter getter, BlockPos pos, CollisionContext context) {
-        CursedChestType type = state.getValue(AbstractChestBlock.CURSED_CHEST_TYPE);
+    public VoxelShape getOutlineShape(BlockState state, BlockView getter, BlockPos pos, ShapeContext context) {
+        CursedChestType type = state.get(AbstractChestBlock.CURSED_CHEST_TYPE);
         if (type == CursedChestType.TOP) {
             return ChestBlock.SHAPES[4];
         } else if (type == CursedChestType.BOTTOM) {
@@ -110,20 +110,20 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
         } else if (type == CursedChestType.SINGLE) {
             return ChestBlock.SHAPES[6];
         } else {
-            int index = (state.getValue(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y).get2DDataValue() + type.getOffset()) % 4;
+            int index = (state.get(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y).getHorizontal() + type.getOffset()) % 4;
             return ChestBlock.SHAPES[index];
         }
     }
 
     @NotNull
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new ChestBlockEntity(ChestCommon.getBlockEntityType(), pos, state);
     }
 
     @Override
-    protected void appendAdditionalStateDefinitions(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(BlockStateProperties.WATERLOGGED);
+    protected void appendAdditionalStateDefinitions(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(Properties.WATERLOGGED);
     }
 
     @Override
@@ -133,22 +133,22 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean triggerEvent(BlockState state, Level level, BlockPos pos, int event, int value) {
-        super.triggerEvent(state, level, pos, event, value);
+    public boolean onSyncedBlockEvent(BlockState state, World level, BlockPos pos, int event, int value) {
+        super.onSyncedBlockEvent(state, level, pos, event, value);
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        return blockEntity != null && blockEntity.triggerEvent(event, value);
+        return blockEntity != null && blockEntity.onSyncedBlockEvent(event, value);
     }
 
     @Override
-    protected boolean isAccessBlocked(LevelAccessor level, BlockPos pos) {
+    protected boolean isAccessBlocked(WorldAccess level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
-        BlockPos abovePos = pos.relative(FaceRotation.getRelativeDirection(Direction.UP, state.getValue(FACE_ROTATION), state.getValue(Y_ROTATION), state.getValue(PERP_ROTATION)));
+        BlockPos abovePos = pos.offset(FaceRotation.getRelativeDirection(Direction.UP, state.get(FACE_ROTATION), state.get(Y_ROTATION), state.get(PERP_ROTATION)));
         return ChestBlock.isSolidBlockAt(level, abovePos) || ChestBlock.isCatSittingAt(level, pos, abovePos);
     }
 
-    private static boolean isCatSittingAt(LevelAccessor level, BlockPos chestPos, BlockPos abovePos) {
-        List<Cat> cats = level.getEntitiesOfClass(Cat.class, new AABB(chestPos, abovePos));
-        for (Cat cat : cats) {
+    private static boolean isCatSittingAt(WorldAccess level, BlockPos chestPos, BlockPos abovePos) {
+        List<CatEntity> cats = level.getNonSpectatingEntities(CatEntity.class, new Box(chestPos, abovePos));
+        for (CatEntity cat : cats) {
             if (cat.isInSittingPose()) {
                 return true;
             }
@@ -156,7 +156,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
         return false;
     }
 
-    private static boolean isSolidBlockAt(LevelAccessor level, BlockPos abovePos) {
-        return level.getBlockState(abovePos).isRedstoneConductor(level, abovePos);
+    private static boolean isSolidBlockAt(WorldAccess level, BlockPos abovePos) {
+        return level.getBlockState(abovePos).isSolidBlock(level, abovePos);
     }
 }

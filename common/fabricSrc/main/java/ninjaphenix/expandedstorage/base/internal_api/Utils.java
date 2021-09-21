@@ -1,14 +1,14 @@
 package ninjaphenix.expandedstorage.base.internal_api;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.KeybindComponent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.text.KeybindText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
 import ninjaphenix.expandedstorage.base.wrappers.PlatformUtils;
 import org.jetbrains.annotations.ApiStatus.Experimental;
@@ -21,11 +21,11 @@ import java.util.function.UnaryOperator;
 public final class Utils {
     @Internal
     public static final String MOD_ID = "expandedstorage";
-    public static final CreativeModeTab TAB = PlatformUtils.getInstance().createTab(BaseApi.getInstance()::tabIcon);
+    public static final ItemGroup TAB = PlatformUtils.getInstance().createTab(BaseApi.getInstance()::tabIcon);
     @Internal
-    public static final Component ALT_USE = new TranslatableComponent("tooltip.expandedstorage.alt_use",
-            new KeybindComponent("key.sneak").withStyle(ChatFormatting.GOLD),
-            new KeybindComponent("key.use").withStyle(ChatFormatting.GOLD));
+    public static final Text ALT_USE = new TranslatableText("tooltip.expandedstorage.alt_use",
+            new KeybindText("key.sneak").formatted(Formatting.GOLD),
+            new KeybindText("key.use").formatted(Formatting.GOLD));
 
     // Slots for Storage Tiers
     public static final int WOOD_STACK_COUNT = 27;
@@ -37,11 +37,11 @@ public final class Utils {
 
     // Default tiers which all modules can, but don't need to, specify blocks for.
     public static final Tier WOOD_TIER = new Tier(Utils.resloc("wood"), WOOD_STACK_COUNT, UnaryOperator.identity(), UnaryOperator.identity());
-    public static final Tier IRON_TIER = new Tier(Utils.resloc("iron"), IRON_STACK_COUNT, BlockBehaviour.Properties::requiresCorrectToolForDrops, UnaryOperator.identity());
-    public static final Tier GOLD_TIER = new Tier(Utils.resloc("gold"), GOLD_STACK_COUNT, BlockBehaviour.Properties::requiresCorrectToolForDrops, UnaryOperator.identity());
-    public static final Tier DIAMOND_TIER = new Tier(Utils.resloc("diamond"), DIAMOND_STACK_COUNT, BlockBehaviour.Properties::requiresCorrectToolForDrops, UnaryOperator.identity());
-    public static final Tier OBSIDIAN_TIER = new Tier(Utils.resloc("obsidian"), OBSIDIAN_STACK_COUNT, BlockBehaviour.Properties::requiresCorrectToolForDrops, UnaryOperator.identity());
-    public static final Tier NETHERITE_TIER = new Tier(Utils.resloc("netherite"), NETHERITE_STACK_COUNT, BlockBehaviour.Properties::requiresCorrectToolForDrops, Item.Properties::fireResistant);
+    public static final Tier IRON_TIER = new Tier(Utils.resloc("iron"), IRON_STACK_COUNT, AbstractBlock.Settings::requiresTool, UnaryOperator.identity());
+    public static final Tier GOLD_TIER = new Tier(Utils.resloc("gold"), GOLD_STACK_COUNT, AbstractBlock.Settings::requiresTool, UnaryOperator.identity());
+    public static final Tier DIAMOND_TIER = new Tier(Utils.resloc("diamond"), DIAMOND_STACK_COUNT, AbstractBlock.Settings::requiresTool, UnaryOperator.identity());
+    public static final Tier OBSIDIAN_TIER = new Tier(Utils.resloc("obsidian"), OBSIDIAN_STACK_COUNT, AbstractBlock.Settings::requiresTool, UnaryOperator.identity());
+    public static final Tier NETHERITE_TIER = new Tier(Utils.resloc("netherite"), NETHERITE_STACK_COUNT, AbstractBlock.Settings::requiresTool, Item.Settings::fireproof);
 
     // Item Cooldown
     public static final int QUARTER_SECOND = 5;
@@ -51,12 +51,12 @@ public final class Utils {
     }
 
     @Internal
-    public static ResourceLocation resloc(String path) {
-        return new ResourceLocation(Utils.MOD_ID, path);
+    public static Identifier resloc(String path) {
+        return new Identifier(Utils.MOD_ID, path);
     }
 
     @Internal
-    public static MutableComponent translation(String key, Object... params) {
-        return new TranslatableComponent(key, params);
+    public static MutableText translation(String key, Object... params) {
+        return new TranslatableText(key, params);
     }
 }

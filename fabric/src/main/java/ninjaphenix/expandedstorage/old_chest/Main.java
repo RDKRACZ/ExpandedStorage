@@ -1,10 +1,10 @@
 package ninjaphenix.expandedstorage.old_chest;
 
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
-import net.minecraft.core.Registry;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.item.BlockItem;
+import net.minecraft.util.registry.Registry;
 import ninjaphenix.expandedstorage.base.internal_api.ModuleInitializer;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.old_chest.block.OldChestBlock;
@@ -15,7 +15,7 @@ import java.util.Set;
 public final class Main implements ModuleInitializer {
     private static void registerBET(BlockEntityType<OldChestBlockEntity> blockEntityType) {
         Registry.register(Registry.BLOCK_ENTITY_TYPE, OldChestCommon.BLOCK_TYPE, blockEntityType);
-        ItemStorage.SIDED.registerForBlocks(AbstractOpenableStorageBlockEntity::getItemStorage, blockEntityType.validBlocks.toArray(Block[]::new));
+        ItemStorage.SIDED.registerForBlocks(AbstractOpenableStorageBlockEntity::getItemStorage, blockEntityType.blocks.toArray(Block[]::new));
     }
 
     private static void registerBlocks(Set<OldChestBlock> blocks) {

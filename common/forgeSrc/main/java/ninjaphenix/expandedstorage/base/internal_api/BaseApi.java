@@ -1,22 +1,21 @@
 package ninjaphenix.expandedstorage.base.internal_api;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
 import ninjaphenix.expandedstorage.base.BaseImpl;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractStorageBlock;
 import ninjaphenix.expandedstorage.base.internal_api.item.BlockUpgradeBehaviour;
 import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
+import org.jetbrains.annotations.ApiStatus.Experimental;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
-
-import static org.jetbrains.annotations.ApiStatus.Experimental;
-import static org.jetbrains.annotations.ApiStatus.Internal;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 
 @Internal
 @Experimental

@@ -1,10 +1,9 @@
 package ninjaphenix.expandedstorage.base.internal_api.block.misc;
 
+import java.util.Locale;
 import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Rotation;
-
-import java.util.Locale;
 
 public enum FaceRotation implements StringRepresentable {
     NORTH(0),
@@ -91,9 +90,9 @@ public enum FaceRotation implements StringRepresentable {
     private static Direction rotate(Direction input, Direction.Axis axis, FaceRotation rotation) {
         return switch (rotation) {
             case NORTH -> input;
-            case EAST -> input.getClockWise(axis);
+            case EAST -> input.rotateClockwise(axis);
             case SOUTH -> input.getOpposite();
-            case WEST -> input.getCounterClockWise(axis);
+            case WEST -> input.rotateCounterclockwise(axis);
         };
     }
 

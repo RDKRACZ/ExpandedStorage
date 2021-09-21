@@ -1,5 +1,10 @@
 package ninjaphenix.expandedstorage.barrel.block;
 
+import ninjaphenix.expandedstorage.barrel.BarrelCommon;
+import ninjaphenix.expandedstorage.barrel.block.misc.BarrelBlockEntity;
+import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
+
+import java.util.Random;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -10,17 +15,13 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import ninjaphenix.expandedstorage.barrel.BarrelCommon;
-import ninjaphenix.expandedstorage.barrel.block.misc.BarrelBlockEntity;
-import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
-
-import java.util.Random;
 
 public final class BarrelBlock extends AbstractOpenableStorageBlock implements WorldlyContainerHolder {
-    public BarrelBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier, ResourceLocation openingStat, int slots) {
+    public BarrelBlock(BlockBehaviour.Properties properties, ResourceLocation blockId, ResourceLocation blockTier, ResourceLocation openingStat, int slots) {
         super(properties, blockId, blockTier, openingStat, slots);
         this.registerDefaultState(this.getStateDefinition().any().setValue(BlockStateProperties.FACING, Direction.NORTH).setValue(BlockStateProperties.OPEN, false));
 

@@ -1,27 +1,6 @@
 package ninjaphenix.expandedstorage.barrel;
 
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.LockCode;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
 import ninjaphenix.expandedstorage.barrel.block.BarrelBlock;
 import ninjaphenix.expandedstorage.barrel.block.misc.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.base.BaseCommon;
@@ -36,6 +15,29 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.LockCode;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 
 public final class BarrelCommon {
     public static final ResourceLocation BLOCK_TYPE = Utils.resloc("barrel");
@@ -62,20 +64,20 @@ public final class BarrelCommon {
         ResourceLocation netheriteOpenStat = BaseCommon.registerStat(Utils.resloc("open_netherite_barrel"));
         // Init block properties
         BlockBehaviour.Properties ironProperties = BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
-                                                                            .strength(5.0F, 6.0F)
-                                                                            .sound(SoundType.WOOD);
+                                                                      .strength(5.0F, 6.0F)
+                                                                      .sound(SoundType.WOOD);
         BlockBehaviour.Properties goldProperties = BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
-                                                                            .strength(3.0F, 6.0F)
-                                                                            .sound(SoundType.WOOD);
+                                                                      .strength(3.0F, 6.0F)
+                                                                      .sound(SoundType.WOOD);
         BlockBehaviour.Properties diamondProperties = BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
-                                                                               .strength(5.0F, 6.0F)
-                                                                               .sound(SoundType.WOOD);
+                                                                         .strength(5.0F, 6.0F)
+                                                                         .sound(SoundType.WOOD);
         BlockBehaviour.Properties obsidianProperties = BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
-                                                                                .strength(50.0F, 1200.0F)
-                                                                                .sound(SoundType.WOOD);
+                                                                          .strength(50.0F, 1200.0F)
+                                                                          .sound(SoundType.WOOD);
         BlockBehaviour.Properties netheriteProperties = BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
-                                                                                 .strength(50.0F, 1200.0F)
-                                                                                 .sound(SoundType.WOOD);
+                                                                           .strength(50.0F, 1200.0F)
+                                                                           .sound(SoundType.WOOD);
         // Init blocks
         BarrelBlock ironBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("iron_barrel"), ironOpenStat, Utils.IRON_TIER, ironProperties);
         BarrelBlock goldBarrelBlock = BarrelCommon.barrelBlock(Utils.resloc("gold_barrel"), goldOpenStat, Utils.GOLD_TIER, goldProperties);
@@ -118,31 +120,31 @@ public final class BarrelCommon {
         BlockState state = level.getBlockState(pos);
         Block block = state.getBlock();
         boolean isExpandedStorageBarrel = block instanceof BarrelBlock;
-        var containerSize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : ((BarrelBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, ((BarrelBlock) block).getBlockTier())).getSlotCount();
+        int containerSize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : ((BarrelBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, ((BarrelBlock) block).getBlockTier())).getSlotCount();
         if (isExpandedStorageBarrel && ((BarrelBlock) block).getBlockTier() == from || !isExpandedStorageBarrel && from == Utils.WOOD_TIER.getId()) {
-            var blockEntity = level.getBlockEntity(pos);
+            BlockEntity blockEntity = level.getBlockEntity(pos);
             //noinspection ConstantConditions
-            var tag = blockEntity.save(new CompoundTag());
+            CompoundTag tag = blockEntity.save(new CompoundTag());
             boolean verifiedSize = blockEntity instanceof Container container && container.getContainerSize() == containerSize;
             if (!verifiedSize) { // Cannot verify container size, we'll let it upgrade if it has or has less than 27 items
                 if (tag.contains("Items", Tag.TAG_LIST)) {
-                    var items = tag.getList("Items", Tag.TAG_COMPOUND);
+                    ListTag items = tag.getList("Items", Tag.TAG_COMPOUND);
                     if (items.size() <= containerSize) {
                         verifiedSize = true;
                     }
                 }
             }
             if (verifiedSize) {
-                var toBlock = (AbstractOpenableStorageBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, to);
-                var inventory = NonNullList.withSize(toBlock.getSlotCount(), ItemStack.EMPTY);
-                var code = LockCode.fromTag(tag);
+                AbstractOpenableStorageBlock toBlock = (AbstractOpenableStorageBlock) BaseApi.getInstance().getTieredBlock(BarrelCommon.BLOCK_TYPE, to);
+                NonNullList<ItemStack> inventory = NonNullList.withSize(toBlock.getSlotCount(), ItemStack.EMPTY);
+                LockCode code = LockCode.fromTag(tag);
                 ContainerHelper.loadAllItems(tag, inventory);
                 level.removeBlockEntity(pos);
-                var newState = toBlock.defaultBlockState().setValue(BlockStateProperties.FACING, state.getValue(BlockStateProperties.FACING));
+                BlockState newState = toBlock.defaultBlockState().setValue(BlockStateProperties.FACING, state.getValue(BlockStateProperties.FACING));
                 if (level.setBlockAndUpdate(pos, newState)) {
-                    var newEntity = (AbstractOpenableStorageBlockEntity) level.getBlockEntity(pos);
+                    BlockEntity newEntity = level.getBlockEntity(pos);
                     //noinspection ConstantConditions
-                    var newTag = newEntity.save(new CompoundTag());
+                    CompoundTag newTag = newEntity.save(new CompoundTag());
                     ContainerHelper.saveAllItems(newTag, inventory);
                     code.addToTag(newTag);
                     newEntity.load(newTag);

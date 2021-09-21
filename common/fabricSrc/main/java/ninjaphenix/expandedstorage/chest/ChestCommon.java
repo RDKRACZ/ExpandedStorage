@@ -1,30 +1,32 @@
 package ninjaphenix.expandedstorage.chest;
 
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.LockCode;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.DoubleBlockCombiner;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.ChestType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.DoubleBlockProperties;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.Material;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.enums.ChestType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.ContainerLock;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.base.BaseCommon;
 import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
@@ -45,7 +47,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public final class ChestCommon {
-    public static final ResourceLocation BLOCK_TYPE = Utils.resloc("cursed_chest");
+    public static final Identifier BLOCK_TYPE = Utils.resloc("cursed_chest");
     private static final int ICON_SUITABILITY = 1000;
     private static BlockEntityType<ChestBlockEntity> blockEntityType;
 
@@ -56,41 +58,41 @@ public final class ChestCommon {
     static void registerContent(Consumer<Set<ChestBlock>> blockReg,
                                 Consumer<Set<BlockItem>> itemReg,
                                 Consumer<BlockEntityType<ChestBlockEntity>> blockEntityTypeConsumer,
-                                net.minecraft.tags.Tag<Block> woodenChestTag,
-                                BiFunction<Block, Item.Properties, BlockItem> blockItemMaker) {
+                                net.minecraft.tag.Tag<Block> woodenChestTag,
+                                BiFunction<Block, Item.Settings, BlockItem> blockItemMaker) {
         // Init and register opening stats
-        ResourceLocation woodOpenStat = BaseCommon.registerStat(Utils.resloc("open_wood_chest"));
-        ResourceLocation pumpkinOpenStat = BaseCommon.registerStat(Utils.resloc("open_pumpkin_chest"));
-        ResourceLocation christmasOpenStat = BaseCommon.registerStat(Utils.resloc("open_christmas_chest"));
-        ResourceLocation ironOpenStat = BaseCommon.registerStat(Utils.resloc("open_iron_chest"));
-        ResourceLocation goldOpenStat = BaseCommon.registerStat(Utils.resloc("open_gold_chest"));
-        ResourceLocation diamondOpenStat = BaseCommon.registerStat(Utils.resloc("open_diamond_chest"));
-        ResourceLocation obsidianOpenStat = BaseCommon.registerStat(Utils.resloc("open_obsidian_chest"));
-        ResourceLocation netheriteOpenStat = BaseCommon.registerStat(Utils.resloc("open_netherite_chest"));
+        Identifier woodOpenStat = BaseCommon.registerStat(Utils.resloc("open_wood_chest"));
+        Identifier pumpkinOpenStat = BaseCommon.registerStat(Utils.resloc("open_pumpkin_chest"));
+        Identifier christmasOpenStat = BaseCommon.registerStat(Utils.resloc("open_christmas_chest"));
+        Identifier ironOpenStat = BaseCommon.registerStat(Utils.resloc("open_iron_chest"));
+        Identifier goldOpenStat = BaseCommon.registerStat(Utils.resloc("open_gold_chest"));
+        Identifier diamondOpenStat = BaseCommon.registerStat(Utils.resloc("open_diamond_chest"));
+        Identifier obsidianOpenStat = BaseCommon.registerStat(Utils.resloc("open_obsidian_chest"));
+        Identifier netheriteOpenStat = BaseCommon.registerStat(Utils.resloc("open_netherite_chest"));
         // Init block properties
-        BlockBehaviour.Properties woodProperties = BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
-                                                                            .strength(2.5F)
-                                                                            .sound(SoundType.WOOD);
-        BlockBehaviour.Properties pumpkinProperties = BlockBehaviour.Properties.of(Material.VEGETABLE, MaterialColor.COLOR_ORANGE)
-                                                                               .strength(1.0F)
-                                                                               .sound(SoundType.WOOD);
-        BlockBehaviour.Properties christmasProperties = BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
-                                                                                 .strength(2.5F)
-                                                                                 .sound(SoundType.WOOD);
-        BlockBehaviour.Properties ironProperties = BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL)
-                                                                            .strength(5.0F, 6.0F)
-                                                                            .sound(SoundType.METAL);
-        BlockBehaviour.Properties goldProperties = BlockBehaviour.Properties.of(Material.METAL, MaterialColor.GOLD)
-                                                                            .strength(3.0F, 6.0F)
-                                                                            .sound(SoundType.METAL);
-        BlockBehaviour.Properties diamondProperties = BlockBehaviour.Properties.of(Material.METAL, MaterialColor.DIAMOND)
-                                                                               .strength(5.0F, 6.0F)
-                                                                               .sound(SoundType.METAL);
-        BlockBehaviour.Properties obsidianProperties = BlockBehaviour.Properties.of(Material.STONE, MaterialColor.COLOR_BLACK)
-                                                                                .strength(50.0F, 1200.0F);
-        BlockBehaviour.Properties netheriteProperties = BlockBehaviour.Properties.of(Material.METAL, MaterialColor.COLOR_BLACK)
-                                                                                 .strength(50.0F, 1200.0F)
-                                                                                 .sound(SoundType.NETHERITE_BLOCK);
+        AbstractBlock.Settings woodProperties = AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN)
+                                                                      .strength(2.5F)
+                                                                      .sounds(BlockSoundGroup.WOOD);
+        AbstractBlock.Settings pumpkinProperties = AbstractBlock.Settings.of(Material.GOURD, MapColor.ORANGE)
+                                                                         .strength(1.0F)
+                                                                         .sounds(BlockSoundGroup.WOOD);
+        AbstractBlock.Settings christmasProperties = AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN)
+                                                                           .strength(2.5F)
+                                                                           .sounds(BlockSoundGroup.WOOD);
+        AbstractBlock.Settings ironProperties = AbstractBlock.Settings.of(Material.METAL, MapColor.IRON_GRAY)
+                                                                      .strength(5.0F, 6.0F)
+                                                                      .sounds(BlockSoundGroup.METAL);
+        AbstractBlock.Settings goldProperties = AbstractBlock.Settings.of(Material.METAL, MapColor.GOLD)
+                                                                      .strength(3.0F, 6.0F)
+                                                                      .sounds(BlockSoundGroup.METAL);
+        AbstractBlock.Settings diamondProperties = AbstractBlock.Settings.of(Material.METAL, MapColor.DIAMOND_BLUE)
+                                                                         .strength(5.0F, 6.0F)
+                                                                         .sounds(BlockSoundGroup.METAL);
+        AbstractBlock.Settings obsidianProperties = AbstractBlock.Settings.of(Material.STONE, MapColor.BLACK)
+                                                                          .strength(50.0F, 1200.0F);
+        AbstractBlock.Settings netheriteProperties = AbstractBlock.Settings.of(Material.METAL, MapColor.BLACK)
+                                                                           .strength(50.0F, 1200.0F)
+                                                                           .sounds(BlockSoundGroup.NETHERITE);
         // Init and register blocks
         ChestBlock woodChestBlock = ChestCommon.chestBlock(Utils.resloc("wood_chest"), woodOpenStat, Utils.WOOD_TIER, woodProperties);
         ChestBlock pumpkinChestBlock = ChestCommon.chestBlock(Utils.resloc("pumpkin_chest"), pumpkinOpenStat, Utils.WOOD_TIER, pumpkinProperties);
@@ -119,7 +121,7 @@ public final class ChestCommon {
         blockEntityTypeConsumer.accept(blockEntityType);
         // Register chest module icon & upgrade behaviours
         BaseApi.getInstance().offerTabIcon(netheriteChestItem, ChestCommon.ICON_SUITABILITY);
-        Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof ChestBlock || block instanceof net.minecraft.world.level.block.ChestBlock || woodenChestTag.contains(block);
+        Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof ChestBlock || block instanceof net.minecraft.block.ChestBlock || woodenChestTag.contains(block);
         BaseApi.getInstance().defineBlockUpgradeBehaviour(isUpgradableChestBlock, ChestCommon::tryUpgradeBlock);
     }
 
@@ -127,20 +129,20 @@ public final class ChestCommon {
         return blockEntityType;
     }
 
-    private static ChestBlock chestBlock(ResourceLocation blockId, ResourceLocation stat, Tier tier, BlockBehaviour.Properties properties) {
-        ChestBlock block = new ChestBlock(tier.getBlockProperties().apply(properties.dynamicShape()), blockId, tier.getId(), stat, tier.getSlotCount());
+    private static ChestBlock chestBlock(Identifier blockId, Identifier stat, Tier tier, AbstractBlock.Settings properties) {
+        ChestBlock block = new ChestBlock(tier.getBlockProperties().apply(properties.dynamicBounds()), blockId, tier.getId(), stat, tier.getSlotCount());
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
     }
 
-    private static BlockItem chestItem(Tier tier, ChestBlock block, BiFunction<Block, Item.Properties, BlockItem> blockItemMaker) {
-        return blockItemMaker.apply(block, tier.getItemProperties().apply(new Item.Properties().tab(Utils.TAB)));
+    private static BlockItem chestItem(Tier tier, ChestBlock block, BiFunction<Block, Item.Settings, BlockItem> blockItemMaker) {
+        return blockItemMaker.apply(block, tier.getItemProperties().apply(new Item.Settings().group(Utils.TAB)));
     }
 
-    static Set<ResourceLocation> getChestTextures(Set<ChestBlock> blocks) {
-        Set<ResourceLocation> textures = new HashSet<>();
+    static Set<Identifier> getChestTextures(Set<ChestBlock> blocks) {
+        Set<Identifier> textures = new HashSet<>();
         for (ChestBlock block : blocks) {
-            ResourceLocation blockId = block.getBlockId();
+            Identifier blockId = block.getBlockId();
             for (CursedChestType type : CursedChestType.values()) {
                 textures.add(ChestApi.INSTANCE.getChestTexture(blockId, type));
             }
@@ -150,7 +152,7 @@ public final class ChestCommon {
 
     static void registerChestTextures(Set<ChestBlock> blocks) {
         for (ChestBlock block : blocks) {
-            ResourceLocation blockId = block.getBlockId();
+            Identifier blockId = block.getBlockId();
             ChestApi.INSTANCE.declareChestTextures(
                     blockId, Utils.resloc("entity/" + blockId.getPath() + "/single"),
                     Utils.resloc("entity/" + blockId.getPath() + "/left"),
@@ -162,36 +164,36 @@ public final class ChestCommon {
         }
     }
 
-    private static boolean tryUpgradeBlock(UseOnContext context, ResourceLocation from, ResourceLocation to) {
-        Level level = context.getLevel();
-        BlockPos pos = context.getClickedPos();
+    private static boolean tryUpgradeBlock(ItemUsageContext context, Identifier from, Identifier to) {
+        World level = context.getWorld();
+        BlockPos pos = context.getBlockPos();
         BlockState state = level.getBlockState(pos);
-        Player player = context.getPlayer();
-        ItemStack handStack = context.getItemInHand();
+        PlayerEntity player = context.getPlayer();
+        ItemStack handStack = context.getStack();
         if (state.getBlock() instanceof ChestBlock) {
-            if (ChestBlock.getBlockType(state) == DoubleBlockCombiner.BlockType.SINGLE) {
+            if (ChestBlock.getBlockType(state) == DoubleBlockProperties.Type.SINGLE) {
                 ChestCommon.upgradeSingleBlock(level, state, pos, from, to);
-                handStack.shrink(1);
+                handStack.decrement(1);
                 return true;
             } else if (handStack.getCount() > 1 || (player != null && player.isCreative())) {
-                BlockPos otherPos = pos.relative(ChestBlock.getDirectionToAttached(state));
+                BlockPos otherPos = pos.offset(ChestBlock.getDirectionToAttached(state));
                 BlockState otherState = level.getBlockState(otherPos);
                 ChestCommon.upgradeSingleBlock(level, state, pos, from, to);
                 ChestCommon.upgradeSingleBlock(level, otherState, otherPos, from, to);
-                handStack.shrink(2);
+                handStack.decrement(2);
                 return true;
             }
         } else {
-            if (net.minecraft.world.level.block.ChestBlock.getBlockType(state) == DoubleBlockCombiner.BlockType.SINGLE) {
+            if (net.minecraft.block.ChestBlock.getDoubleBlockType(state) == DoubleBlockProperties.Type.SINGLE) {
                 ChestCommon.upgradeSingleBlock(level, state, pos, from, to);
-                handStack.shrink(1);
+                handStack.decrement(1);
                 return true;
             } else if (handStack.getCount() > 1 || (player != null && player.isCreative())) {
-                BlockPos otherPos = pos.relative(net.minecraft.world.level.block.ChestBlock.getConnectedDirection(state));
+                BlockPos otherPos = pos.offset(net.minecraft.block.ChestBlock.getFacing(state));
                 BlockState otherState = level.getBlockState(otherPos);
                 ChestCommon.upgradeSingleBlock(level, state, pos, from, to);
                 ChestCommon.upgradeSingleBlock(level, otherState, otherPos, from, to);
-                handStack.shrink(2);
+                handStack.decrement(2);
                 return true;
             }
         }
@@ -199,46 +201,46 @@ public final class ChestCommon {
         return false;
     }
 
-    private static void upgradeSingleBlock(Level level, BlockState state, BlockPos pos, ResourceLocation from, ResourceLocation to) {
+    private static void upgradeSingleBlock(World level, BlockState state, BlockPos pos, Identifier from, Identifier to) {
         Block block = state.getBlock();
         boolean isExpandedStorageChest = block instanceof ChestBlock;
-        var containerSize = !isExpandedStorageChest ? Utils.WOOD_STACK_COUNT : ((ChestBlock) BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, ((ChestBlock) block).getBlockTier())).getSlotCount();
+        int containerSize = !isExpandedStorageChest ? Utils.WOOD_STACK_COUNT : ((ChestBlock) BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, ((ChestBlock) block).getBlockTier())).getSlotCount();
         if (isExpandedStorageChest && ((ChestBlock) block).getBlockTier() == from || !isExpandedStorageChest && from == Utils.WOOD_TIER.getId()) {
-            var blockEntity = level.getBlockEntity(pos);
+            BlockEntity blockEntity = level.getBlockEntity(pos);
             //noinspection ConstantConditions
-            var tag = blockEntity.save(new CompoundTag());
-            boolean verifiedSize = blockEntity instanceof Container container && container.getContainerSize() == containerSize;
+            NbtCompound tag = blockEntity.writeNbt(new NbtCompound());
+            boolean verifiedSize = blockEntity instanceof Inventory container && container.size() == containerSize;
             if (!verifiedSize) { // Cannot verify container size, we'll let it upgrade if it has or has less than 27 items
-                if (tag.contains("Items", Tag.TAG_LIST)) {
-                    var items = tag.getList("Items", Tag.TAG_COMPOUND);
+                if (tag.contains("Items", NbtElement.LIST_TYPE)) {
+                    NbtList items = tag.getList("Items", NbtElement.COMPOUND_TYPE);
                     if (items.size() <= containerSize) {
                         verifiedSize = true;
                     }
                 }
             }
             if (verifiedSize) {
-                var toBlock = (AbstractOpenableStorageBlock) BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, to);
-                var inventory = NonNullList.withSize(toBlock.getSlotCount(), ItemStack.EMPTY);
-                var code = LockCode.fromTag(tag);
-                ContainerHelper.loadAllItems(tag, inventory);
+                AbstractOpenableStorageBlock toBlock = (AbstractOpenableStorageBlock) BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, to);
+                DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
+                ContainerLock code = ContainerLock.fromNbt(tag);
+                Inventories.readNbt(tag, inventory);
                 level.removeBlockEntity(pos);
                 // Needs fixing up to check for vanilla states.
-                var newState = toBlock.defaultBlockState()
-                                      .setValue(BlockStateProperties.HORIZONTAL_FACING, state.getValue(BlockStateProperties.HORIZONTAL_FACING))
-                                      .setValue(BlockStateProperties.WATERLOGGED, state.getValue(BlockStateProperties.WATERLOGGED));
-                if (state.hasProperty(ChestBlock.CURSED_CHEST_TYPE)) {
-                    newState = newState.setValue(ChestBlock.CURSED_CHEST_TYPE, state.getValue(ChestBlock.CURSED_CHEST_TYPE));
-                } else if (state.hasProperty(BlockStateProperties.CHEST_TYPE)) {
-                    ChestType type = state.getValue(BlockStateProperties.CHEST_TYPE);
-                    newState = newState.setValue(ChestBlock.CURSED_CHEST_TYPE, type == ChestType.LEFT ? CursedChestType.RIGHT : type == ChestType.RIGHT ? CursedChestType.LEFT : CursedChestType.SINGLE);
+                BlockState newState = toBlock.getDefaultState()
+                                             .with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING))
+                                             .with(Properties.WATERLOGGED, state.get(Properties.WATERLOGGED));
+                if (state.contains(ChestBlock.CURSED_CHEST_TYPE)) {
+                    newState = newState.with(ChestBlock.CURSED_CHEST_TYPE, state.get(ChestBlock.CURSED_CHEST_TYPE));
+                } else if (state.contains(Properties.CHEST_TYPE)) {
+                    ChestType type = state.get(Properties.CHEST_TYPE);
+                    newState = newState.with(ChestBlock.CURSED_CHEST_TYPE, type == ChestType.LEFT ? CursedChestType.RIGHT : type == ChestType.RIGHT ? CursedChestType.LEFT : CursedChestType.SINGLE);
                 }
-                if (level.setBlockAndUpdate(pos, newState)) {
-                    var newEntity = (AbstractOpenableStorageBlockEntity) level.getBlockEntity(pos);
+                if (level.setBlockState(pos, newState)) {
+                    BlockEntity newEntity = level.getBlockEntity(pos);
                     //noinspection ConstantConditions
-                    var newTag = newEntity.save(new CompoundTag());
-                    ContainerHelper.saveAllItems(newTag, inventory);
-                    code.addToTag(newTag);
-                    newEntity.load(newTag);
+                    NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
+                    Inventories.writeNbt(newTag, inventory);
+                    code.writeNbt(newTag);
+                    newEntity.readNbt(newTag);
                 }
             }
         }

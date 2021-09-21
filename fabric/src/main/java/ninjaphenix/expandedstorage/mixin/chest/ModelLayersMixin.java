@@ -1,10 +1,10 @@
 package ninjaphenix.expandedstorage.mixin.chest;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.client.model.geom.LayerDefinitions;
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.entity.model.EntityModelLayer;
+import net.minecraft.client.render.entity.model.EntityModels;
 import ninjaphenix.expandedstorage.chest.client.ChestBlockEntityRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,13 +15,13 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import java.util.Map;
 
 // todo: hopefully remove this before 1.18
-@Mixin(LayerDefinitions.class)
+@Mixin(EntityModels.class)
 public abstract class ModelLayersMixin {
-    @Inject(method = "createRoots()Ljava/util/Map;",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/geom/builders/LayerDefinition;create(Lnet/minecraft/client/model/geom/builders/MeshDefinition;II)Lnet/minecraft/client/model/geom/builders/LayerDefinition;", ordinal = 0),
+    @Inject(method = "getModels()Ljava/util/Map;",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/TexturedModelData;of(Lnet/minecraft/client/model/ModelData;II)Lnet/minecraft/client/model/TexturedModelData;", ordinal = 0),
             locals = LocalCapture.CAPTURE_FAILHARD)
-    private static void addChestModelLayers(CallbackInfoReturnable<Map<ModelLayerLocation, ModelPart>> cir,
-                                            ImmutableMap.Builder<ModelLayerLocation, LayerDefinition> builder) {
+    private static void addChestModelLayers(CallbackInfoReturnable<Map<EntityModelLayer, ModelPart>> cir,
+                                            ImmutableMap.Builder<EntityModelLayer, TexturedModelData> builder) {
         builder.put(ChestBlockEntityRenderer.SINGLE_LAYER, ChestBlockEntityRenderer.createSingleBodyLayer());
         builder.put(ChestBlockEntityRenderer.LEFT_LAYER, ChestBlockEntityRenderer.createLeftBodyLayer());
         builder.put(ChestBlockEntityRenderer.RIGHT_LAYER, ChestBlockEntityRenderer.createRightBodyLayer());

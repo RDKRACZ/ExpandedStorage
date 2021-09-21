@@ -1,20 +1,20 @@
 package ninjaphenix.expandedstorage.chest;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Identifier;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
 
 @SuppressWarnings("ClassCanBeRecord")
 public final class TextureCollection {
-    private final ResourceLocation single;
-    private final ResourceLocation left;
-    private final ResourceLocation right;
-    private final ResourceLocation top;
-    private final ResourceLocation bottom;
-    private final ResourceLocation front;
-    private final ResourceLocation back;
+    private final Identifier single;
+    private final Identifier left;
+    private final Identifier right;
+    private final Identifier top;
+    private final Identifier bottom;
+    private final Identifier front;
+    private final Identifier back;
 
-    public TextureCollection(ResourceLocation single, ResourceLocation left, ResourceLocation right,
-                             ResourceLocation top, ResourceLocation bottom, ResourceLocation front, ResourceLocation back) {
+    public TextureCollection(Identifier single, Identifier left, Identifier right,
+                             Identifier top, Identifier bottom, Identifier front, Identifier back) {
         this.single = single;
         this.left = left;
         this.right = right;
@@ -24,7 +24,7 @@ public final class TextureCollection {
         this.back = back;
     }
 
-    ResourceLocation getTexture(CursedChestType type) {
+    Identifier getTexture(CursedChestType type) {
         if (type == CursedChestType.TOP) {
             return this.top;
         } else if (type == CursedChestType.BOTTOM) {

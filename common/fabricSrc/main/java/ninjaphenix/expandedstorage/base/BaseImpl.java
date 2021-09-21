@@ -1,19 +1,19 @@
 package ninjaphenix.expandedstorage.base;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractStorageBlock;
 import ninjaphenix.expandedstorage.base.internal_api.item.BlockUpgradeBehaviour;
 import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
 import ninjaphenix.expandedstorage.base.item.StorageConversionKit;
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -24,8 +24,8 @@ import java.util.function.Predicate;
 public final class BaseImpl implements BaseApi {
     private static BaseImpl instance;
     private final Map<Predicate<Block>, BlockUpgradeBehaviour> BLOCK_UPGRADE_BEHAVIOURS = new HashMap<>();
-    private final Map<Pair<ResourceLocation, ResourceLocation>, AbstractStorageBlock> BLOCKS = new HashMap<>();
-    private Map<ResourceLocation, Item> items = new LinkedHashMap<>();
+    private final Map<Pair<Identifier, Identifier>, AbstractStorageBlock> BLOCKS = new HashMap<>();
+    private Map<Identifier, Item> items = new LinkedHashMap<>();
     private Item tabIcon = Items.ENDER_CHEST;
     private int suitability = -1;
 
@@ -56,17 +56,17 @@ public final class BaseImpl implements BaseApi {
     }
 
     @Override
-    public void defineTierUpgradePath(Component addingMod, Tier... tiers) {
+    public void defineTierUpgradePath(Text addingMod, Tier... tiers) {
         int numTiers = tiers.length;
         for (int fromIndex = 0; fromIndex < numTiers - 1; fromIndex++) {
             Tier fromTier = tiers[fromIndex];
             for (int toIndex = fromIndex + 1; toIndex < numTiers; toIndex++) {
                 Tier toTier = tiers[toIndex];
-                ResourceLocation itemId = Utils.resloc(fromTier.getId().getPath() + "_to_" + toTier.getId().getPath() + "_conversion_kit");
+                Identifier itemId = Utils.resloc(fromTier.getId().getPath() + "_to_" + toTier.getId().getPath() + "_conversion_kit");
                 if (!items.containsKey(itemId)) {
-                    Item.Properties properties = fromTier.getItemProperties()
-                                                         .andThen(toTier.getItemProperties())
-                                                         .apply(new Item.Properties().tab(Utils.TAB).stacksTo(16));
+                    Item.Settings properties = fromTier.getItemProperties()
+                                                       .andThen(toTier.getItemProperties())
+                                                       .apply(new Item.Settings().group(Utils.TAB).maxCount(16));
                     Item kit = new StorageConversionKit(properties, fromTier.getId(), toTier.getId());
                     this.register(itemId, kit);
                 }
@@ -75,8 +75,8 @@ public final class BaseImpl implements BaseApi {
     }
 
     @Override
-    @ApiStatus.Internal
-    public void register(ResourceLocation itemId, Item item) {
+    @Internal
+    public void register(Identifier itemId, Item item) {
         items.put(itemId, item);
     }
 
@@ -86,14 +86,14 @@ public final class BaseImpl implements BaseApi {
     }
 
     @Override
-    public AbstractStorageBlock getTieredBlock(ResourceLocation blockType, ResourceLocation tier) {
+    public AbstractStorageBlock getTieredBlock(Identifier blockType, Identifier tier) {
         return BLOCKS.get(new Pair<>(blockType, tier));
     }
 
     @Override
-    @ApiStatus.Internal
-    public Map<ResourceLocation, Item> getAndClearItems() {
-        Map<ResourceLocation, Item> items = this.items;
+    @Internal
+    public Map<Identifier, Item> getAndClearItems() {
+        Map<Identifier, Item> items = this.items;
         this.items = null;
         return items;
     }
@@ -107,7 +107,7 @@ public final class BaseImpl implements BaseApi {
     }
 
     @Override
-    @ApiStatus.Internal
+    @Internal
     public ItemStack tabIcon() {
         return new ItemStack(tabIcon);
     }

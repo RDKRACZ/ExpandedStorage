@@ -1,30 +1,6 @@
 package ninjaphenix.expandedstorage.chest;
 
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.LockCode;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.DoubleBlockCombiner;
-import net.minecraft.world.level.block.SoundType;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.ChestType;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
 import ninjaphenix.expandedstorage.base.BaseCommon;
 import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
@@ -43,6 +19,32 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.LockCode;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DoubleBlockCombiner;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.ChestType;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 
 public final class ChestCommon {
     public static final ResourceLocation BLOCK_TYPE = Utils.resloc("cursed_chest");
@@ -69,28 +71,28 @@ public final class ChestCommon {
         ResourceLocation netheriteOpenStat = BaseCommon.registerStat(Utils.resloc("open_netherite_chest"));
         // Init block properties
         BlockBehaviour.Properties woodProperties = BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
-                                                                            .strength(2.5F)
-                                                                            .sound(SoundType.WOOD);
+                                                                      .strength(2.5F)
+                                                                      .sound(SoundType.WOOD);
         BlockBehaviour.Properties pumpkinProperties = BlockBehaviour.Properties.of(Material.VEGETABLE, MaterialColor.COLOR_ORANGE)
-                                                                               .strength(1.0F)
-                                                                               .sound(SoundType.WOOD);
+                                                                         .strength(1.0F)
+                                                                         .sound(SoundType.WOOD);
         BlockBehaviour.Properties christmasProperties = BlockBehaviour.Properties.of(Material.WOOD, MaterialColor.WOOD)
-                                                                                 .strength(2.5F)
-                                                                                 .sound(SoundType.WOOD);
+                                                                           .strength(2.5F)
+                                                                           .sound(SoundType.WOOD);
         BlockBehaviour.Properties ironProperties = BlockBehaviour.Properties.of(Material.METAL, MaterialColor.METAL)
-                                                                            .strength(5.0F, 6.0F)
-                                                                            .sound(SoundType.METAL);
+                                                                      .strength(5.0F, 6.0F)
+                                                                      .sound(SoundType.METAL);
         BlockBehaviour.Properties goldProperties = BlockBehaviour.Properties.of(Material.METAL, MaterialColor.GOLD)
-                                                                            .strength(3.0F, 6.0F)
-                                                                            .sound(SoundType.METAL);
+                                                                      .strength(3.0F, 6.0F)
+                                                                      .sound(SoundType.METAL);
         BlockBehaviour.Properties diamondProperties = BlockBehaviour.Properties.of(Material.METAL, MaterialColor.DIAMOND)
-                                                                               .strength(5.0F, 6.0F)
-                                                                               .sound(SoundType.METAL);
+                                                                         .strength(5.0F, 6.0F)
+                                                                         .sound(SoundType.METAL);
         BlockBehaviour.Properties obsidianProperties = BlockBehaviour.Properties.of(Material.STONE, MaterialColor.COLOR_BLACK)
-                                                                                .strength(50.0F, 1200.0F);
+                                                                          .strength(50.0F, 1200.0F);
         BlockBehaviour.Properties netheriteProperties = BlockBehaviour.Properties.of(Material.METAL, MaterialColor.COLOR_BLACK)
-                                                                                 .strength(50.0F, 1200.0F)
-                                                                                 .sound(SoundType.NETHERITE_BLOCK);
+                                                                           .strength(50.0F, 1200.0F)
+                                                                           .sound(SoundType.NETHERITE_BLOCK);
         // Init and register blocks
         ChestBlock woodChestBlock = ChestCommon.chestBlock(Utils.resloc("wood_chest"), woodOpenStat, Utils.WOOD_TIER, woodProperties);
         ChestBlock pumpkinChestBlock = ChestCommon.chestBlock(Utils.resloc("pumpkin_chest"), pumpkinOpenStat, Utils.WOOD_TIER, pumpkinProperties);
@@ -202,30 +204,30 @@ public final class ChestCommon {
     private static void upgradeSingleBlock(Level level, BlockState state, BlockPos pos, ResourceLocation from, ResourceLocation to) {
         Block block = state.getBlock();
         boolean isExpandedStorageChest = block instanceof ChestBlock;
-        var containerSize = !isExpandedStorageChest ? Utils.WOOD_STACK_COUNT : ((ChestBlock) BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, ((ChestBlock) block).getBlockTier())).getSlotCount();
+        int containerSize = !isExpandedStorageChest ? Utils.WOOD_STACK_COUNT : ((ChestBlock) BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, ((ChestBlock) block).getBlockTier())).getSlotCount();
         if (isExpandedStorageChest && ((ChestBlock) block).getBlockTier() == from || !isExpandedStorageChest && from == Utils.WOOD_TIER.getId()) {
-            var blockEntity = level.getBlockEntity(pos);
+            BlockEntity blockEntity = level.getBlockEntity(pos);
             //noinspection ConstantConditions
-            var tag = blockEntity.save(new CompoundTag());
+            CompoundTag tag = blockEntity.save(new CompoundTag());
             boolean verifiedSize = blockEntity instanceof Container container && container.getContainerSize() == containerSize;
             if (!verifiedSize) { // Cannot verify container size, we'll let it upgrade if it has or has less than 27 items
                 if (tag.contains("Items", Tag.TAG_LIST)) {
-                    var items = tag.getList("Items", Tag.TAG_COMPOUND);
+                    ListTag items = tag.getList("Items", Tag.TAG_COMPOUND);
                     if (items.size() <= containerSize) {
                         verifiedSize = true;
                     }
                 }
             }
             if (verifiedSize) {
-                var toBlock = (AbstractOpenableStorageBlock) BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, to);
-                var inventory = NonNullList.withSize(toBlock.getSlotCount(), ItemStack.EMPTY);
-                var code = LockCode.fromTag(tag);
+                AbstractOpenableStorageBlock toBlock = (AbstractOpenableStorageBlock) BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, to);
+                NonNullList<ItemStack> inventory = NonNullList.withSize(toBlock.getSlotCount(), ItemStack.EMPTY);
+                LockCode code = LockCode.fromTag(tag);
                 ContainerHelper.loadAllItems(tag, inventory);
                 level.removeBlockEntity(pos);
                 // Needs fixing up to check for vanilla states.
-                var newState = toBlock.defaultBlockState()
-                                      .setValue(BlockStateProperties.HORIZONTAL_FACING, state.getValue(BlockStateProperties.HORIZONTAL_FACING))
-                                      .setValue(BlockStateProperties.WATERLOGGED, state.getValue(BlockStateProperties.WATERLOGGED));
+                BlockState newState = toBlock.defaultBlockState()
+                                             .setValue(BlockStateProperties.HORIZONTAL_FACING, state.getValue(BlockStateProperties.HORIZONTAL_FACING))
+                                             .setValue(BlockStateProperties.WATERLOGGED, state.getValue(BlockStateProperties.WATERLOGGED));
                 if (state.hasProperty(ChestBlock.CURSED_CHEST_TYPE)) {
                     newState = newState.setValue(ChestBlock.CURSED_CHEST_TYPE, state.getValue(ChestBlock.CURSED_CHEST_TYPE));
                 } else if (state.hasProperty(BlockStateProperties.CHEST_TYPE)) {
@@ -233,9 +235,9 @@ public final class ChestCommon {
                     newState = newState.setValue(ChestBlock.CURSED_CHEST_TYPE, type == ChestType.LEFT ? CursedChestType.RIGHT : type == ChestType.RIGHT ? CursedChestType.LEFT : CursedChestType.SINGLE);
                 }
                 if (level.setBlockAndUpdate(pos, newState)) {
-                    var newEntity = (AbstractOpenableStorageBlockEntity) level.getBlockEntity(pos);
+                    BlockEntity newEntity = level.getBlockEntity(pos);
                     //noinspection ConstantConditions
-                    var newTag = newEntity.save(new CompoundTag());
+                    CompoundTag newTag = newEntity.save(new CompoundTag());
                     ContainerHelper.saveAllItems(newTag, inventory);
                     code.addToTag(newTag);
                     newEntity.load(newTag);

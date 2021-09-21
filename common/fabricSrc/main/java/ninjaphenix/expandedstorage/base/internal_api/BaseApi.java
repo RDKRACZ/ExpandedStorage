@@ -1,22 +1,21 @@
 package ninjaphenix.expandedstorage.base.internal_api;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import ninjaphenix.expandedstorage.base.BaseImpl;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractStorageBlock;
 import ninjaphenix.expandedstorage.base.internal_api.item.BlockUpgradeBehaviour;
 import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
+import org.jetbrains.annotations.ApiStatus.Experimental;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
-
-import static org.jetbrains.annotations.ApiStatus.Experimental;
-import static org.jetbrains.annotations.ApiStatus.Internal;
 
 @Internal
 @Experimental
@@ -38,7 +37,7 @@ public interface BaseApi {
      * @param addingMod Friendly mod name for upgrade item tooltip
      * @param tiers     Storage block tiers in order of upgrade path
      */
-    void defineTierUpgradePath(Component addingMod, Tier... tiers);
+    void defineTierUpgradePath(Text addingMod, Tier... tiers);
 
     @Internal
     ItemStack tabIcon();
@@ -48,7 +47,7 @@ public interface BaseApi {
     void defineBlockUpgradeBehaviour(Predicate<Block> target, BlockUpgradeBehaviour behaviour);
 
     @Internal
-    void register(ResourceLocation id, Item item);
+    void register(Identifier id, Item item);
 
     /**
      * @deprecated Will be removed with no replacement.
@@ -62,8 +61,8 @@ public interface BaseApi {
      */
     @Deprecated
     @ScheduledForRemoval
-    AbstractStorageBlock getTieredBlock(ResourceLocation blockType, ResourceLocation tier);
+    AbstractStorageBlock getTieredBlock(Identifier blockType, Identifier tier);
 
     @Internal
-    Map<ResourceLocation, Item> getAndClearItems();
+    Map<Identifier, Item> getAndClearItems();
 }

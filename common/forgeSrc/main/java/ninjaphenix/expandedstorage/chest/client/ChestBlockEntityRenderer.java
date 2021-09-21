@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
+import net.minecraft.client.model.*;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -12,6 +13,7 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.render.*;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -26,10 +28,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
 import ninjaphenix.expandedstorage.base.internal_api.Utils;
 import ninjaphenix.expandedstorage.base.internal_api.block.AbstractChestBlock;
-import ninjaphenix.expandedstorage.base.internal_api.block.misc.Property;
-import ninjaphenix.expandedstorage.base.internal_api.block.misc.PropertyRetriever;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.base.internal_api.block.misc.FaceRotation;
+import ninjaphenix.expandedstorage.base.internal_api.block.misc.Property;
+import ninjaphenix.expandedstorage.base.internal_api.block.misc.PropertyRetriever;
 import ninjaphenix.expandedstorage.chest.block.ChestBlock;
 import ninjaphenix.expandedstorage.chest.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.chest.internal_api.ChestApi;
@@ -62,11 +64,11 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
         public Int2IntFunction get(ChestBlockEntity first, ChestBlockEntity second) {
             return i -> {
                 //noinspection ConstantConditions
-                int firstLightColor = LevelRenderer.getLightColor(first.getLevel(), first.getBlockPos());
+                int firstLightColor = LevelRenderer.getLightColor(first.getWorld(), first.getPos());
                 int firstBlockLight = LightTexture.block(firstLightColor);
                 int firstSkyLight = LightTexture.sky(firstLightColor);
                 //noinspection ConstantConditions
-                int secondLightColor = LevelRenderer.getLightColor(second.getLevel(), second.getBlockPos());
+                int secondLightColor = LevelRenderer.getLightColor(second.getWorld(), second.getPos());
                 int secondBlockLight = LightTexture.block(secondLightColor);
                 int secondSkyLight = LightTexture.sky(secondLightColor);
                 return LightTexture.pack(Math.max(firstBlockLight, secondBlockLight), Math.max(firstSkyLight, secondSkyLight));
@@ -178,7 +180,7 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
     @Override
     public void render(ChestBlockEntity entity, float delta, PoseStack stack, MultiBufferSource source, int light, int overlay) {
         ResourceLocation blockId = entity.getBlockId();
-        BlockState state = entity.hasLevel() ? entity.getBlockState() :
+        BlockState state = entity.hasWorld() ? entity.getCachedState() :
                 ChestBlockEntityRenderer.DEFAULT_STATE.setValue(AbstractChestBlock.Y_ROTATION, FaceRotation.SOUTH);
         if (blockId == null || !(state.getBlock() instanceof ChestBlock block)) {
             return;
@@ -191,8 +193,8 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
         stack.mulPose(Vector3f.ZP.rotationDegrees(-state.getValue(AbstractChestBlock.FACE_ROTATION).asRotationAngle()));
         stack.translate(-0.5D, -0.5D, -0.5D);
         PropertyRetriever<ChestBlockEntity> retriever;
-        if (entity.hasLevel()) {
-            retriever = AbstractChestBlock.createPropertyRetriever(block, state, entity.getLevel(), entity.getBlockPos(), true);
+        if (entity.hasWorld()) {
+            retriever = AbstractChestBlock.createPropertyRetriever(block, state, entity.getWorld(), entity.getPos(), true);
         } else {
             retriever = PropertyRetriever.createDirect(entity);
         }

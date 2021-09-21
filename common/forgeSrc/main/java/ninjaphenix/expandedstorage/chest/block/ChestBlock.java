@@ -1,5 +1,15 @@
 package ninjaphenix.expandedstorage.chest.block;
 
+import ninjaphenix.expandedstorage.base.internal_api.block.AbstractChestBlock;
+import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
+import ninjaphenix.expandedstorage.base.internal_api.block.misc.FaceRotation;
+import ninjaphenix.expandedstorage.chest.ChestCommon;
+import ninjaphenix.expandedstorage.chest.block.misc.ChestBlockEntity;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Random;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -23,16 +33,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import ninjaphenix.expandedstorage.base.internal_api.block.AbstractChestBlock;
-import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
-import ninjaphenix.expandedstorage.base.internal_api.block.misc.FaceRotation;
-import ninjaphenix.expandedstorage.chest.ChestCommon;
-import ninjaphenix.expandedstorage.chest.block.misc.ChestBlockEntity;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.Random;
 
 public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements SimpleWaterloggedBlock {
     public static final int SET_OBSERVER_COUNT_EVENT = 1;

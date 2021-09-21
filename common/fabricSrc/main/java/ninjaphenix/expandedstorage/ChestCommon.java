@@ -1,7 +1,6 @@
 package ninjaphenix.expandedstorage;
 
-import com.google.common.collect.ImmutableSet;
-import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoubleBlockProperties;
@@ -23,6 +22,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -35,13 +35,10 @@ import ninjaphenix.expandedstorage.internal_api.Utils;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.internal_api.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.internal_api.tier.Tier;
-import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public final class ChestCommon {
@@ -53,11 +50,7 @@ public final class ChestCommon {
 
     }
 
-    static void registerContent(Consumer<Set<ChestBlock>> blockReg,
-                                Consumer<Set<BlockItem>> itemReg,
-                                Consumer<BlockEntityType<ChestBlockEntity>> blockEntityTypeConsumer,
-                                net.minecraft.tag.Tag<Block> woodenChestTag,
-                                BiFunction<Block, Item.Settings, BlockItem> blockItemMaker) {
+    static void registerContent(RegistrationConsumer<ChestBlock, BlockItem, ChestBlockEntity> registrationConsumer, Tag<Block> woodenChestTag, BiFunction<Block, Item.Settings, BlockItem> blockItemMaker) {
         // Init and register opening stats
         Identifier woodOpenStat = BaseCommon.registerStat(Utils.id("open_wood_chest"));
         Identifier pumpkinOpenStat = BaseCommon.registerStat(Utils.id("open_pumpkin_chest"));
@@ -68,40 +61,25 @@ public final class ChestCommon {
         Identifier obsidianOpenStat = BaseCommon.registerStat(Utils.id("open_obsidian_chest"));
         Identifier netheriteOpenStat = BaseCommon.registerStat(Utils.id("open_netherite_chest"));
         // Init block properties
-        AbstractBlock.Settings woodProperties = AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN)
-                                                                      .strength(2.5F)
-                                                                      .sounds(BlockSoundGroup.WOOD);
-        AbstractBlock.Settings pumpkinProperties = AbstractBlock.Settings.of(Material.GOURD, MapColor.ORANGE)
-                                                                         .strength(1.0F)
-                                                                         .sounds(BlockSoundGroup.WOOD);
-        AbstractBlock.Settings christmasProperties = AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN)
-                                                                           .strength(2.5F)
-                                                                           .sounds(BlockSoundGroup.WOOD);
-        AbstractBlock.Settings ironProperties = AbstractBlock.Settings.of(Material.METAL, MapColor.IRON_GRAY)
-                                                                      .strength(5.0F, 6.0F)
-                                                                      .sounds(BlockSoundGroup.METAL);
-        AbstractBlock.Settings goldProperties = AbstractBlock.Settings.of(Material.METAL, MapColor.GOLD)
-                                                                      .strength(3.0F, 6.0F)
-                                                                      .sounds(BlockSoundGroup.METAL);
-        AbstractBlock.Settings diamondProperties = AbstractBlock.Settings.of(Material.METAL, MapColor.DIAMOND_BLUE)
-                                                                         .strength(5.0F, 6.0F)
-                                                                         .sounds(BlockSoundGroup.METAL);
-        AbstractBlock.Settings obsidianProperties = AbstractBlock.Settings.of(Material.STONE, MapColor.BLACK)
-                                                                          .strength(50.0F, 1200.0F);
-        AbstractBlock.Settings netheriteProperties = AbstractBlock.Settings.of(Material.METAL, MapColor.BLACK)
-                                                                           .strength(50.0F, 1200.0F)
-                                                                           .sounds(BlockSoundGroup.NETHERITE);
+        Settings woodSettings = Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings pumpkinSettings = Settings.of(Material.GOURD, MapColor.ORANGE).strength(1).sounds(BlockSoundGroup.WOOD);
+        // todo: use mapColorProvider
+        Settings christmasSettings = Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings ironSettings = Settings.of(Material.METAL, MapColor.IRON_GRAY).strength(5, 6).sounds(BlockSoundGroup.METAL);
+        Settings goldSettings = Settings.of(Material.METAL, MapColor.GOLD).strength(3, 6).sounds(BlockSoundGroup.METAL);
+        Settings diamondSettings = Settings.of(Material.METAL, MapColor.DIAMOND_BLUE).strength(5, 6).sounds(BlockSoundGroup.METAL);
+        Settings obsidianSettings = Settings.of(Material.STONE, MapColor.BLACK).strength(50, 1200);
+        Settings netheriteSettings = Settings.of(Material.METAL, MapColor.BLACK).strength(50, 1200).sounds(BlockSoundGroup.NETHERITE);
         // Init and register blocks
-        ChestBlock woodChestBlock = ChestCommon.chestBlock(Utils.id("wood_chest"), woodOpenStat, Utils.WOOD_TIER, woodProperties);
-        ChestBlock pumpkinChestBlock = ChestCommon.chestBlock(Utils.id("pumpkin_chest"), pumpkinOpenStat, Utils.WOOD_TIER, pumpkinProperties);
-        ChestBlock christmasChestBlock = ChestCommon.chestBlock(Utils.id("christmas_chest"), christmasOpenStat, Utils.WOOD_TIER, christmasProperties);
-        ChestBlock ironChestBlock = ChestCommon.chestBlock(Utils.id("iron_chest"), ironOpenStat, Utils.IRON_TIER, ironProperties);
-        ChestBlock goldChestBlock = ChestCommon.chestBlock(Utils.id("gold_chest"), goldOpenStat, Utils.GOLD_TIER, goldProperties);
-        ChestBlock diamondChestBlock = ChestCommon.chestBlock(Utils.id("diamond_chest"), diamondOpenStat, Utils.DIAMOND_TIER, diamondProperties);
-        ChestBlock obsidianChestBlock = ChestCommon.chestBlock(Utils.id("obsidian_chest"), obsidianOpenStat, Utils.OBSIDIAN_TIER, obsidianProperties);
-        ChestBlock netheriteChestBlock = ChestCommon.chestBlock(Utils.id("netherite_chest"), netheriteOpenStat, Utils.NETHERITE_TIER, netheriteProperties);
-        Set<ChestBlock> blocks = ImmutableSet.copyOf(new ChestBlock[]{woodChestBlock, pumpkinChestBlock, christmasChestBlock, ironChestBlock, goldChestBlock, diamondChestBlock, obsidianChestBlock, netheriteChestBlock});
-        blockReg.accept(blocks);
+        ChestBlock woodChestBlock = ChestCommon.chestBlock(Utils.id("wood_chest"), woodOpenStat, Utils.WOOD_TIER, woodSettings);
+        ChestBlock pumpkinChestBlock = ChestCommon.chestBlock(Utils.id("pumpkin_chest"), pumpkinOpenStat, Utils.WOOD_TIER, pumpkinSettings);
+        ChestBlock christmasChestBlock = ChestCommon.chestBlock(Utils.id("christmas_chest"), christmasOpenStat, Utils.WOOD_TIER, christmasSettings);
+        ChestBlock ironChestBlock = ChestCommon.chestBlock(Utils.id("iron_chest"), ironOpenStat, Utils.IRON_TIER, ironSettings);
+        ChestBlock goldChestBlock = ChestCommon.chestBlock(Utils.id("gold_chest"), goldOpenStat, Utils.GOLD_TIER, goldSettings);
+        ChestBlock diamondChestBlock = ChestCommon.chestBlock(Utils.id("diamond_chest"), diamondOpenStat, Utils.DIAMOND_TIER, diamondSettings);
+        ChestBlock obsidianChestBlock = ChestCommon.chestBlock(Utils.id("obsidian_chest"), obsidianOpenStat, Utils.OBSIDIAN_TIER, obsidianSettings);
+        ChestBlock netheriteChestBlock = ChestCommon.chestBlock(Utils.id("netherite_chest"), netheriteOpenStat, Utils.NETHERITE_TIER, netheriteSettings);
+        Set<ChestBlock> blocks = Set.of(woodChestBlock, pumpkinChestBlock, christmasChestBlock, ironChestBlock, goldChestBlock, diamondChestBlock, obsidianChestBlock, netheriteChestBlock);
         // Init and register items
         BlockItem woodChestItem = ChestCommon.chestItem(Utils.WOOD_TIER, woodChestBlock, blockItemMaker);
         BlockItem pumpkinChestItem = ChestCommon.chestItem(Utils.WOOD_TIER, pumpkinChestBlock, blockItemMaker);
@@ -111,12 +89,10 @@ public final class ChestCommon {
         BlockItem diamondChestItem = ChestCommon.chestItem(Utils.DIAMOND_TIER, diamondChestBlock, blockItemMaker);
         BlockItem obsidianChestItem = ChestCommon.chestItem(Utils.OBSIDIAN_TIER, obsidianChestBlock, blockItemMaker);
         BlockItem netheriteChestItem = ChestCommon.chestItem(Utils.NETHERITE_TIER, netheriteChestBlock, blockItemMaker);
-        Set<BlockItem> items = ImmutableSet.copyOf(new BlockItem[]{woodChestItem, pumpkinChestItem, christmasChestItem, ironChestItem, goldChestItem, diamondChestItem, obsidianChestItem, netheriteChestItem});
-        itemReg.accept(items);
+        Set<BlockItem> items = Set.of(woodChestItem, pumpkinChestItem, christmasChestItem, ironChestItem, goldChestItem, diamondChestItem, obsidianChestItem, netheriteChestItem);
         // Init and register block entity type
-        BlockEntityType<ChestBlockEntity> blockEntityType = PlatformUtils.getInstance().createBlockEntityType((pos, state) -> new ChestBlockEntity(ChestCommon.getBlockEntityType(), pos, state), Collections.unmodifiableSet(blocks), null);
-        ChestCommon.blockEntityType = blockEntityType;
-        blockEntityTypeConsumer.accept(blockEntityType);
+        ChestCommon.blockEntityType  = BlockEntityType.Builder.create((pos, state) -> new ChestBlockEntity(ChestCommon.getBlockEntityType(), pos, state), blocks.toArray(ChestBlock[]::new)).build(null);
+        registrationConsumer.accept(blocks, items, ChestCommon.blockEntityType);
         // Register chest module icon & upgrade behaviours
         BaseApi.getInstance().offerTabIcon(netheriteChestItem, ChestCommon.ICON_SUITABILITY);
         Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof ChestBlock || block instanceof net.minecraft.block.ChestBlock || woodenChestTag.contains(block);
@@ -127,8 +103,8 @@ public final class ChestCommon {
         return blockEntityType;
     }
 
-    private static ChestBlock chestBlock(Identifier blockId, Identifier stat, Tier tier, AbstractBlock.Settings properties) {
-        ChestBlock block = new ChestBlock(tier.getBlockSettings().apply(properties.dynamicBounds()), blockId, tier.getId(), stat, tier.getSlotCount());
+    private static ChestBlock chestBlock(Identifier blockId, Identifier stat, Tier tier, Settings settings) {
+        ChestBlock block = new ChestBlock(tier.getBlockSettings().apply(settings.dynamicBounds()), blockId, tier.getId(), stat, tier.getSlotCount());
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
     }

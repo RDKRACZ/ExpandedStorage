@@ -1,7 +1,7 @@
 package ninjaphenix.expandedstorage;
 
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoubleBlockProperties;
@@ -29,11 +29,8 @@ import ninjaphenix.expandedstorage.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.internal_api.Utils;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.internal_api.tier.Tier;
-import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public final class OldChestCommon {
@@ -49,9 +46,7 @@ public final class OldChestCommon {
         return blockEntityType;
     }
 
-    static void registerContent(Consumer<Set<OldChestBlock>> blockReg,
-                                Consumer<Set<BlockItem>> itemReg,
-                                Consumer<BlockEntityType<OldChestBlockEntity>> blockEntityTypeConsumer) {
+    static void registerContent(RegistrationConsumer<OldChestBlock, BlockItem, OldChestBlockEntity> registrationConsumer) {
         // Init and register opening stats
         Identifier woodOpenStat = BaseCommon.registerStat(Utils.id("open_old_wood_chest"));
         Identifier ironOpenStat = BaseCommon.registerStat(Utils.id("open_old_iron_chest"));
@@ -60,32 +55,20 @@ public final class OldChestCommon {
         Identifier obsidianOpenStat = BaseCommon.registerStat(Utils.id("open_old_obsidian_chest"));
         Identifier netheriteOpenStat = BaseCommon.registerStat(Utils.id("open_old_netherite_chest"));
         // Init block properties
-        AbstractBlock.Settings woodProperties = AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN)
-                                                                      .strength(2.5F)
-                                                                      .sounds(BlockSoundGroup.WOOD);
-        AbstractBlock.Settings ironProperties = AbstractBlock.Settings.of(Material.METAL, MapColor.IRON_GRAY)
-                                                                      .strength(5.0F, 6.0F)
-                                                                      .sounds(BlockSoundGroup.METAL);
-        AbstractBlock.Settings goldProperties = AbstractBlock.Settings.of(Material.METAL, MapColor.GOLD)
-                                                                      .strength(3.0F, 6.0F)
-                                                                      .sounds(BlockSoundGroup.METAL);
-        AbstractBlock.Settings diamondProperties = AbstractBlock.Settings.of(Material.METAL, MapColor.DIAMOND_BLUE)
-                                                                         .strength(5.0F, 6.0F)
-                                                                         .sounds(BlockSoundGroup.METAL);
-        AbstractBlock.Settings obsidianProperties = AbstractBlock.Settings.of(Material.STONE, MapColor.BLACK)
-                                                                          .strength(50.0F, 1200.0F);
-        AbstractBlock.Settings netheriteProperties = AbstractBlock.Settings.of(Material.METAL, MapColor.BLACK)
-                                                                           .strength(50.0F, 1200.0F)
-                                                                           .sounds(BlockSoundGroup.NETHERITE);
+        Settings woodSettings = Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings ironSettings = Settings.of(Material.METAL, MapColor.IRON_GRAY).strength(5, 6).sounds(BlockSoundGroup.METAL);
+        Settings goldSettings = Settings.of(Material.METAL, MapColor.GOLD).strength(3, 6).sounds(BlockSoundGroup.METAL);
+        Settings diamondSettings = Settings.of(Material.METAL, MapColor.DIAMOND_BLUE).strength(5, 6).sounds(BlockSoundGroup.METAL);
+        Settings obsidianSettings = Settings.of(Material.STONE, MapColor.BLACK).strength(50, 1200);
+        Settings netheriteSettings = Settings.of(Material.METAL, MapColor.BLACK).strength(50, 1200).sounds(BlockSoundGroup.NETHERITE);
         // Init blocks
-        OldChestBlock woodChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_wood_chest"), woodOpenStat, Utils.WOOD_TIER, woodProperties);
-        OldChestBlock ironChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_iron_chest"), ironOpenStat, Utils.IRON_TIER, ironProperties);
-        OldChestBlock goldChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_gold_chest"), goldOpenStat, Utils.GOLD_TIER, goldProperties);
-        OldChestBlock diamondChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_diamond_chest"), diamondOpenStat, Utils.DIAMOND_TIER, diamondProperties);
-        OldChestBlock obsidianChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_obsidian_chest"), obsidianOpenStat, Utils.OBSIDIAN_TIER, obsidianProperties);
-        OldChestBlock netheriteChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_netherite_chest"), netheriteOpenStat, Utils.NETHERITE_TIER, netheriteProperties);
+        OldChestBlock woodChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_wood_chest"), woodOpenStat, Utils.WOOD_TIER, woodSettings);
+        OldChestBlock ironChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_iron_chest"), ironOpenStat, Utils.IRON_TIER, ironSettings);
+        OldChestBlock goldChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_gold_chest"), goldOpenStat, Utils.GOLD_TIER, goldSettings);
+        OldChestBlock diamondChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_diamond_chest"), diamondOpenStat, Utils.DIAMOND_TIER, diamondSettings);
+        OldChestBlock obsidianChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_obsidian_chest"), obsidianOpenStat, Utils.OBSIDIAN_TIER, obsidianSettings);
+        OldChestBlock netheriteChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_netherite_chest"), netheriteOpenStat, Utils.NETHERITE_TIER, netheriteSettings);
         Set<OldChestBlock> blocks = ImmutableSet.copyOf(new OldChestBlock[]{woodChestBlock, ironChestBlock, goldChestBlock, diamondChestBlock, obsidianChestBlock, netheriteChestBlock});
-        blockReg.accept(blocks);
         // Init items
         BlockItem woodChestItem = OldChestCommon.oldChestItem(Utils.WOOD_TIER, woodChestBlock);
         BlockItem ironChestItem = OldChestCommon.oldChestItem(Utils.IRON_TIER, ironChestBlock);
@@ -94,11 +77,9 @@ public final class OldChestCommon {
         BlockItem obsidianChestItem = OldChestCommon.oldChestItem(Utils.OBSIDIAN_TIER, obsidianChestBlock);
         BlockItem netheriteChestItem = OldChestCommon.oldChestItem(Utils.NETHERITE_TIER, netheriteChestBlock);
         Set<BlockItem> items = ImmutableSet.copyOf(new BlockItem[]{woodChestItem, ironChestItem, goldChestItem, diamondChestItem, obsidianChestItem, netheriteChestItem});
-        itemReg.accept(items);
         // Init block entity type
-        BlockEntityType<OldChestBlockEntity> blockEntityType = PlatformUtils.getInstance().createBlockEntityType((pos, state) -> new OldChestBlockEntity(OldChestCommon.getBlockEntityType(), pos, state), Collections.unmodifiableSet(blocks), null);
-        OldChestCommon.blockEntityType = blockEntityType;
-        blockEntityTypeConsumer.accept(blockEntityType);
+        OldChestCommon.blockEntityType = BlockEntityType.Builder.create((pos, state) -> new OldChestBlockEntity(OldChestCommon.getBlockEntityType(), pos, state), blocks.toArray(OldChestBlock[]::new)).build(null);
+        registrationConsumer.accept(blocks, items, OldChestCommon.blockEntityType);
         // Register chest module icon & upgrade behaviours
         BaseApi.getInstance().offerTabIcon(netheriteChestItem, OldChestCommon.ICON_SUITABILITY);
         Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof OldChestBlock;
@@ -109,8 +90,8 @@ public final class OldChestCommon {
         return new BlockItem(block, tier.getItemSettings().apply(new Item.Settings().group(Utils.TAB)));
     }
 
-    private static OldChestBlock oldChestBlock(Identifier blockId, Identifier stat, Tier tier, AbstractBlock.Settings properties) {
-        OldChestBlock block = new OldChestBlock(tier.getBlockSettings().apply(properties), blockId, tier.getId(), stat, tier.getSlotCount());
+    private static OldChestBlock oldChestBlock(Identifier blockId, Identifier stat, Tier tier, Settings settings) {
+        OldChestBlock block = new OldChestBlock(tier.getBlockSettings().apply(settings), blockId, tier.getId(), stat, tier.getSlotCount());
         BaseApi.getInstance().registerTieredBlock(block);
         return block;
     }

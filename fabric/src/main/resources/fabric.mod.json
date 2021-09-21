@@ -8,12 +8,7 @@
   },
   "entrypoints": {
     "main": [
-      "ninjaphenix.expandedstorage.base.Main"
-    ],
-    "expandedstorage-module": [
-      "ninjaphenix.expandedstorage.barrel.Main",
-      "ninjaphenix.expandedstorage.chest.Main",
-      "ninjaphenix.expandedstorage.old_chest.Main"
+      "ninjaphenix.expandedstorage.BaseMain"
     ]
   },
   "environment": "*",

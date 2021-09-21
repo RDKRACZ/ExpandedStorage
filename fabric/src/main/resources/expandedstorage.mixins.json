@@ -1,15 +1,15 @@
 {
   "required": true,
   "package": "ninjaphenix.expandedstorage.mixin",
-  "plugin": "ninjaphenix.expandedstorage.base.MixinPlugin",
+  "plugin": "ninjaphenix.expandedstorage.MixinPlugin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "base.HTMChestSupport",
-    "base.HTMOpenableBlockEntitySupport",
-    "chest.ToweletteSupport"
+    "HTMChestSupport",
+    "HTMOpenableBlockEntitySupport",
+    "ToweletteSupport"
   ],
   "client": [
-    "chest.ModelLayersMixin"
+    "ModelLayersMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -3,8 +3,6 @@ package ninjaphenix.expandedstorage.internal_api.item;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import java.util.Locale;
-
 @Internal
 @Experimental
 public enum MutationMode {

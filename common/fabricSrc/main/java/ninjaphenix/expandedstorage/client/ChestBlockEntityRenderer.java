@@ -24,6 +24,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
+import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.internal_api.Utils;
@@ -195,7 +196,7 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
         } else {
             retriever = PropertyRetriever.createDirect(entity);
         }
-        VertexConsumer consumer = new SpriteIdentifier(TexturedRenderLayers.CHEST_ATLAS_TEXTURE, ChestApi.INSTANCE.getChestTexture(blockId, chestType)).getVertexConsumer(source, RenderLayer::getEntityCutout);
+        VertexConsumer consumer = new SpriteIdentifier(TexturedRenderLayers.CHEST_ATLAS_TEXTURE, Common.getChestTexture(blockId, chestType)).getVertexConsumer(source, RenderLayer::getEntityCutout);
         float lidOpenness = ChestBlockEntityRenderer.getLidOpenness(retriever.get(ChestBlockEntityRenderer.LID_OPENNESS_FUNCTION_GETTER).get(delta));
         int brightness = retriever.get(ChestBlockEntityRenderer.BRIGHTNESS_PROPERTY).applyAsInt(light);
         if (chestType == CursedChestType.SINGLE) {

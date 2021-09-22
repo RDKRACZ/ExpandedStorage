@@ -11,13 +11,12 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import ninjaphenix.expandedstorage.internal_api.BaseApi;
+import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.internal_api.Utils;
 import ninjaphenix.expandedstorage.internal_api.item.BlockUpgradeBehaviour;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
 public final class StorageConversionKit extends Item {
     private final Identifier from;
@@ -39,7 +38,7 @@ public final class StorageConversionKit extends Item {
         PlayerEntity player = context.getPlayer();
         if (player != null && player.isSneaking()) {
             Block block = world.getBlockState(context.getBlockPos()).getBlock();
-            BlockUpgradeBehaviour behaviour = BaseApi.getInstance().getBlockUpgradeBehaviour(block);
+            BlockUpgradeBehaviour behaviour = Common.getBlockUpgradeBehaviour(block);
             if (behaviour != null) {
                 if (world.isClient()) {
                     return ActionResult.CONSUME;

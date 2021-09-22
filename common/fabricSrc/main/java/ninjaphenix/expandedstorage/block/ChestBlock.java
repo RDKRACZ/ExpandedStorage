@@ -23,7 +23,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import ninjaphenix.expandedstorage.ChestCommon;
+import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
 import ninjaphenix.expandedstorage.internal_api.block.misc.CursedChestType;
@@ -81,13 +81,13 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
 
     @Override
     public Identifier getBlockType() {
-        return ChestCommon.BLOCK_TYPE;
+        return Common.CHEST_BLOCK_TYPE;
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> blockEntityType) {
-        boolean correctBET = blockEntityType == ChestCommon.getBlockEntityType();
+        boolean correctBET = blockEntityType == Common.getChestBlockEntityType();
         return world.isClient() && correctBET ? (world1, pos, state1, entity) -> ChestBlockEntity.progressLidAnimation(world1, pos, state1, (ChestBlockEntity) entity) : null;
     }
 
@@ -118,7 +118,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     @NotNull
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new ChestBlockEntity(ChestCommon.getBlockEntityType(), pos, state);
+        return new ChestBlockEntity(Common.getChestBlockEntityType(), pos, state);
     }
 
     @Override
@@ -128,7 +128,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
 
     @Override
     protected BlockEntityType<ChestBlockEntity> getBlockEntityType() {
-        return ChestCommon.getBlockEntityType();
+        return Common.getChestBlockEntityType();
     }
 
     @Override

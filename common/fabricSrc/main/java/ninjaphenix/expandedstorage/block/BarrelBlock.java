@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
-import ninjaphenix.expandedstorage.BarrelCommon;
+import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.misc.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractOpenableStorageBlock;
 
@@ -40,12 +40,12 @@ public final class BarrelBlock extends AbstractOpenableStorageBlock implements I
 
     @Override
     public Identifier getBlockType() {
-        return BarrelCommon.BLOCK_TYPE;
+        return Common.BARREL_BLOCK_TYPE;
     }
 
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new BarrelBlockEntity(BarrelCommon.getBlockEntityType(), pos, state);
+        return new BarrelBlockEntity(Common.getBarrelBlockEntityType(), pos, state);
     }
 
     @Override

@@ -22,7 +22,7 @@ public final class BaseCommon {
     }
 
     static void initialize(Consumer<ItemRegistryEntry[]> itemRegistration) {
-        ItemRegistryEntry[] items = new ItemRegistryEntry[1 + factorial(6)];
+        ItemRegistryEntry[] items = new ItemRegistryEntry[1 + factorial(5)];
         items[0] = new ItemRegistryEntry(Utils.id("chest_mutator"), new StorageMutator(new Item.Settings().maxCount(1).group(BaseCommon.GROUP)));
         BaseCommon.defineTierUpgradePath(items, Utils.WOOD_TIER, Utils.IRON_TIER, Utils.GOLD_TIER, Utils.DIAMOND_TIER, Utils.OBSIDIAN_TIER, Utils.NETHERITE_TIER);
         itemRegistration.accept(items);
@@ -55,6 +55,6 @@ public final class BaseCommon {
         if (value == 1) {
             return value;
         }
-        return value * factorial(value - 1);
+        return value + factorial(value - 1);
     }
 }

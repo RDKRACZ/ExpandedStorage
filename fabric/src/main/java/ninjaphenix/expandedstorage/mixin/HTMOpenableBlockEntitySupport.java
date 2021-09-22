@@ -10,7 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractStorageBlockEntity;
-import ninjaphenix.expandedstorage.internal_api.block.misc.FabricChestProperties;
+import ninjaphenix.expandedstorage.FabricChestProperties;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

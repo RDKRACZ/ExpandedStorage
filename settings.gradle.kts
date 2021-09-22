@@ -40,4 +40,4 @@ pluginManagement {
 rootProject.name = "expandedstorage"
 
 include("fabric")
-//include("forge")
+include("forge")

@@ -111,7 +111,6 @@ public final class Main implements ModInitializer {
 
     private static class Client {
         public static void registerChestTextures(ChestBlock[] blocks) {
-            Common.registerChestTextures(blocks);
             ClientSpriteRegistryCallback.event(TexturedRenderLayers.CHEST_ATLAS_TEXTURE).register((atlasTexture, registry) -> {
                 for (Identifier texture : Common.getChestTextures(blocks)) {
                     registry.register(texture);

@@ -13,7 +13,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.internal_api.Utils;
 import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
-import ninjaphenix.expandedstorage.internal_api.block.misc.FabricChestProperties;
+import ninjaphenix.expandedstorage.FabricChestProperties;
 
 import java.util.function.Supplier;
 

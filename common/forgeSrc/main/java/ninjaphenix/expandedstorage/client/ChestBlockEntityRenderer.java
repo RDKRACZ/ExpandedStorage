@@ -27,12 +27,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
-import ninjaphenix.expandedstorage.internal_api.Utils;
-import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
-import ninjaphenix.expandedstorage.internal_api.block.misc.CursedChestType;
-import ninjaphenix.expandedstorage.internal_api.block.misc.FaceRotation;
-import ninjaphenix.expandedstorage.internal_api.block.misc.Property;
-import ninjaphenix.expandedstorage.internal_api.block.misc.PropertyRetriever;
+import ninjaphenix.expandedstorage.Utils;
+import ninjaphenix.expandedstorage.block.AbstractChestBlock;
+import ninjaphenix.expandedstorage.block.misc.CursedChestType;
+import ninjaphenix.expandedstorage.block.misc.FaceRotation;
+import ninjaphenix.expandedstorage.block.misc.Property;
+import ninjaphenix.expandedstorage.block.misc.PropertyRetriever;
 
 public final class ChestBlockEntityRenderer implements BlockEntityRenderer<ChestBlockEntity> {
     // todo: hopefully we can remove this mess once *hopefully* this is all json, 1.18
@@ -218,11 +218,15 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
             ChestBlockEntityRenderer.renderTop(stack, consumer, backLid, brightness, overlay, lidOpenness);
         } else if (chestType == CursedChestType.LEFT) {
             ChestBlockEntityRenderer.renderBottom(stack, consumer, leftBottom, brightness, overlay);
+            //noinspection SuspiciousNameCombination
             ChestBlockEntityRenderer.renderTop(stack, consumer, leftLid, brightness, overlay, lidOpenness);
+            //noinspection SuspiciousNameCombination
             ChestBlockEntityRenderer.renderTop(stack, consumer, leftLock, brightness, overlay, lidOpenness);
         } else if (chestType == CursedChestType.RIGHT) {
             ChestBlockEntityRenderer.renderBottom(stack, consumer, rightBottom, brightness, overlay);
+            //noinspection SuspiciousNameCombination
             ChestBlockEntityRenderer.renderTop(stack, consumer, rightLid, brightness, overlay, lidOpenness);
+            //noinspection SuspiciousNameCombination
             ChestBlockEntityRenderer.renderTop(stack, consumer, rightLock, brightness, overlay, lidOpenness);
         }
         stack.popPose();

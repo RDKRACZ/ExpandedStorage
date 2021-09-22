@@ -29,11 +29,11 @@ import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.block.BarrelBlock;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 import ninjaphenix.expandedstorage.block.OldChestBlock;
+import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
-import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
 import ninjaphenix.expandedstorage.client.ChestBlockEntityRenderer;
-import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.Nullable;
 

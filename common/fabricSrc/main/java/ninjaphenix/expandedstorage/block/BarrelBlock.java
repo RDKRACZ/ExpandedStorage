@@ -16,7 +16,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.misc.BarrelBlockEntity;
-import ninjaphenix.expandedstorage.internal_api.block.AbstractOpenableStorageBlock;
 
 import java.util.Random;
 

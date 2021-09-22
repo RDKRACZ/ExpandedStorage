@@ -11,8 +11,8 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import ninjaphenix.expandedstorage.ForgeChestProperties;
-import ninjaphenix.expandedstorage.internal_api.Utils;
-import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.Utils;
+import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
 
 import java.util.function.Supplier;
 

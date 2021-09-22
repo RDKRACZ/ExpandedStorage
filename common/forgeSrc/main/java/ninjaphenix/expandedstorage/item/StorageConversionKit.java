@@ -1,8 +1,7 @@
 package ninjaphenix.expandedstorage.item;
 
 import ninjaphenix.expandedstorage.Common;
-import ninjaphenix.expandedstorage.internal_api.Utils;
-import ninjaphenix.expandedstorage.internal_api.item.BlockUpgradeBehaviour;
+import ninjaphenix.expandedstorage.Utils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

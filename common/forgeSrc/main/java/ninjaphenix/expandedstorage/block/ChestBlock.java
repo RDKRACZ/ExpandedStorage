@@ -2,9 +2,8 @@ package ninjaphenix.expandedstorage.block;
 
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
-import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
-import ninjaphenix.expandedstorage.internal_api.block.misc.CursedChestType;
-import ninjaphenix.expandedstorage.internal_api.block.misc.FaceRotation;
+import ninjaphenix.expandedstorage.block.misc.CursedChestType;
+import ninjaphenix.expandedstorage.block.misc.FaceRotation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

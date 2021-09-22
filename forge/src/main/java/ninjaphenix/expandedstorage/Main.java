@@ -30,11 +30,10 @@ import ninjaphenix.expandedstorage.block.BarrelBlock;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 import ninjaphenix.expandedstorage.block.OldChestBlock;
 import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.client.ChestBlockEntityRenderer;
-import ninjaphenix.expandedstorage.internal_api.Utils;
-import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,6 +41,7 @@ import org.jetbrains.annotations.Nullable;
 @Mod("expandedstorage")
 public final class Main {
     private final IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+
     public Main() {
         Common.registerBaseContent(this::baseRegistration);
         Common.registerChestContent(this::chestRegistration, BlockTags.createOptional(new ResourceLocation("forge", "chests/wooden")), ChestBlockItem::new);
@@ -142,7 +142,7 @@ public final class Main {
         }
     }
 
-    private  void baseRegistration(Tuple<ResourceLocation, Item>[] items) {
+    private void baseRegistration(Tuple<ResourceLocation, Item>[] items) {
         modBus.addGenericListener(Item.class, (RegistryEvent.Register<Item> event) -> {
             IForgeRegistry<Item> registry = event.getRegistry();
             for (Tuple<ResourceLocation, Item> item : items) {

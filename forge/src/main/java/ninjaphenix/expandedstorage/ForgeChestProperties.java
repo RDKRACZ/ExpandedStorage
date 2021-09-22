@@ -5,9 +5,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
-import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
-import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
-import ninjaphenix.expandedstorage.internal_api.block.misc.Property;
+import ninjaphenix.expandedstorage.block.AbstractChestBlock;
+import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.Property;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 
 public final class ForgeChestProperties {
@@ -16,7 +16,7 @@ public final class ForgeChestProperties {
         public Object get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
             return new CombinedInvWrapper(
                     (IItemHandlerModifiable) PlatformUtils.getInstance().createGenericItemAccess(first),
-                    (IItemHandlerModifiable)PlatformUtils.getInstance().createGenericItemAccess(second)
+                    (IItemHandlerModifiable) PlatformUtils.getInstance().createGenericItemAccess(second)
             );
         }
 

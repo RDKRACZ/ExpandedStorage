@@ -7,7 +7,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
-import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
 
 public final class OldChestBlock extends AbstractChestBlock<AbstractChestBlockEntity> {
     public OldChestBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier,

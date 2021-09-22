@@ -11,7 +11,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.block.BarrelBlock;
-import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 
 public class BarrelBlockEntity extends AbstractOpenableStorageBlockEntity {
     public BarrelBlockEntity(BlockEntityType<BarrelBlockEntity> blockEntityType, BlockPos pos, BlockState state) {

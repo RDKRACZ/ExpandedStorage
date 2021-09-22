@@ -7,7 +7,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
-import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
 
 public final class OldChestBlock extends AbstractChestBlock<AbstractChestBlockEntity> {
     public OldChestBlock(Settings properties, Identifier blockId, Identifier blockTier,

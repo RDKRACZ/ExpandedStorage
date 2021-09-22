@@ -1,6 +1,6 @@
 package ninjaphenix.expandedstorage.wrappers;
 
-import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
 
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;

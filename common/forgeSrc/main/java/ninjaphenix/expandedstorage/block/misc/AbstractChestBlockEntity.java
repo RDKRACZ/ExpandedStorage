@@ -6,7 +6,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.Nullable;
 

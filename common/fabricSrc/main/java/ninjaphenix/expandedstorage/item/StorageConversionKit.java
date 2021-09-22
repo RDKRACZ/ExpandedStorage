@@ -12,8 +12,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.Common;
-import ninjaphenix.expandedstorage.internal_api.Utils;
-import ninjaphenix.expandedstorage.internal_api.item.BlockUpgradeBehaviour;
+import ninjaphenix.expandedstorage.Utils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

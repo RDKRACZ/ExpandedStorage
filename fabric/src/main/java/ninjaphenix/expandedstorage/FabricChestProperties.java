@@ -9,9 +9,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
-import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
-import ninjaphenix.expandedstorage.internal_api.block.misc.Property;
+import ninjaphenix.expandedstorage.block.AbstractChestBlock;
+import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.Property;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 
 import java.util.List;

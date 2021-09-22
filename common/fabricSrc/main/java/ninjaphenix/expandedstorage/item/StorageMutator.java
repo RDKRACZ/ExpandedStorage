@@ -30,11 +30,10 @@ import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.BarrelBlock;
 import ninjaphenix.expandedstorage.block.ChestBlock;
-import ninjaphenix.expandedstorage.internal_api.Utils;
-import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
-import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
-import ninjaphenix.expandedstorage.internal_api.block.misc.CursedChestType;
-import ninjaphenix.expandedstorage.internal_api.item.MutationMode;
+import ninjaphenix.expandedstorage.Utils;
+import ninjaphenix.expandedstorage.block.AbstractChestBlock;
+import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.CursedChestType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

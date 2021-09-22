@@ -1,7 +1,7 @@
 package ninjaphenix.expandedstorage;
 
 import net.minecraft.resources.ResourceLocation;
-import ninjaphenix.expandedstorage.internal_api.block.misc.CursedChestType;
+import ninjaphenix.expandedstorage.block.misc.CursedChestType;
 
 @SuppressWarnings("ClassCanBeRecord")
 public final class TextureCollection {

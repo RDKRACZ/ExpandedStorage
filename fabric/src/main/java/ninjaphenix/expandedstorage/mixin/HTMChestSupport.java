@@ -6,9 +6,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
-import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.FabricChestProperties;
+import ninjaphenix.expandedstorage.block.AbstractChestBlock;
+import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 
 import java.util.Optional;

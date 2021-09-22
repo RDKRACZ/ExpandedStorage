@@ -2,7 +2,6 @@ package ninjaphenix.expandedstorage.internal_api;
 
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.text.KeybindText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -10,7 +9,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import ninjaphenix.expandedstorage.internal_api.tier.Tier;
-import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
@@ -21,7 +19,6 @@ import java.util.function.UnaryOperator;
 public final class Utils {
     @Internal
     public static final String MOD_ID = "expandedstorage";
-    public static final ItemGroup TAB = PlatformUtils.getInstance().createTab(BaseApi.getInstance()::tabIcon);
     @Internal
     public static final Text ALT_USE = new TranslatableText("tooltip.expandedstorage.alt_use",
             new KeybindText("key.sneak").formatted(Formatting.GOLD),

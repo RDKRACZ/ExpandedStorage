@@ -1,7 +1,11 @@
 package ninjaphenix.expandedstorage;
 
 import net.minecraft.block.AbstractBlock.Settings;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.DoubleBlockProperties;
+import net.minecraft.block.MapColor;
+import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.ChestType;
@@ -37,14 +41,13 @@ import java.util.function.Predicate;
 
 public final class ChestCommon {
     public static final Identifier BLOCK_TYPE = Utils.id("cursed_chest");
-    private static final int ICON_SUITABILITY = 1000;
     private static BlockEntityType<ChestBlockEntity> blockEntityType;
 
     private ChestCommon() {
 
     }
 
-    static void registerContent(RegistrationConsumer<ChestBlock, BlockItem, ChestBlockEntity> registrationConsumer, Tag<Block> woodenChestTag, BiFunction<Block, Item.Settings, BlockItem> blockItemMaker) {
+    static void registerChestContent(RegistrationConsumer<ChestBlock, BlockItem, ChestBlockEntity> registrationConsumer, Tag<Block> woodenChestTag, BiFunction<Block, Item.Settings, BlockItem> blockItemMaker) {
         // Init and register opening stats
         Identifier woodOpenStat = BaseCommon.registerStat(Utils.id("open_wood_chest"));
         Identifier pumpkinOpenStat = BaseCommon.registerStat(Utils.id("open_pumpkin_chest"));
@@ -88,7 +91,6 @@ public final class ChestCommon {
         ChestCommon.blockEntityType = BlockEntityType.Builder.create((pos, state) -> new ChestBlockEntity(ChestCommon.getBlockEntityType(), pos, state), blocks).build(null);
         registrationConsumer.accept(blocks, items, ChestCommon.blockEntityType);
         // Register chest module icon & upgrade behaviours
-        BaseApi.getInstance().offerTabIcon(netheriteChestItem, ChestCommon.ICON_SUITABILITY);
         Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof ChestBlock || block instanceof net.minecraft.block.ChestBlock || woodenChestTag.contains(block);
         BaseApi.getInstance().defineBlockUpgradeBehaviour(isUpgradableChestBlock, ChestCommon::tryUpgradeBlock);
     }
@@ -104,7 +106,7 @@ public final class ChestCommon {
     }
 
     private static BlockItem chestItem(Tier tier, ChestBlock block, BiFunction<Block, Item.Settings, BlockItem> blockItemMaker) {
-        return blockItemMaker.apply(block, tier.getItemSettings().apply(new Item.Settings().group(Utils.TAB)));
+        return blockItemMaker.apply(block, tier.getItemSettings().apply(new Item.Settings().group(BaseCommon.GROUP)));
     }
 
     static Identifier[] getChestTextures(ChestBlock[] blocks) {

@@ -25,19 +25,20 @@ import ninjaphenix.expandedstorage.block.misc.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.OldChestBlockEntity;
 import ninjaphenix.expandedstorage.client.ChestBlockEntityRenderer;
-import ninjaphenix.expandedstorage.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 
 public final class BaseMain implements ModInitializer {
     @Override
     public void onInitialize() {
-        BaseCommon.initialize();
-        BaseApi.getInstance().getAndClearItems().forEach((id, item) -> Registry.register(Registry.ITEM, id, item));
-
-        ChestCommon.registerContent(BaseMain::chestRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new);
-        OldChestCommon.registerContent(BaseMain::oldChestRegistration);
-        BarrelCommon.registerContent(BaseMain::barrelRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_barrels")));
+        BaseCommon.initialize(items -> {
+            for (BaseCommon.ItemRegistryEntry item : items) {
+                Registry.register(Registry.ITEM, item.id(), item.object());
+            }
+        });
+        ChestCommon.registerChestContent(BaseMain::chestRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new);
+        OldChestCommon.registerOldChestContent(BaseMain::oldChestRegistration);
+        BarrelCommon.registerBarrelContent(BaseMain::barrelRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_barrels")));
 
         /* GOALS
          *

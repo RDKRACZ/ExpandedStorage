@@ -33,7 +33,6 @@ import java.util.function.Predicate;
 
 public final class OldChestCommon {
     public static final Identifier BLOCK_TYPE = Utils.id("old_cursed_chest");
-    private static final int ICON_SUITABILITY = 999;
     private static BlockEntityType<OldChestBlockEntity> blockEntityType;
 
     private OldChestCommon() {
@@ -44,7 +43,7 @@ public final class OldChestCommon {
         return blockEntityType;
     }
 
-    static void registerContent(RegistrationConsumer<OldChestBlock, BlockItem, OldChestBlockEntity> registrationConsumer) {
+    static void registerOldChestContent(RegistrationConsumer<OldChestBlock, BlockItem, OldChestBlockEntity> registrationConsumer) {
         // Init and register opening stats
         Identifier woodOpenStat = BaseCommon.registerStat(Utils.id("open_old_wood_chest"));
         Identifier ironOpenStat = BaseCommon.registerStat(Utils.id("open_old_iron_chest"));
@@ -79,13 +78,12 @@ public final class OldChestCommon {
         OldChestCommon.blockEntityType = BlockEntityType.Builder.create((pos, state) -> new OldChestBlockEntity(OldChestCommon.getBlockEntityType(), pos, state), blocks).build(null);
         registrationConsumer.accept(blocks, items, OldChestCommon.blockEntityType);
         // Register chest module icon & upgrade behaviours
-        BaseApi.getInstance().offerTabIcon(netheriteChestItem, OldChestCommon.ICON_SUITABILITY);
         Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof OldChestBlock;
         BaseApi.getInstance().defineBlockUpgradeBehaviour(isUpgradableChestBlock, OldChestCommon::tryUpgradeBlock);
     }
 
     private static BlockItem oldChestItem(Tier tier, OldChestBlock block) {
-        return new BlockItem(block, tier.getItemSettings().apply(new Item.Settings().group(Utils.TAB)));
+        return new BlockItem(block, tier.getItemSettings().apply(new Item.Settings().group(BaseCommon.GROUP)));
     }
 
     private static OldChestBlock oldChestBlock(Identifier blockId, Identifier stat, Tier tier, Settings settings) {

@@ -34,7 +34,6 @@ import java.util.function.Predicate;
 
 public final class BarrelCommon {
     public static final Identifier BLOCK_TYPE = Utils.id("barrel");
-    private static final int ICON_SUITABILITY = 998;
     private static BlockEntityType<BarrelBlockEntity> blockEntityType;
 
     private BarrelCommon() {
@@ -45,7 +44,7 @@ public final class BarrelCommon {
         return blockEntityType;
     }
 
-    static void registerContent(RegistrationConsumer<BarrelBlock, BlockItem, BarrelBlockEntity> registration, Tag<Block> woodenBarrelTag) {
+    static void registerBarrelContent(RegistrationConsumer<BarrelBlock, BlockItem, BarrelBlockEntity> registration, Tag<Block> woodenBarrelTag) {
         // Init and register opening stats
         Identifier ironOpenStat = BaseCommon.registerStat(Utils.id("open_iron_barrel"));
         Identifier goldOpenStat = BaseCommon.registerStat(Utils.id("open_gold_barrel"));
@@ -76,7 +75,6 @@ public final class BarrelCommon {
         BarrelCommon.blockEntityType = BlockEntityType.Builder.create((pos, state) -> new BarrelBlockEntity(BarrelCommon.getBlockEntityType(), pos, state), blocks).build(null);
         registration.accept(blocks, items, BarrelCommon.blockEntityType);
         // Register chest module icon & upgrade behaviours
-        BaseApi.getInstance().offerTabIcon(netheriteBarrelItem, BarrelCommon.ICON_SUITABILITY);
         Predicate<Block> isUpgradableBarrelBlock = (block) -> block instanceof BarrelBlock || block instanceof net.minecraft.block.BarrelBlock || woodenBarrelTag.contains(block);
         BaseApi.getInstance().defineBlockUpgradeBehaviour(isUpgradableBarrelBlock, BarrelCommon::tryUpgradeBlock);
     }
@@ -88,7 +86,7 @@ public final class BarrelCommon {
     }
 
     private static BlockItem barrelItem(Tier tier, BarrelBlock block) {
-        return new BlockItem(block, tier.getItemSettings().apply(new Item.Settings().group(Utils.TAB)));
+        return new BlockItem(block, tier.getItemSettings().apply(new Item.Settings().group(BaseCommon.GROUP)));
     }
 
     private static boolean tryUpgradeBlock(ItemUsageContext context, Identifier from, Identifier to) {

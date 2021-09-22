@@ -1,6 +1,5 @@
 package ninjaphenix.expandedstorage;
 
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -30,7 +29,6 @@ import ninjaphenix.expandedstorage.internal_api.Utils;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.internal_api.tier.Tier;
 
-import java.util.Set;
 import java.util.function.Predicate;
 
 public final class OldChestCommon {
@@ -68,7 +66,7 @@ public final class OldChestCommon {
         OldChestBlock diamondChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_diamond_chest"), diamondOpenStat, Utils.DIAMOND_TIER, diamondSettings);
         OldChestBlock obsidianChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_obsidian_chest"), obsidianOpenStat, Utils.OBSIDIAN_TIER, obsidianSettings);
         OldChestBlock netheriteChestBlock = OldChestCommon.oldChestBlock(Utils.id("old_netherite_chest"), netheriteOpenStat, Utils.NETHERITE_TIER, netheriteSettings);
-        Set<OldChestBlock> blocks = ImmutableSet.copyOf(new OldChestBlock[]{woodChestBlock, ironChestBlock, goldChestBlock, diamondChestBlock, obsidianChestBlock, netheriteChestBlock});
+        OldChestBlock[] blocks = new OldChestBlock[]{woodChestBlock, ironChestBlock, goldChestBlock, diamondChestBlock, obsidianChestBlock, netheriteChestBlock};
         // Init items
         BlockItem woodChestItem = OldChestCommon.oldChestItem(Utils.WOOD_TIER, woodChestBlock);
         BlockItem ironChestItem = OldChestCommon.oldChestItem(Utils.IRON_TIER, ironChestBlock);
@@ -76,9 +74,9 @@ public final class OldChestCommon {
         BlockItem diamondChestItem = OldChestCommon.oldChestItem(Utils.DIAMOND_TIER, diamondChestBlock);
         BlockItem obsidianChestItem = OldChestCommon.oldChestItem(Utils.OBSIDIAN_TIER, obsidianChestBlock);
         BlockItem netheriteChestItem = OldChestCommon.oldChestItem(Utils.NETHERITE_TIER, netheriteChestBlock);
-        Set<BlockItem> items = ImmutableSet.copyOf(new BlockItem[]{woodChestItem, ironChestItem, goldChestItem, diamondChestItem, obsidianChestItem, netheriteChestItem});
+        BlockItem[] items = new BlockItem[]{woodChestItem, ironChestItem, goldChestItem, diamondChestItem, obsidianChestItem, netheriteChestItem};
         // Init block entity type
-        OldChestCommon.blockEntityType = BlockEntityType.Builder.create((pos, state) -> new OldChestBlockEntity(OldChestCommon.getBlockEntityType(), pos, state), blocks.toArray(OldChestBlock[]::new)).build(null);
+        OldChestCommon.blockEntityType = BlockEntityType.Builder.create((pos, state) -> new OldChestBlockEntity(OldChestCommon.getBlockEntityType(), pos, state), blocks).build(null);
         registrationConsumer.accept(blocks, items, OldChestCommon.blockEntityType);
         // Register chest module icon & upgrade behaviours
         BaseApi.getInstance().offerTabIcon(netheriteChestItem, OldChestCommon.ICON_SUITABILITY);

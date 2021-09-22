@@ -1,11 +1,7 @@
 package ninjaphenix.expandedstorage;
 
 import net.minecraft.block.AbstractBlock.Settings;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.DoubleBlockProperties;
-import net.minecraft.block.MapColor;
-import net.minecraft.block.Material;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.ChestType;
@@ -29,15 +25,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
-import ninjaphenix.expandedstorage.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.client.ChestApi;
+import ninjaphenix.expandedstorage.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.internal_api.Utils;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.internal_api.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.internal_api.tier.Tier;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
@@ -79,7 +73,7 @@ public final class ChestCommon {
         ChestBlock diamondChestBlock = ChestCommon.chestBlock(Utils.id("diamond_chest"), diamondOpenStat, Utils.DIAMOND_TIER, diamondSettings);
         ChestBlock obsidianChestBlock = ChestCommon.chestBlock(Utils.id("obsidian_chest"), obsidianOpenStat, Utils.OBSIDIAN_TIER, obsidianSettings);
         ChestBlock netheriteChestBlock = ChestCommon.chestBlock(Utils.id("netherite_chest"), netheriteOpenStat, Utils.NETHERITE_TIER, netheriteSettings);
-        Set<ChestBlock> blocks = Set.of(woodChestBlock, pumpkinChestBlock, christmasChestBlock, ironChestBlock, goldChestBlock, diamondChestBlock, obsidianChestBlock, netheriteChestBlock);
+        ChestBlock[] blocks = new ChestBlock[]{woodChestBlock, pumpkinChestBlock, christmasChestBlock, ironChestBlock, goldChestBlock, diamondChestBlock, obsidianChestBlock, netheriteChestBlock};
         // Init and register items
         BlockItem woodChestItem = ChestCommon.chestItem(Utils.WOOD_TIER, woodChestBlock, blockItemMaker);
         BlockItem pumpkinChestItem = ChestCommon.chestItem(Utils.WOOD_TIER, pumpkinChestBlock, blockItemMaker);
@@ -89,9 +83,9 @@ public final class ChestCommon {
         BlockItem diamondChestItem = ChestCommon.chestItem(Utils.DIAMOND_TIER, diamondChestBlock, blockItemMaker);
         BlockItem obsidianChestItem = ChestCommon.chestItem(Utils.OBSIDIAN_TIER, obsidianChestBlock, blockItemMaker);
         BlockItem netheriteChestItem = ChestCommon.chestItem(Utils.NETHERITE_TIER, netheriteChestBlock, blockItemMaker);
-        Set<BlockItem> items = Set.of(woodChestItem, pumpkinChestItem, christmasChestItem, ironChestItem, goldChestItem, diamondChestItem, obsidianChestItem, netheriteChestItem);
+        BlockItem[] items = new BlockItem[]{woodChestItem, pumpkinChestItem, christmasChestItem, ironChestItem, goldChestItem, diamondChestItem, obsidianChestItem, netheriteChestItem};
         // Init and register block entity type
-        ChestCommon.blockEntityType  = BlockEntityType.Builder.create((pos, state) -> new ChestBlockEntity(ChestCommon.getBlockEntityType(), pos, state), blocks.toArray(ChestBlock[]::new)).build(null);
+        ChestCommon.blockEntityType = BlockEntityType.Builder.create((pos, state) -> new ChestBlockEntity(ChestCommon.getBlockEntityType(), pos, state), blocks).build(null);
         registrationConsumer.accept(blocks, items, ChestCommon.blockEntityType);
         // Register chest module icon & upgrade behaviours
         BaseApi.getInstance().offerTabIcon(netheriteChestItem, ChestCommon.ICON_SUITABILITY);
@@ -113,18 +107,19 @@ public final class ChestCommon {
         return blockItemMaker.apply(block, tier.getItemSettings().apply(new Item.Settings().group(Utils.TAB)));
     }
 
-    static Set<Identifier> getChestTextures(Set<ChestBlock> blocks) {
-        Set<Identifier> textures = new HashSet<>();
+    static Identifier[] getChestTextures(ChestBlock[] blocks) {
+        Identifier[] textures = new Identifier[blocks.length * CursedChestType.values().length];
+        int index = 0;
         for (ChestBlock block : blocks) {
             Identifier blockId = block.getBlockId();
             for (CursedChestType type : CursedChestType.values()) {
-                textures.add(ChestApi.INSTANCE.getChestTexture(blockId, type));
+                textures[index++] = ChestApi.INSTANCE.getChestTexture(blockId, type);
             }
         }
         return textures;
     }
 
-    static void registerChestTextures(Set<ChestBlock> blocks) {
+    static void registerChestTextures(ChestBlock[] blocks) {
         for (ChestBlock block : blocks) {
             Identifier blockId = block.getBlockId();
             ChestApi.INSTANCE.declareChestTextures(

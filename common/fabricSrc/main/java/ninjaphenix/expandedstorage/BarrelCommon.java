@@ -30,7 +30,6 @@ import ninjaphenix.expandedstorage.internal_api.Utils;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.internal_api.tier.Tier;
 
-import java.util.Set;
 import java.util.function.Predicate;
 
 public final class BarrelCommon {
@@ -65,16 +64,16 @@ public final class BarrelCommon {
         BarrelBlock diamondBarrelBlock = BarrelCommon.barrelBlock(Utils.id("diamond_barrel"), diamondOpenStat, Utils.DIAMOND_TIER, diamondSettings);
         BarrelBlock obsidianBarrelBlock = BarrelCommon.barrelBlock(Utils.id("obsidian_barrel"), obsidianOpenStat, Utils.OBSIDIAN_TIER, obsidianSettings);
         BarrelBlock netheriteBarrelBlock = BarrelCommon.barrelBlock(Utils.id("netherite_barrel"), netheriteOpenStat, Utils.NETHERITE_TIER, netheriteSettings);
-        Set<BarrelBlock> blocks = Set.of(ironBarrelBlock, goldBarrelBlock, diamondBarrelBlock, obsidianBarrelBlock, netheriteBarrelBlock);
+        BarrelBlock[] blocks = new BarrelBlock[]{ironBarrelBlock, goldBarrelBlock, diamondBarrelBlock, obsidianBarrelBlock, netheriteBarrelBlock};
         // Init items
         BlockItem ironBarrelItem = BarrelCommon.barrelItem(Utils.IRON_TIER, ironBarrelBlock);
         BlockItem goldBarrelItem = BarrelCommon.barrelItem(Utils.GOLD_TIER, goldBarrelBlock);
         BlockItem diamondBarrelItem = BarrelCommon.barrelItem(Utils.DIAMOND_TIER, diamondBarrelBlock);
         BlockItem obsidianBarrelItem = BarrelCommon.barrelItem(Utils.OBSIDIAN_TIER, obsidianBarrelBlock);
         BlockItem netheriteBarrelItem = BarrelCommon.barrelItem(Utils.NETHERITE_TIER, netheriteBarrelBlock);
-        Set<BlockItem> items = Set.of(ironBarrelItem, goldBarrelItem, diamondBarrelItem, obsidianBarrelItem, netheriteBarrelItem);
+        BlockItem[] items = new BlockItem[]{ironBarrelItem, goldBarrelItem, diamondBarrelItem, obsidianBarrelItem, netheriteBarrelItem};
         // Init block entity type
-        BarrelCommon.blockEntityType = BlockEntityType.Builder.create((pos, state) -> new BarrelBlockEntity(BarrelCommon.getBlockEntityType(), pos, state), blocks.toArray(BarrelBlock[]::new)).build(null);
+        BarrelCommon.blockEntityType = BlockEntityType.Builder.create((pos, state) -> new BarrelBlockEntity(BarrelCommon.getBlockEntityType(), pos, state), blocks).build(null);
         registration.accept(blocks, items, BarrelCommon.blockEntityType);
         // Register chest module icon & upgrade behaviours
         BaseApi.getInstance().offerTabIcon(netheriteBarrelItem, BarrelCommon.ICON_SUITABILITY);

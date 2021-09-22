@@ -8,7 +8,7 @@
   },
   "entrypoints": {
     "main": [
-      "ninjaphenix.expandedstorage.BaseMain"
+      "ninjaphenix.expandedstorage.Main"
     ]
   },
   "environment": "*",

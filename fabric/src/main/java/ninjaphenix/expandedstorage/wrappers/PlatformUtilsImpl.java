@@ -2,11 +2,18 @@ package ninjaphenix.expandedstorage.wrappers;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.internal_api.Utils;
+import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.internal_api.block.misc.FabricChestProperties;
 
 import java.util.function.Supplier;
 
@@ -24,5 +31,16 @@ public final class PlatformUtilsImpl extends PlatformUtils {
                 return icon.get();
             }
         };
+    }
+
+    @Override
+    public Object createGenericItemAccess(AbstractOpenableStorageBlockEntity entity) {
+        //noinspection UnstableApiUsage,deprecation
+        return InventoryStorage.of(entity.getInventory(), null);
+    }
+
+    @Override
+    public Object createChestItemAccess(World world, BlockState state, BlockPos pos, Direction side) {
+        return FabricChestProperties.createItemStorage(world, state, pos);
     }
 }

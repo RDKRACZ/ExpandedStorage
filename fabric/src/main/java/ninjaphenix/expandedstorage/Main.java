@@ -8,7 +8,11 @@ import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.tag.TagFactory;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -19,24 +23,27 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.block.BarrelBlock;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 import ninjaphenix.expandedstorage.block.OldChestBlock;
 import ninjaphenix.expandedstorage.block.misc.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
-import ninjaphenix.expandedstorage.block.misc.OldChestBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
 import ninjaphenix.expandedstorage.client.ChestBlockEntityRenderer;
 import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
+import org.jetbrains.annotations.Nullable;
 
-public final class BaseMain implements ModInitializer {
+public final class Main implements ModInitializer {
     @Override
     public void onInitialize() {
-        Common.registerBaseContent(BaseMain::baseRegistration);
-        Common.registerChestContent(BaseMain::chestRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new);
-        Common.registerOldChestContent(BaseMain::oldChestRegistration);
-        Common.registerBarrelContent(BaseMain::barrelRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_barrels")));
+        Common.registerBaseContent(Main::baseRegistration);
+        Common.registerChestContent(Main::chestRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new);
+        Common.registerOldChestContent(Main::oldChestRegistration);
+        Common.registerBarrelContent(Main::barrelRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_barrels")));
 
         /* GOALS
          *
@@ -60,14 +67,21 @@ public final class BaseMain implements ModInitializer {
             Registry.register(Registry.ITEM, ((ChestBlock) item.getBlock()).getBlockId(), item);
         }
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.CHEST_BLOCK_TYPE, blockEntityType);
-        ItemStorage.SIDED.registerForBlocks(AbstractOpenableStorageBlockEntity::getItemStorage, blocks);
+        // noinspection UnstableApiUsage,deprecation
+        ItemStorage.SIDED.registerForBlocks(Main::getChestItemAccess, blocks);
         if (PlatformUtils.getInstance().isClient()) {
-            BaseMain.Client.registerChestTextures(blocks);
-            BaseMain.Client.registerItemRenderers(items);
+            Main.Client.registerChestTextures(blocks);
+            Main.Client.registerItemRenderers(items);
         }
     }
 
-    private static void oldChestRegistration(OldChestBlock[] blocks, BlockItem[] items, BlockEntityType<OldChestBlockEntity> blockEntityType) {
+    @SuppressWarnings({"deprecation", "UnstableApiUsage"})
+    private static Storage<ItemVariant> getChestItemAccess(World world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction context) {
+        //noinspection unchecked,deprecation,UnstableApiUsage
+        return (Storage<ItemVariant>) AbstractOpenableStorageBlockEntity.getItemAccess(world, pos, state, blockEntity, context);
+    }
+
+    private static void oldChestRegistration(OldChestBlock[] blocks, BlockItem[] items, BlockEntityType<AbstractChestBlockEntity> blockEntityType) {
         for (OldChestBlock block : blocks) {
             Registry.register(Registry.BLOCK, block.getBlockId(), block);
         }
@@ -75,7 +89,8 @@ public final class BaseMain implements ModInitializer {
             Registry.register(Registry.ITEM, ((OldChestBlock) item.getBlock()).getBlockId(), item);
         }
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.OLD_CHEST_BLOCK_TYPE, blockEntityType);
-        ItemStorage.SIDED.registerForBlocks(AbstractOpenableStorageBlockEntity::getItemStorage, blocks);
+        //noinspection deprecation,UnstableApiUsage
+        ItemStorage.SIDED.registerForBlocks(Main::getChestItemAccess, blocks);
     }
 
     private static void barrelRegistration(BarrelBlock[] blocks, BlockItem[] items, BlockEntityType<BarrelBlockEntity> blockEntityType) {
@@ -90,7 +105,8 @@ public final class BaseMain implements ModInitializer {
             Registry.register(Registry.ITEM, ((BarrelBlock) item.getBlock()).getBlockId(), item);
         }
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.BARREL_BLOCK_TYPE, blockEntityType);
-        ItemStorage.SIDED.registerForBlocks(AbstractOpenableStorageBlockEntity::getItemStorage, blocks);
+        //noinspection deprecation,UnstableApiUsage
+        ItemStorage.SIDED.registerForBlocks(Main::getChestItemAccess, blocks);
     }
 
     private static class Client {

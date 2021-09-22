@@ -10,6 +10,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
+import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,24 +55,26 @@ public final class FabricChestProperties {
         }
     };
 
-    public static final Property<AbstractOpenableStorageBlockEntity, Optional<Storage<ItemVariant>>> INVENTORY_GETTER = new Property<>() {
+    public static final Property<AbstractOpenableStorageBlockEntity, Object> INVENTORY_GETTER = new Property<>() {
         @Override
-        public Optional<Storage<ItemVariant>> get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
-            return Optional.of(new CombinedStorage<>(List.of(AbstractOpenableStorageBlockEntity.createGenericItemStorage(first),
-                    AbstractOpenableStorageBlockEntity.createGenericItemStorage(second))));
+        public Object get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
+            //noinspection unchecked,deprecation,UnstableApiUsage
+            return new CombinedStorage<>(List.of((Storage<ItemVariant>) PlatformUtils.getInstance().createGenericItemAccess(first),
+                    (Storage<ItemVariant>) PlatformUtils.getInstance().createGenericItemAccess(second)));
         }
 
         @Override
-        public Optional<Storage<ItemVariant>> get(AbstractOpenableStorageBlockEntity single) {
-            return Optional.of(AbstractOpenableStorageBlockEntity.createGenericItemStorage(single));
+        public Object get(AbstractOpenableStorageBlockEntity single) {
+            return PlatformUtils.getInstance().createGenericItemAccess(single);
         }
     };
 
 
-    public static Optional<Storage<ItemVariant>> createItemStorage(World level, BlockState state, BlockPos pos) {
+    public static Object createItemStorage(World world, BlockState state, BlockPos pos) {
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
-            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, level, pos, true).get(FabricChestProperties.INVENTORY_GETTER);
+            //noinspection unchecked
+            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, world, pos, true).get(FabricChestProperties.INVENTORY_GETTER);
         }
-        return Optional.empty();
+        return null;
     }
 }

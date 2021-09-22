@@ -1,7 +1,5 @@
 package ninjaphenix.expandedstorage.block.misc;
 
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.entity.BlockEntityType;
@@ -12,18 +10,14 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.block.ChestBlock;
-import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
-import ninjaphenix.expandedstorage.internal_api.block.misc.FabricChestProperties;
-import org.jetbrains.annotations.Nullable;
 
-public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
+public final class ChestBlockEntity extends AbstractChestBlockEntity {
     private final ChestLidAnimator lidController;
 
-    public ChestBlockEntity(BlockEntityType<ChestBlockEntity> blockEntityType, BlockPos pos, BlockState state) {
+    public ChestBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state) {
         super(blockEntityType, pos, state, ((ChestBlock) state.getBlock()).getBlockId());
         lidController = new ChestLidAnimator();
     }
@@ -77,10 +71,5 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity {
     // Client only
     public float getLidOpenness(float f) {
         return lidController.getProgress(f);
-    }
-
-    @Override
-    protected Storage<ItemVariant> createItemStorage(World world, BlockState state, BlockPos pos, @Nullable Direction side) {
-        return FabricChestProperties.createItemStorage(world, state, pos).orElse(AbstractOpenableStorageBlockEntity.createGenericItemStorage(this));
     }
 }

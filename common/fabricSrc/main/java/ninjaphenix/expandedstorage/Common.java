@@ -37,7 +37,7 @@ import ninjaphenix.expandedstorage.block.ChestBlock;
 import ninjaphenix.expandedstorage.block.OldChestBlock;
 import ninjaphenix.expandedstorage.block.misc.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
-import ninjaphenix.expandedstorage.block.misc.OldChestBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
 import ninjaphenix.expandedstorage.internal_api.Utils;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractStorageBlock;
@@ -76,14 +76,14 @@ public final class Common {
     private static final Tier OBSIDIAN_TIER = new Tier(Utils.id("obsidian"), Common.OBSIDIAN_STACK_COUNT, Settings::requiresTool, UnaryOperator.identity());
     private static final Tier NETHERITE_TIER = new Tier(Utils.id("netherite"), Common.NETHERITE_STACK_COUNT, Settings::requiresTool, Item.Settings::fireproof);
     private static BlockEntityType<ChestBlockEntity> chestBlockEntityType;
-    private static BlockEntityType<OldChestBlockEntity> oldChestBlockEntityType;
+    private static BlockEntityType<AbstractChestBlockEntity> oldChestBlockEntityType;
     private static BlockEntityType<BarrelBlockEntity> barrelBlockEntityType;
 
     public static BlockEntityType<ChestBlockEntity> getChestBlockEntityType() {
         return chestBlockEntityType;
     }
 
-    public static BlockEntityType<OldChestBlockEntity> getOldChestBlockEntityType() {
+    public static BlockEntityType<AbstractChestBlockEntity> getOldChestBlockEntityType() {
         return oldChestBlockEntityType;
     }
 
@@ -162,14 +162,14 @@ public final class Common {
         BlockItem netheriteChestItem = Common.chestItem(Common.NETHERITE_TIER, netheriteChestBlock, blockItemMaker);
         BlockItem[] items = new BlockItem[]{woodChestItem, pumpkinChestItem, christmasChestItem, ironChestItem, goldChestItem, diamondChestItem, obsidianChestItem, netheriteChestItem};
         // Init and register block entity type
-        chestBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new ChestBlockEntity(getChestBlockEntityType(), pos, state), blocks).build(null);
+        chestBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new ChestBlockEntity(Common.getChestBlockEntityType(), pos, state), blocks).build(null);
         registrationConsumer.accept(blocks, items, chestBlockEntityType);
         // Register chest module icon & upgrade behaviours
         Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof ChestBlock || block instanceof net.minecraft.block.ChestBlock || woodenChestTag.contains(block);
         Common.defineBlockUpgradeBehaviour(isUpgradableChestBlock, Common::tryUpgradeBlockToChest);
     }
 
-    static void registerOldChestContent(RegistrationConsumer<OldChestBlock, BlockItem, OldChestBlockEntity> registrationConsumer) {
+    static void registerOldChestContent(RegistrationConsumer<OldChestBlock, BlockItem, AbstractChestBlockEntity> registrationConsumer) {
         // Init and register opening stats
         Identifier woodOpenStat = Common.registerStat(Utils.id("open_old_wood_chest"));
         Identifier ironOpenStat = Common.registerStat(Utils.id("open_old_iron_chest"));
@@ -201,7 +201,7 @@ public final class Common {
         BlockItem netheriteChestItem = Common.oldChestItem(Common.NETHERITE_TIER, netheriteChestBlock);
         BlockItem[] items = new BlockItem[]{woodChestItem, ironChestItem, goldChestItem, diamondChestItem, obsidianChestItem, netheriteChestItem};
         // Init block entity type
-        oldChestBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new OldChestBlockEntity(getOldChestBlockEntityType(), pos, state), blocks).build(null);
+        oldChestBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new AbstractChestBlockEntity(Common.getOldChestBlockEntityType(), pos, state, ((AbstractStorageBlock) state.getBlock()).getBlockId()), blocks).build(null);
         registrationConsumer.accept(blocks, items, oldChestBlockEntityType);
         // Register chest module icon & upgrade behaviours
         Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof OldChestBlock;
@@ -236,7 +236,7 @@ public final class Common {
         BlockItem netheriteBarrelItem = Common.barrelItem(Common.NETHERITE_TIER, netheriteBarrelBlock);
         BlockItem[] items = new BlockItem[]{ironBarrelItem, goldBarrelItem, diamondBarrelItem, obsidianBarrelItem, netheriteBarrelItem};
         // Init block entity type
-        barrelBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new BarrelBlockEntity(getBarrelBlockEntityType(), pos, state), blocks).build(null);
+        barrelBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new BarrelBlockEntity(Common.getBarrelBlockEntityType(), pos, state), blocks).build(null);
         registration.accept(blocks, items, barrelBlockEntityType);
         // Register chest module icon & upgrade behaviours
         Predicate<Block> isUpgradableBarrelBlock = (block) -> block instanceof BarrelBlock || block instanceof net.minecraft.block.BarrelBlock || woodenBarrelTag.contains(block);
@@ -436,6 +436,7 @@ public final class Common {
     }
 
     static void registerBaseContent(Consumer<Pair<Identifier, Item>[]> itemRegistration) {
+        //noinspection unchecked
         Pair<Identifier, Item>[] items = new Pair[16];
         items[0] = new Pair<>(Utils.id("chest_mutator"), new StorageMutator(new Item.Settings().maxCount(1).group(Common.GROUP)));
         Common.defineTierUpgradePath(items, Utils.WOOD_TIER, Common.IRON_TIER, Common.GOLD_TIER, Common.DIAMOND_TIER, Common.OBSIDIAN_TIER, Common.NETHERITE_TIER);

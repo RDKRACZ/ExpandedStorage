@@ -1,9 +1,6 @@
 package ninjaphenix.expandedstorage.internal_api.block.misc;
 
 import com.google.common.base.Suppliers;
-import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
-import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
-import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -25,6 +22,7 @@ import net.minecraft.world.World;
 import ninjaphenix.container_library.api.OpenableBlockEntity;
 import ninjaphenix.container_library.api.inventory.AbstractHandler;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractOpenableStorageBlock;
+import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +37,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     protected Text defaultTitle;
     private int slots;
     private DefaultedList<ItemStack> items;
-    private Supplier<Storage<ItemVariant>> itemStorage;
+    protected Supplier<Object> itemAccess;
     private final Supplier<SidedInventory> inventory = Suppliers.memoize(() -> new SidedInventory() {
         private final int[] availableSlots = AbstractOpenableStorageBlockEntity.createAvailableSlots(this.size());
 
@@ -166,20 +164,20 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         this.initialise(blockId);
     }
 
-    public static Storage<ItemVariant> createGenericItemStorage(AbstractOpenableStorageBlockEntity entity) {
-        return InventoryStorage.of(entity.getInventory(), null);
-    }
-
-    public static Storage<ItemVariant> getItemStorage(World world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction direction) {
+    public static Object getItemAccess(World world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction direction) {
         if (blockEntity != null) {
             AbstractOpenableStorageBlockEntity entity = (AbstractOpenableStorageBlockEntity) blockEntity;
-            if (entity.itemStorage == null) {
-                entity.itemStorage = Suppliers.memoize(() -> entity.createItemStorage(world, state, pos, direction));
+            if (entity.itemAccess == null) {
+                entity.itemAccess = Suppliers.memoize(() -> entity.createItemAccess(world, state, pos, direction));
             }
-            return entity.itemStorage.get();
+            return entity.itemAccess.get();
         }
         return null;
 
+    }
+
+    protected Object createItemAccess(World world, BlockState state, BlockPos pos, @Nullable Direction side) {
+        return PlatformUtils.getInstance().createGenericItemAccess(this);
     }
 
     private void playerStartUsing(PlayerEntity player) {
@@ -212,17 +210,6 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
     public final void recountObservers() {
         observerCounter.updateViewerCount(this.getWorld(), this.getPos(), this.getCachedState());
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public void setCachedState(BlockState state) {
-        super.setCachedState(state);
-        this.itemStorage = null;
-    }
-
-    protected Storage<ItemVariant> createItemStorage(World world, BlockState state, BlockPos pos, @Nullable Direction side) {
-        return AbstractOpenableStorageBlockEntity.createGenericItemStorage(this);
     }
 
     private void initialise(Identifier blockId) {

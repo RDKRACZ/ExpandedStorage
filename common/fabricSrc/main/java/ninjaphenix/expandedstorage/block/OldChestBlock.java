@@ -6,17 +6,17 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import ninjaphenix.expandedstorage.Common;
-import ninjaphenix.expandedstorage.block.misc.OldChestBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
 
-public final class OldChestBlock extends AbstractChestBlock<OldChestBlockEntity> {
+public final class OldChestBlock extends AbstractChestBlock<AbstractChestBlockEntity> {
     public OldChestBlock(Settings properties, Identifier blockId, Identifier blockTier,
                          Identifier openingStat, int slots) {
         super(properties, blockId, blockTier, openingStat, slots);
     }
 
     @Override
-    protected BlockEntityType<OldChestBlockEntity> getBlockEntityType() {
+    protected BlockEntityType<AbstractChestBlockEntity> getBlockEntityType() {
         return Common.getOldChestBlockEntityType();
     }
 
@@ -27,6 +27,6 @@ public final class OldChestBlock extends AbstractChestBlock<OldChestBlockEntity>
 
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new OldChestBlockEntity(Common.getOldChestBlockEntityType(), pos, state);
+        return new AbstractChestBlockEntity(Common.getOldChestBlockEntityType(), pos, state, this.getBlockId());
     }
 }

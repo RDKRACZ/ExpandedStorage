@@ -15,7 +15,9 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import ninjaphenix.expandedstorage.block.BarrelBlock;
@@ -44,9 +46,9 @@ public final class BaseMain implements ModInitializer {
          */
     }
 
-    private static void baseRegistration(Common.ItemRegistryEntry[] items) {
-        for (Common.ItemRegistryEntry item : items) {
-            Registry.register(Registry.ITEM, item.id(), item.object());
+    private static void baseRegistration(Pair<Identifier, Item>[] items) {
+        for (Pair<Identifier, Item> item : items) {
+            Registry.register(Registry.ITEM, item.getLeft(), item.getRight());
         }
     }
 

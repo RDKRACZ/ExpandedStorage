@@ -1,6 +1,5 @@
 package ninjaphenix.expandedstorage;
 
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -28,6 +27,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -134,7 +134,7 @@ public final class Common {
         // Init block properties
         Settings woodSettings = Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
         Settings pumpkinSettings = Settings.of(Material.GOURD, MapColor.ORANGE).strength(1).sounds(BlockSoundGroup.WOOD);
-        // todo: use mapColorProvider
+        // todo: use mapColorProvider, would require mixins...
         Settings christmasSettings = Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
         Settings ironSettings = Settings.of(Material.METAL, MapColor.IRON_GRAY).strength(5, 6).sounds(BlockSoundGroup.METAL);
         Settings goldSettings = Settings.of(Material.METAL, MapColor.GOLD).strength(3, 6).sounds(BlockSoundGroup.METAL);
@@ -435,14 +435,9 @@ public final class Common {
         }
     }
 
-    // todo: change for a pair class or make non-record
-    record ItemRegistryEntry(Identifier id, Item object) {
-
-    }
-
-    static void registerBaseContent(Consumer<ItemRegistryEntry[]> itemRegistration) {
-        ItemRegistryEntry[] items = new ItemRegistryEntry[16];
-        items[0] = new ItemRegistryEntry(Utils.id("chest_mutator"), new StorageMutator(new Item.Settings().maxCount(1).group(Common.GROUP)));
+    static void registerBaseContent(Consumer<Pair<Identifier, Item>[]> itemRegistration) {
+        Pair<Identifier, Item>[] items = new Pair[16];
+        items[0] = new Pair<>(Utils.id("chest_mutator"), new StorageMutator(new Item.Settings().maxCount(1).group(Common.GROUP)));
         Common.defineTierUpgradePath(items, Utils.WOOD_TIER, Common.IRON_TIER, Common.GOLD_TIER, Common.DIAMOND_TIER, Common.OBSIDIAN_TIER, Common.NETHERITE_TIER);
         itemRegistration.accept(items);
     }
@@ -453,7 +448,7 @@ public final class Common {
         return rv;
     }
 
-    private static void defineTierUpgradePath(ItemRegistryEntry[] items, Tier... tiers) {
+    private static void defineTierUpgradePath(Pair<Identifier, Item>[] items, Tier... tiers) {
         int numTiers = tiers.length;
         int index = 1;
         for (int fromIndex = 0; fromIndex < numTiers - 1; fromIndex++) {
@@ -465,7 +460,7 @@ public final class Common {
                                                    .andThen(toTier.getItemSettings())
                                                    .apply(new Item.Settings().group(Common.GROUP).maxCount(16));
                 Item kit = new StorageConversionKit(properties, fromTier.getId(), toTier.getId());
-                items[index++] = new ItemRegistryEntry(itemId, kit);
+                items[index++] = new Pair<>(itemId, kit);
             }
         }
     }

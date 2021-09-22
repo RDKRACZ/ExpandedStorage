@@ -211,6 +211,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     @Override
     public OpenableBlockEntity getOpenableBlockEntity(World world, BlockState state, BlockPos pos) {
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
+            //noinspection unchecked
             return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, world, pos, false).get(new Property<>() {
                 @Override
                 public OpenableBlockEntity get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
@@ -230,6 +231,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     @Override
     public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
+            //noinspection unchecked
             return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, world, pos, false).get(new Property<>() {
                 @Override
                 public SidedInventory get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {

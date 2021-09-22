@@ -151,6 +151,7 @@ public final class Common {
         ChestBlock obsidianChestBlock = Common.chestBlock(Utils.id("obsidian_chest"), obsidianOpenStat, Common.OBSIDIAN_TIER, obsidianSettings);
         ChestBlock netheriteChestBlock = Common.chestBlock(Utils.id("netherite_chest"), netheriteOpenStat, Common.NETHERITE_TIER, netheriteSettings);
         ChestBlock[] blocks = new ChestBlock[]{woodChestBlock, pumpkinChestBlock, christmasChestBlock, ironChestBlock, goldChestBlock, diamondChestBlock, obsidianChestBlock, netheriteChestBlock};
+        Common.registerChestTextures(blocks);
         // Init and register items
         BlockItem woodChestItem = Common.chestItem(Utils.WOOD_TIER, woodChestBlock, blockItemMaker);
         BlockItem pumpkinChestItem = Common.chestItem(Utils.WOOD_TIER, pumpkinChestBlock, blockItemMaker);

@@ -35,7 +35,7 @@ public final class StorageConversionKit extends Item {
     public ActionResult useOnBlock(ItemUsageContext context) {
         World world = context.getWorld();
         PlayerEntity player = context.getPlayer();
-        if(player != null) {
+        if (player != null) {
             player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
             if (player.isSneaking()) {
                 Block block = world.getBlockState(context.getBlockPos()).getBlock();

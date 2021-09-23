@@ -46,7 +46,9 @@ dependencies {
 
     modImplementation(libs.fabric.loader)
     modApi(libs.fabric.api)
-    modImplementation(libs.containerLibrary.fabric)
+    modImplementation(libs.containerLibrary.fabric) {
+        isTransitive = false
+    }
 
     // For chest module
     modCompileOnly(libs.statement, excludeFabric)

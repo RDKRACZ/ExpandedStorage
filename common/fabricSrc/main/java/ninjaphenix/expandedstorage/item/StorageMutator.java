@@ -47,9 +47,6 @@ import static net.minecraft.util.BlockRotation.CLOCKWISE_180;
 import static net.minecraft.util.BlockRotation.CLOCKWISE_90;
 
 public class StorageMutator extends Item {
-    // Item Cooldown
-    private static final int QUARTER_SECOND = 5;
-
     public StorageMutator(Item.Settings properties) {
         super(properties);
     }
@@ -94,13 +91,13 @@ public class StorageMutator extends Item {
                             world.setBlockState(otherPos, otherState.rotate(CLOCKWISE_180).with(CHEST_TYPE, otherState.get(CHEST_TYPE).getOpposite()));
                         }
                         //noinspection ConstantConditions
-                        player.getItemCooldownManager().set(this, StorageMutator.QUARTER_SECOND);
+                        player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                         return ActionResult.SUCCESS;
                     }
                 }
                 world.setBlockState(pos, state.rotate(CLOCKWISE_90));
                 //noinspection ConstantConditions
-                player.getItemCooldownManager().set(this, StorageMutator.QUARTER_SECOND);
+                player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                 return ActionResult.SUCCESS;
             }
         }
@@ -128,7 +125,7 @@ public class StorageMutator extends Item {
                             }
                         }
                         //noinspection ConstantConditions
-                        player.getItemCooldownManager().set(this, StorageMutator.QUARTER_SECOND);
+                        player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                         return ActionResult.SUCCESS;
                     }
                 } else {
@@ -138,7 +135,7 @@ public class StorageMutator extends Item {
                         player.sendMessage(new TranslatableText("tooltip.expandedstorage.storage_mutator.merge_start"), true);
                     }
                     //noinspection ConstantConditions
-                    player.getItemCooldownManager().set(this, StorageMutator.QUARTER_SECOND);
+                    player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                     return ActionResult.SUCCESS;
                 }
             } else if (mode == MutationMode.SPLIT) {
@@ -160,7 +157,7 @@ public class StorageMutator extends Item {
                     world.setBlockState(pos, state.with(FACING, Direction.byId(direction.getId() + 1)));
                 }
                 //noinspection ConstantConditions
-                player.getItemCooldownManager().set(this, StorageMutator.QUARTER_SECOND);
+                player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                 return ActionResult.SUCCESS;
             }
         }
@@ -223,7 +220,7 @@ public class StorageMutator extends Item {
                             }
                         }
                         //noinspection ConstantConditions
-                        player.getItemCooldownManager().set(this, StorageMutator.QUARTER_SECOND);
+                        player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                         return ActionResult.SUCCESS;
                     }
                 } else {
@@ -233,7 +230,7 @@ public class StorageMutator extends Item {
                         player.sendMessage(new TranslatableText("tooltip.expandedstorage.storage_mutator.merge_start"), true);
                     }
                     //noinspection ConstantConditions
-                    player.getItemCooldownManager().set(this, StorageMutator.QUARTER_SECOND);
+                    player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                     return ActionResult.SUCCESS;
                 }
             }
@@ -246,7 +243,7 @@ public class StorageMutator extends Item {
                     world.setBlockState(otherPos, otherState.with(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE));
                 }
                 //noinspection ConstantConditions
-                player.getItemCooldownManager().set(this, StorageMutator.QUARTER_SECOND);
+                player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                 return ActionResult.SUCCESS;
             }
         } else if (mode == MutationMode.ROTATE) {
@@ -256,7 +253,7 @@ public class StorageMutator extends Item {
                     world.setBlockState(pos, state.with(FACING, Direction.byId(direction.getId() + 1)));
                 }
                 //noinspection ConstantConditions
-                player.getItemCooldownManager().set(this, StorageMutator.QUARTER_SECOND);
+                player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                 return ActionResult.SUCCESS;
             } else if (state.contains(HORIZONTAL_FACING)) {
                 if (block instanceof AbstractChestBlock) {
@@ -277,7 +274,7 @@ public class StorageMutator extends Item {
                         }
                     }
                     //noinspection ConstantConditions
-                    player.getItemCooldownManager().set(this, StorageMutator.QUARTER_SECOND);
+                    player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                     return ActionResult.SUCCESS;
                 }
             }
@@ -289,7 +286,7 @@ public class StorageMutator extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         TypedActionResult<ItemStack> result = this.useModifierInAir(world, player, hand);
         if (result.getResult() == ActionResult.SUCCESS) {
-            player.getItemCooldownManager().set(this, StorageMutator.QUARTER_SECOND);
+            player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
         }
         return result;
     }

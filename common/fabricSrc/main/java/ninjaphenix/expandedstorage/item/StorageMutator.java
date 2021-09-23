@@ -16,6 +16,7 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -39,9 +40,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static net.minecraft.state.property.Properties.CHEST_TYPE;
 import static net.minecraft.state.property.Properties.FACING;
-import static net.minecraft.state.property.Properties.HORIZONTAL_FACING;
 import static net.minecraft.state.property.Properties.WATERLOGGED;
 import static net.minecraft.util.BlockRotation.CLOCKWISE_180;
 import static net.minecraft.util.BlockRotation.CLOCKWISE_90;
@@ -81,14 +80,14 @@ public class StorageMutator extends Item {
         Block block = state.getBlock();
         if (block instanceof net.minecraft.block.AbstractChestBlock) {
             if (StorageMutator.getMode(stack) == MutationMode.ROTATE) {
-                if (state.contains(CHEST_TYPE)) {
-                    ChestType chestType = state.get(CHEST_TYPE);
+                if (state.contains(Properties.CHEST_TYPE)) {
+                    ChestType chestType = state.get(Properties.CHEST_TYPE);
                     if (chestType != ChestType.SINGLE) {
                         if (!world.isClient()) {
                             BlockPos otherPos = pos.offset(net.minecraft.block.ChestBlock.getFacing(state));
                             BlockState otherState = world.getBlockState(otherPos);
-                            world.setBlockState(pos, state.rotate(CLOCKWISE_180).with(CHEST_TYPE, state.get(CHEST_TYPE).getOpposite()));
-                            world.setBlockState(otherPos, otherState.rotate(CLOCKWISE_180).with(CHEST_TYPE, otherState.get(CHEST_TYPE).getOpposite()));
+                            world.setBlockState(pos, state.rotate(CLOCKWISE_180).with(Properties.CHEST_TYPE, state.get(Properties.CHEST_TYPE).getOpposite()));
+                            world.setBlockState(otherPos, otherState.rotate(CLOCKWISE_180).with(Properties.CHEST_TYPE, otherState.get(Properties.CHEST_TYPE).getOpposite()));
                         }
                         //noinspection ConstantConditions
                         player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
@@ -109,13 +108,13 @@ public class StorageMutator extends Item {
                     BlockPos otherPos = NbtHelper.toBlockPos(tag.getCompound("pos"));
                     BlockState otherState = world.getBlockState(otherPos);
                     if (otherState.getBlock() == state.getBlock() &&
-                            otherState.get(HORIZONTAL_FACING) == state.get(HORIZONTAL_FACING) &&
-                            otherState.get(CHEST_TYPE) == ChestType.SINGLE) {
+                            otherState.get(Properties.HORIZONTAL_FACING) == state.get(Properties.HORIZONTAL_FACING) &&
+                            otherState.get(Properties.CHEST_TYPE) == ChestType.SINGLE) {
                         if (!world.isClient()) {
                             BlockPos offset = otherPos.subtract(pos);
                             Direction direction = Direction.fromVector(offset.getX(), offset.getY(), offset.getZ());
                             if (direction != null) {
-                                CursedChestType type = ChestBlock.getChestType(state.get(AbstractChestBlock.Y_ROTATION), state.get(AbstractChestBlock.FACE_ROTATION), state.get(AbstractChestBlock.PERP_ROTATION), direction);
+                                CursedChestType type = ChestBlock.getChestType(state.get(Properties.HORIZONTAL_FACING), direction);
                                 Predicate<BlockEntity> isRandomizable = b -> b instanceof LootableContainerBlockEntity;
                                 this.convertBlock(world, state, pos, Common.getTieredBlock(Common.CHEST_BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type, isRandomizable);
                                 this.convertBlock(world, otherState, otherPos, Common.getTieredBlock(Common.CHEST_BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type.getOpposite(), isRandomizable);
@@ -139,13 +138,13 @@ public class StorageMutator extends Item {
                     return ActionResult.SUCCESS;
                 }
             } else if (mode == MutationMode.SPLIT) {
-                ChestType chestType = state.get(CHEST_TYPE);
+                ChestType chestType = state.get(Properties.CHEST_TYPE);
                 if (chestType != ChestType.SINGLE) {
                     if (!world.isClient()) {
                         BlockPos otherPos = pos.offset(net.minecraft.block.ChestBlock.getFacing(state));
                         BlockState otherState = world.getBlockState(otherPos);
-                        world.setBlockState(pos, state.with(CHEST_TYPE, ChestType.SINGLE));
-                        world.setBlockState(otherPos, otherState.with(CHEST_TYPE, ChestType.SINGLE));
+                        world.setBlockState(pos, state.with(Properties.CHEST_TYPE, ChestType.SINGLE));
+                        world.setBlockState(otherPos, otherState.with(Properties.CHEST_TYPE, ChestType.SINGLE));
                     }
                     return ActionResult.SUCCESS;
                 }
@@ -177,8 +176,8 @@ public class StorageMutator extends Item {
             }
             if (state.contains(FACING)) {
                 newState = newState.with(FACING, state.get(FACING));
-            } else if (state.contains(HORIZONTAL_FACING)) {
-                newState = newState.with(HORIZONTAL_FACING, state.get(HORIZONTAL_FACING));
+            } else if (state.contains(Properties.HORIZONTAL_FACING)) {
+                newState = newState.with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING));
             }
             if (type != null) {
                 newState = newState.with(ChestBlock.CURSED_CHEST_TYPE, type);
@@ -202,15 +201,15 @@ public class StorageMutator extends Item {
                 if (tag.contains("pos")) {
                     BlockPos otherPos = NbtHelper.toBlockPos(tag.getCompound("pos"));
                     BlockState otherState = world.getBlockState(otherPos);
-                    Direction facing = state.get(HORIZONTAL_FACING);
+                    Direction facing = state.get(Properties.HORIZONTAL_FACING);
                     if (block == otherState.getBlock()
-                            && facing == otherState.get(HORIZONTAL_FACING)
+                            && facing == otherState.get(Properties.HORIZONTAL_FACING)
                             && otherState.get(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
                         if (!world.isClient()) {
                             BlockPos offset = otherPos.subtract(pos);
                             Direction direction = Direction.fromVector(offset.getX(), offset.getY(), offset.getZ());
                             if (direction != null) {
-                                CursedChestType chestType = AbstractChestBlock.getChestType(state.get(AbstractChestBlock.Y_ROTATION), state.get(AbstractChestBlock.FACE_ROTATION), state.get(AbstractChestBlock.PERP_ROTATION), direction);
+                                CursedChestType chestType = AbstractChestBlock.getChestType(state.get(Properties.HORIZONTAL_FACING), direction);
                                 Predicate<BlockEntity> isStorage = b -> b instanceof AbstractOpenableStorageBlockEntity;
                                 this.convertBlock(world, state, pos, block, chestBlock.getSlotCount(), chestType, isStorage);
                                 this.convertBlock(world, otherState, otherPos, block, chestBlock.getSlotCount(), chestType.getOpposite(), isStorage);
@@ -255,7 +254,7 @@ public class StorageMutator extends Item {
                 //noinspection ConstantConditions
                 player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                 return ActionResult.SUCCESS;
-            } else if (state.contains(HORIZONTAL_FACING)) {
+            } else if (state.contains(Properties.HORIZONTAL_FACING)) {
                 if (block instanceof AbstractChestBlock) {
                     if (!world.isClient()) {
                         CursedChestType value = state.get(AbstractChestBlock.CURSED_CHEST_TYPE);

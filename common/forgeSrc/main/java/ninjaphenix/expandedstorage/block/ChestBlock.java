@@ -3,17 +3,14 @@ package ninjaphenix.expandedstorage.block;
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
-import ninjaphenix.expandedstorage.block.misc.FaceRotation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Random;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -29,7 +26,6 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -109,7 +105,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
         } else if (type == CursedChestType.SINGLE) {
             return ChestBlock.SHAPES[6];
         } else {
-            int index = (state.getValue(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y).get2DDataValue() + type.getOffset()) % 4;
+            int index = (state.getValue(BlockStateProperties.HORIZONTAL_FACING).get2DDataValue() + type.getOffset()) % 4;
             return ChestBlock.SHAPES[index];
         }
     }
@@ -140,22 +136,6 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
 
     @Override
     protected boolean isAccessBlocked(LevelAccessor world, BlockPos pos) {
-        BlockState state = world.getBlockState(pos);
-        BlockPos abovePos = pos.relative(FaceRotation.getRelativeDirection(Direction.UP, state.getValue(FACE_ROTATION), state.getValue(Y_ROTATION), state.getValue(PERP_ROTATION)));
-        return ChestBlock.isSolidBlockAt(world, abovePos) || ChestBlock.isCatSittingAt(world, pos, abovePos);
-    }
-
-    private static boolean isCatSittingAt(LevelAccessor world, BlockPos chestPos, BlockPos abovePos) {
-        List<Cat> cats = world.getEntitiesOfClass(Cat.class, new AABB(chestPos, abovePos));
-        for (Cat cat : cats) {
-            if (cat.isInSittingPose()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean isSolidBlockAt(LevelAccessor world, BlockPos abovePos) {
-        return world.getBlockState(abovePos).isRedstoneConductor(world, abovePos);
+        return net.minecraft.world.level.block.ChestBlock.isChestBlockedAt(world, pos);
     }
 }

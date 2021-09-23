@@ -9,8 +9,7 @@ import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
 
 public final class OldChestBlock extends AbstractChestBlock<AbstractChestBlockEntity> {
-    public OldChestBlock(Settings properties, Identifier blockId, Identifier blockTier,
-                         Identifier openingStat, int slots) {
+    public OldChestBlock(Settings properties, Identifier blockId, Identifier blockTier, Identifier openingStat, int slots) {
         super(properties, blockId, blockTier, openingStat, slots);
     }
 

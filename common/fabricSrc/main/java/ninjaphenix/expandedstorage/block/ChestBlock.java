@@ -8,7 +8,6 @@ import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -17,7 +16,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -26,11 +24,9 @@ import net.minecraft.world.WorldAccess;
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
-import ninjaphenix.expandedstorage.block.misc.FaceRotation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Random;
 
 public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements Waterloggable {
@@ -109,7 +105,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
         } else if (type == CursedChestType.SINGLE) {
             return ChestBlock.SHAPES[6];
         } else {
-            int index = (state.get(AbstractChestBlock.Y_ROTATION).asDirection(Direction.Axis.Y).getHorizontal() + type.getOffset()) % 4;
+            int index = (state.get(Properties.HORIZONTAL_FACING).getHorizontal() + type.getOffset()) % 4;
             return ChestBlock.SHAPES[index];
         }
     }
@@ -140,22 +136,6 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
 
     @Override
     protected boolean isAccessBlocked(WorldAccess world, BlockPos pos) {
-        BlockState state = world.getBlockState(pos);
-        BlockPos abovePos = pos.offset(FaceRotation.getRelativeDirection(Direction.UP, state.get(FACE_ROTATION), state.get(Y_ROTATION), state.get(PERP_ROTATION)));
-        return ChestBlock.isSolidBlockAt(world, abovePos) || ChestBlock.isCatSittingAt(world, pos, abovePos);
-    }
-
-    private static boolean isCatSittingAt(WorldAccess world, BlockPos chestPos, BlockPos abovePos) {
-        List<CatEntity> cats = world.getNonSpectatingEntities(CatEntity.class, new Box(chestPos, abovePos));
-        for (CatEntity cat : cats) {
-            if (cat.isInSittingPose()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean isSolidBlockAt(WorldAccess world, BlockPos abovePos) {
-        return world.getBlockState(abovePos).isSolidBlock(world, abovePos);
+        return net.minecraft.block.ChestBlock.isChestBlocked(world, pos);
     }
 }

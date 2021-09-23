@@ -35,14 +35,17 @@ public final class StorageConversionKit extends Item {
     public InteractionResult useOn(UseOnContext context) {
         Level world = context.getLevel();
         Player player = context.getPlayer();
-        if (player != null && player.isShiftKeyDown()) {
-            Block block = world.getBlockState(context.getClickedPos()).getBlock();
-            BlockUpgradeBehaviour behaviour = Common.getBlockUpgradeBehaviour(block);
-            if (behaviour != null) {
-                if (world.isClientSide()) {
-                    return InteractionResult.CONSUME;
-                } else if (behaviour.tryUpgradeBlock(context, from, to)) {
-                    return InteractionResult.SUCCESS;
+        if (player != null) {
+            player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
+            if (player.isShiftKeyDown()) {
+                Block block = world.getBlockState(context.getClickedPos()).getBlock();
+                BlockUpgradeBehaviour behaviour = Common.getBlockUpgradeBehaviour(block);
+                if (behaviour != null) {
+                    if (world.isClientSide()) {
+                        return InteractionResult.CONSUME;
+                    } else if (behaviour.tryUpgradeBlock(context, from, to)) {
+                        return InteractionResult.SUCCESS;
+                    }
                 }
             }
         }

@@ -1,8 +1,6 @@
 package ninjaphenix.expandedstorage;
 
 import ninjaphenix.expandedstorage.tier.Tier;
-import org.jetbrains.annotations.ApiStatus.Experimental;
-import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.util.function.UnaryOperator;
 import net.minecraft.ChatFormatting;
@@ -12,12 +10,8 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
-@Internal
-@Experimental
 public final class Utils {
-    @Internal
     public static final String MOD_ID = "expandedstorage";
-    @Internal
     public static final Component ALT_USE = new TranslatableComponent("tooltip.expandedstorage.alt_use",
             new KeybindComponent("key.sneak").withStyle(ChatFormatting.GOLD),
             new KeybindComponent("key.use").withStyle(ChatFormatting.GOLD));
@@ -26,16 +20,17 @@ public final class Utils {
 
     public static final Tier WOOD_TIER = new Tier(Utils.id("wood"), WOOD_STACK_COUNT, UnaryOperator.identity(), UnaryOperator.identity());
 
+    // Item Cooldown
+    public static final int QUARTER_SECOND = 5;
+
     private Utils() {
 
     }
 
-    @Internal
     public static ResourceLocation id(String path) {
         return new ResourceLocation(Utils.MOD_ID, path);
     }
 
-    @Internal
     public static MutableComponent translation(String key, Object... params) {
         return new TranslatableComponent(key, params);
     }

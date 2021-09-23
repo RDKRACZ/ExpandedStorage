@@ -37,19 +37,15 @@ import net.minecraft.world.level.block.DoubleBlockCombiner.BlockType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.ChestType;
 
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.CHEST_TYPE;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED;
 import static net.minecraft.world.level.block.Rotation.CLOCKWISE_180;
 import static net.minecraft.world.level.block.Rotation.CLOCKWISE_90;
 
 public class StorageMutator extends Item {
-    // Item Cooldown
-    private static final int QUARTER_SECOND = 5;
-
     public StorageMutator(Item.Properties properties) {
         super(properties);
     }
@@ -84,23 +80,23 @@ public class StorageMutator extends Item {
         Block block = state.getBlock();
         if (block instanceof net.minecraft.world.level.block.AbstractChestBlock) {
             if (StorageMutator.getMode(stack) == MutationMode.ROTATE) {
-                if (state.hasProperty(CHEST_TYPE)) {
-                    ChestType chestType = state.getValue(CHEST_TYPE);
+                if (state.hasProperty(BlockStateProperties.CHEST_TYPE)) {
+                    ChestType chestType = state.getValue(BlockStateProperties.CHEST_TYPE);
                     if (chestType != ChestType.SINGLE) {
                         if (!world.isClientSide()) {
                             BlockPos otherPos = pos.relative(net.minecraft.world.level.block.ChestBlock.getConnectedDirection(state));
                             BlockState otherState = world.getBlockState(otherPos);
-                            world.setBlockAndUpdate(pos, state.rotate(CLOCKWISE_180).setValue(CHEST_TYPE, state.getValue(CHEST_TYPE).getOpposite()));
-                            world.setBlockAndUpdate(otherPos, otherState.rotate(CLOCKWISE_180).setValue(CHEST_TYPE, otherState.getValue(CHEST_TYPE).getOpposite()));
+                            world.setBlockAndUpdate(pos, state.rotate(CLOCKWISE_180).setValue(BlockStateProperties.CHEST_TYPE, state.getValue(BlockStateProperties.CHEST_TYPE).getOpposite()));
+                            world.setBlockAndUpdate(otherPos, otherState.rotate(CLOCKWISE_180).setValue(BlockStateProperties.CHEST_TYPE, otherState.getValue(BlockStateProperties.CHEST_TYPE).getOpposite()));
                         }
                         //noinspection ConstantConditions
-                        player.getCooldowns().addCooldown(this, StorageMutator.QUARTER_SECOND);
+                        player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
                         return InteractionResult.SUCCESS;
                     }
                 }
                 world.setBlockAndUpdate(pos, state.rotate(CLOCKWISE_90));
                 //noinspection ConstantConditions
-                player.getCooldowns().addCooldown(this, StorageMutator.QUARTER_SECOND);
+                player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
                 return InteractionResult.SUCCESS;
             }
         }
@@ -112,13 +108,13 @@ public class StorageMutator extends Item {
                     BlockPos otherPos = NbtUtils.readBlockPos(tag.getCompound("pos"));
                     BlockState otherState = world.getBlockState(otherPos);
                     if (otherState.getBlock() == state.getBlock() &&
-                            otherState.getValue(HORIZONTAL_FACING) == state.getValue(HORIZONTAL_FACING) &&
-                            otherState.getValue(CHEST_TYPE) == ChestType.SINGLE) {
+                            otherState.getValue(BlockStateProperties.HORIZONTAL_FACING) == state.getValue(BlockStateProperties.HORIZONTAL_FACING) &&
+                            otherState.getValue(BlockStateProperties.CHEST_TYPE) == ChestType.SINGLE) {
                         if (!world.isClientSide()) {
                             BlockPos offset = otherPos.subtract(pos);
                             Direction direction = Direction.fromNormal(offset.getX(), offset.getY(), offset.getZ());
                             if (direction != null) {
-                                CursedChestType type = ChestBlock.getChestType(state.getValue(AbstractChestBlock.Y_ROTATION), state.getValue(AbstractChestBlock.FACE_ROTATION), state.getValue(AbstractChestBlock.PERP_ROTATION), direction);
+                                CursedChestType type = ChestBlock.getChestType(state.getValue(BlockStateProperties.HORIZONTAL_FACING), direction);
                                 Predicate<BlockEntity> isRandomizable = b -> b instanceof RandomizableContainerBlockEntity;
                                 this.convertBlock(world, state, pos, Common.getTieredBlock(Common.CHEST_BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type, isRandomizable);
                                 this.convertBlock(world, otherState, otherPos, Common.getTieredBlock(Common.CHEST_BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type.getOpposite(), isRandomizable);
@@ -128,7 +124,7 @@ public class StorageMutator extends Item {
                             }
                         }
                         //noinspection ConstantConditions
-                        player.getCooldowns().addCooldown(this, StorageMutator.QUARTER_SECOND);
+                        player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
                         return InteractionResult.SUCCESS;
                     }
                 } else {
@@ -138,17 +134,17 @@ public class StorageMutator extends Item {
                         player.displayClientMessage(new TranslatableComponent("tooltip.expandedstorage.storage_mutator.merge_start"), true);
                     }
                     //noinspection ConstantConditions
-                    player.getCooldowns().addCooldown(this, StorageMutator.QUARTER_SECOND);
+                    player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
                     return InteractionResult.SUCCESS;
                 }
             } else if (mode == MutationMode.SPLIT) {
-                ChestType chestType = state.getValue(CHEST_TYPE);
+                ChestType chestType = state.getValue(BlockStateProperties.CHEST_TYPE);
                 if (chestType != ChestType.SINGLE) {
                     if (!world.isClientSide()) {
                         BlockPos otherPos = pos.relative(net.minecraft.world.level.block.ChestBlock.getConnectedDirection(state));
                         BlockState otherState = world.getBlockState(otherPos);
-                        world.setBlockAndUpdate(pos, state.setValue(CHEST_TYPE, ChestType.SINGLE));
-                        world.setBlockAndUpdate(otherPos, otherState.setValue(CHEST_TYPE, ChestType.SINGLE));
+                        world.setBlockAndUpdate(pos, state.setValue(BlockStateProperties.CHEST_TYPE, ChestType.SINGLE));
+                        world.setBlockAndUpdate(otherPos, otherState.setValue(BlockStateProperties.CHEST_TYPE, ChestType.SINGLE));
                     }
                     return InteractionResult.SUCCESS;
                 }
@@ -160,7 +156,7 @@ public class StorageMutator extends Item {
                     world.setBlockAndUpdate(pos, state.setValue(FACING, Direction.from3DDataValue(direction.get3DDataValue() + 1)));
                 }
                 //noinspection ConstantConditions
-                player.getCooldowns().addCooldown(this, StorageMutator.QUARTER_SECOND);
+                player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
                 return InteractionResult.SUCCESS;
             }
         }
@@ -180,8 +176,8 @@ public class StorageMutator extends Item {
             }
             if (state.hasProperty(FACING)) {
                 newState = newState.setValue(FACING, state.getValue(FACING));
-            } else if (state.hasProperty(HORIZONTAL_FACING)) {
-                newState = newState.setValue(HORIZONTAL_FACING, state.getValue(HORIZONTAL_FACING));
+            } else if (state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
+                newState = newState.setValue(BlockStateProperties.HORIZONTAL_FACING, state.getValue(BlockStateProperties.HORIZONTAL_FACING));
             }
             if (type != null) {
                 newState = newState.setValue(ChestBlock.CURSED_CHEST_TYPE, type);
@@ -205,15 +201,15 @@ public class StorageMutator extends Item {
                 if (tag.contains("pos")) {
                     BlockPos otherPos = NbtUtils.readBlockPos(tag.getCompound("pos"));
                     BlockState otherState = world.getBlockState(otherPos);
-                    Direction facing = state.getValue(HORIZONTAL_FACING);
+                    Direction facing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
                     if (block == otherState.getBlock()
-                            && facing == otherState.getValue(HORIZONTAL_FACING)
+                            && facing == otherState.getValue(BlockStateProperties.HORIZONTAL_FACING)
                             && otherState.getValue(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
                         if (!world.isClientSide()) {
                             BlockPos offset = otherPos.subtract(pos);
                             Direction direction = Direction.fromNormal(offset.getX(), offset.getY(), offset.getZ());
                             if (direction != null) {
-                                CursedChestType chestType = AbstractChestBlock.getChestType(state.getValue(AbstractChestBlock.Y_ROTATION), state.getValue(AbstractChestBlock.FACE_ROTATION), state.getValue(AbstractChestBlock.PERP_ROTATION), direction);
+                                CursedChestType chestType = AbstractChestBlock.getChestType(state.getValue(BlockStateProperties.HORIZONTAL_FACING), direction);
                                 Predicate<BlockEntity> isStorage = b -> b instanceof AbstractOpenableStorageBlockEntity;
                                 this.convertBlock(world, state, pos, block, chestBlock.getSlotCount(), chestType, isStorage);
                                 this.convertBlock(world, otherState, otherPos, block, chestBlock.getSlotCount(), chestType.getOpposite(), isStorage);
@@ -223,7 +219,7 @@ public class StorageMutator extends Item {
                             }
                         }
                         //noinspection ConstantConditions
-                        player.getCooldowns().addCooldown(this, StorageMutator.QUARTER_SECOND);
+                        player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
                         return InteractionResult.SUCCESS;
                     }
                 } else {
@@ -233,7 +229,7 @@ public class StorageMutator extends Item {
                         player.displayClientMessage(new TranslatableComponent("tooltip.expandedstorage.storage_mutator.merge_start"), true);
                     }
                     //noinspection ConstantConditions
-                    player.getCooldowns().addCooldown(this, StorageMutator.QUARTER_SECOND);
+                    player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
                     return InteractionResult.SUCCESS;
                 }
             }
@@ -246,7 +242,7 @@ public class StorageMutator extends Item {
                     world.setBlockAndUpdate(otherPos, otherState.setValue(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE));
                 }
                 //noinspection ConstantConditions
-                player.getCooldowns().addCooldown(this, StorageMutator.QUARTER_SECOND);
+                player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
                 return InteractionResult.SUCCESS;
             }
         } else if (mode == MutationMode.ROTATE) {
@@ -256,9 +252,9 @@ public class StorageMutator extends Item {
                     world.setBlockAndUpdate(pos, state.setValue(FACING, Direction.from3DDataValue(direction.get3DDataValue() + 1)));
                 }
                 //noinspection ConstantConditions
-                player.getCooldowns().addCooldown(this, StorageMutator.QUARTER_SECOND);
+                player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
                 return InteractionResult.SUCCESS;
-            } else if (state.hasProperty(HORIZONTAL_FACING)) {
+            } else if (state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
                 if (block instanceof AbstractChestBlock) {
                     if (!world.isClientSide()) {
                         CursedChestType value = state.getValue(AbstractChestBlock.CURSED_CHEST_TYPE);
@@ -277,7 +273,7 @@ public class StorageMutator extends Item {
                         }
                     }
                     //noinspection ConstantConditions
-                    player.getCooldowns().addCooldown(this, StorageMutator.QUARTER_SECOND);
+                    player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
                     return InteractionResult.SUCCESS;
                 }
             }
@@ -289,7 +285,7 @@ public class StorageMutator extends Item {
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         InteractionResultHolder<ItemStack> result = this.useModifierInAir(world, player, hand);
         if (result.getResult() == InteractionResult.SUCCESS) {
-            player.getCooldowns().addCooldown(this, StorageMutator.QUARTER_SECOND);
+            player.getCooldowns().addCooldown(this, Utils.QUARTER_SECOND);
         }
         return result;
     }

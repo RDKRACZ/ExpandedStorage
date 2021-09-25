@@ -1,8 +1,8 @@
 package ninjaphenix.expandedstorage.block.misc;
 
 import com.google.common.base.Suppliers;
-import ninjaphenix.container_library.api.OpenableBlockEntity;
 import ninjaphenix.container_library.api.inventory.AbstractHandler;
+import ninjaphenix.container_library.api.v2.OpenableBlockEntityV2;
 import ninjaphenix.expandedstorage.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.ApiStatus.Experimental;
@@ -28,10 +28,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 @Internal
 @Experimental
-public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements OpenableBlockEntity {
+public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements OpenableBlockEntityV2 {
     private final ResourceLocation blockId;
     private final ContainerOpenersCounter observerCounter;
     protected Component defaultTitle;
@@ -106,7 +107,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
         @Override
         public boolean stillValid(Player player) {
-            return AbstractOpenableStorageBlockEntity.this.canContinueUse(player);
+            return AbstractOpenableStorageBlockEntity.this.getLevel().getBlockEntity(AbstractOpenableStorageBlockEntity.this.getBlockPos()) == AbstractOpenableStorageBlockEntity.this && player.distanceToSqr(Vec3.atCenterOf(AbstractOpenableStorageBlockEntity.this.getBlockPos())) <= 64.0D;
         }
 
         @Override
@@ -253,7 +254,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
     @Override
     public boolean canBeUsedBy(ServerPlayer player) {
-        return this.usableBy(player);
+        return this.getInventory().stillValid(player) && this.usableBy(player);
     }
 
     @Override

@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.Container;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DoubleBlockCombiner;
@@ -12,6 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestLidController;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import ninjaphenix.container_library.api.helpers.VariableInventory;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 
 public final class ChestBlockEntity extends AbstractChestBlockEntity {
@@ -56,7 +56,7 @@ public final class ChestBlockEntity extends AbstractChestBlockEntity {
 
     @Override
     protected boolean isThis(Container inventory) {
-        return super.isThis(inventory) || inventory instanceof CompoundContainer compoundContainer && compoundContainer.contains(this.getInventory());
+        return super.isThis(inventory) || inventory instanceof VariableInventory variableInventory && variableInventory.containsPart(this.getInventory());
     }
 
     @Override

@@ -17,10 +17,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import ninjaphenix.container_library.api.OpenableBlockEntity;
 import ninjaphenix.container_library.api.inventory.AbstractHandler;
+import ninjaphenix.container_library.api.v2.OpenableBlockEntityV2;
 import ninjaphenix.expandedstorage.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.ApiStatus.Experimental;
@@ -31,7 +32,7 @@ import java.util.function.Supplier;
 
 @Internal
 @Experimental
-public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements OpenableBlockEntity {
+public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements OpenableBlockEntityV2 {
     private final Identifier blockId;
     private final ViewerCountManager observerCounter;
     protected Text defaultTitle;
@@ -106,7 +107,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
         @Override
         public boolean canPlayerUse(PlayerEntity player) {
-            return AbstractOpenableStorageBlockEntity.this.canContinueUse(player);
+            return AbstractOpenableStorageBlockEntity.this.getWorld().getBlockEntity(AbstractOpenableStorageBlockEntity.this.getPos()) == AbstractOpenableStorageBlockEntity.this && player.squaredDistanceTo(Vec3d.ofCenter(AbstractOpenableStorageBlockEntity.this.getPos())) <= 64.0D;
         }
 
         @Override
@@ -253,7 +254,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
     @Override
     public boolean canBeUsedBy(ServerPlayerEntity player) {
-        return this.usableBy(player);
+        return this.getInventory().canPlayerUse(player) && this.usableBy(player);
     }
 
     @Override

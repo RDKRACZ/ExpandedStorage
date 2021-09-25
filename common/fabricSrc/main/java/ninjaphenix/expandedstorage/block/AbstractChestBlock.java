@@ -18,9 +18,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import ninjaphenix.container_library.api.OpenableBlockEntity;
-import ninjaphenix.container_library.api.helpers.OpenableBlockEntities;
 import ninjaphenix.container_library.api.helpers.VariableSidedInventory;
+import ninjaphenix.container_library.api.v2.OpenableBlockEntityV2;
+import ninjaphenix.container_library.api.v2.helpers.OpenableBlockEntitiesV2;
 import ninjaphenix.expandedstorage.Utils;
 import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
@@ -198,23 +198,23 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     }
 
     @Override
-    public OpenableBlockEntity getOpenableBlockEntity(World world, BlockState state, BlockPos pos) {
+    public OpenableBlockEntityV2 getOpenableBlockEntity(World world, BlockState state, BlockPos pos) {
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
             //noinspection unchecked
             return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, world, pos, false).apply(new DoubleBlockProperties.PropertyRetriever<>() {
                 @Override
-                public OpenableBlockEntity getFromBoth(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
+                public OpenableBlockEntityV2 getFromBoth(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
                     Text name = first.hasCustomTitle() ? first.getTitle() : second.hasCustomTitle() ? second.getTitle() : Utils.translation("container.expandedstorage.generic_double", first.getTitle());
-                    return new OpenableBlockEntities(name, first, second);
+                    return new OpenableBlockEntitiesV2(name, first, second);
                 }
 
                 @Override
-                public OpenableBlockEntity getFrom(AbstractOpenableStorageBlockEntity single) {
+                public OpenableBlockEntityV2 getFrom(AbstractOpenableStorageBlockEntity single) {
                     return single;
                 }
 
                 @Override
-                public OpenableBlockEntity getFallback() {
+                public OpenableBlockEntityV2 getFallback() {
                     return null;
                 }
             });

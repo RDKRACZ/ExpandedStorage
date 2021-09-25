@@ -1,7 +1,6 @@
 package ninjaphenix.expandedstorage.block;
 
-import ninjaphenix.container_library.api.OpenableBlockEntityProvider;
-import ninjaphenix.container_library.api.client.NCL_ClientApi;
+import ninjaphenix.container_library.api.v2.OpenableBlockEntityProviderV2;
 import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -29,7 +28,7 @@ import net.minecraft.world.phys.BlockHitResult;
 
 @Internal
 @Experimental
-public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock implements EntityBlock, OpenableBlockEntityProvider {
+public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock implements EntityBlock, OpenableBlockEntityProviderV2 {
     private final ResourceLocation openingStat;
     private final int slots;
 
@@ -51,11 +50,7 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
     @Override
     @SuppressWarnings("deprecation")
     public final InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (world.isClientSide()) {
-            NCL_ClientApi.openInventoryAt(pos);
-            return InteractionResult.SUCCESS;
-        }
-        return InteractionResult.CONSUME;
+        return this.ncl_onBlockUse(world, state, pos, player, hand, hit);
     }
 
     @Override

@@ -26,7 +26,7 @@ public abstract class HTMOpenableBlockEntitySupport extends AbstractStorageBlock
         super(blockEntityType, pos, state);
     }
 
-    @Inject(method = "readNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Inventories;loadAllItems(Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/util/collection/DefaultedList;)V"))
+    @Inject(method = "readNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Inventories;readNbt(Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/util/collection/DefaultedList;)V"))
     private void readHTMLock(NbtCompound tag, CallbackInfo ci) {
         if (tag.contains(FabricChestProperties.LOCK_TAG_KEY, NbtElement.COMPOUND_TYPE)) {
             htmLock.fromTag(tag.getCompound(FabricChestProperties.LOCK_TAG_KEY));

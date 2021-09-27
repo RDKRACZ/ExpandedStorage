@@ -59,7 +59,7 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
         @Override
         public Float2FloatFunction acceptNone() {
             // This somehow still gets called
-            return i -> i;
+            return f -> f;
         }
     };
 
@@ -86,7 +86,8 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
 
         @Override
         public Int2IntFunction acceptNone() {
-            return null;
+            // This somehow still gets called
+            return i -> i;
         }
     };
 

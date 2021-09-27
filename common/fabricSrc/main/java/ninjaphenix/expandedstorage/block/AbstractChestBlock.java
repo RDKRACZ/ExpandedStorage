@@ -24,6 +24,8 @@ import ninjaphenix.container_library.api.v2.helpers.OpenableBlockEntitiesV2;
 import ninjaphenix.expandedstorage.Utils;
 import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
+import ninjaphenix.expandedstorage.block.misc.Property;
+import ninjaphenix.expandedstorage.block.misc.PropertyRetriever;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
@@ -184,11 +186,10 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
         return state.with(Properties.HORIZONTAL_FACING, rotation.rotate(state.get(Properties.HORIZONTAL_FACING)));
     }
 
-    public static <A extends AbstractOpenableStorageBlockEntity> DoubleBlockProperties.PropertySource<A> createPropertyRetriever(AbstractChestBlock<A> block, BlockState state, WorldAccess world, BlockPos pos, boolean alwaysOpen) {
+    public static <A extends AbstractOpenableStorageBlockEntity> PropertyRetriever<A> createPropertyRetriever(AbstractChestBlock<A> block, BlockState state, WorldAccess world, BlockPos pos, boolean alwaysOpen) {
         BiPredicate<WorldAccess, BlockPos> isChestBlocked = alwaysOpen ? (_level, _pos) -> false : block::isAccessBlocked;
-        return DoubleBlockProperties.toPropertySource(block.getBlockEntityType(), AbstractChestBlock::getBlockType,
-                AbstractChestBlock::getDirectionToAttached, Properties.HORIZONTAL_FACING, state, world, pos,
-                isChestBlocked);
+        return PropertyRetriever.create(block.getBlockEntityType(), AbstractChestBlock::getBlockType, AbstractChestBlock::getDirectionToAttached,
+                (s) -> s.get(Properties.HORIZONTAL_FACING), state, world, pos, isChestBlocked);
     }
 
     protected abstract BlockEntityType<T> getBlockEntityType();
@@ -201,23 +202,18 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     public OpenableBlockEntityV2 getOpenableBlockEntity(World world, BlockState state, BlockPos pos) {
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
             //noinspection unchecked
-            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, world, pos, false).apply(new DoubleBlockProperties.PropertyRetriever<>() {
+            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, world, pos, false).get(new Property<AbstractOpenableStorageBlockEntity, OpenableBlockEntityV2>() {
                 @Override
-                public OpenableBlockEntityV2 getFromBoth(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
+                public OpenableBlockEntityV2 get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
                     Text name = first.hasCustomTitle() ? first.getTitle() : second.hasCustomTitle() ? second.getTitle() : Utils.translation("container.expandedstorage.generic_double", first.getTitle());
                     return new OpenableBlockEntitiesV2(name, first, second);
                 }
 
                 @Override
-                public OpenableBlockEntityV2 getFrom(AbstractOpenableStorageBlockEntity single) {
+                public OpenableBlockEntityV2 get(AbstractOpenableStorageBlockEntity single) {
                     return single;
                 }
-
-                @Override
-                public OpenableBlockEntityV2 getFallback() {
-                    return null;
-                }
-            });
+            }).orElse(null);
         }
         return null;
     }
@@ -226,22 +222,17 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
             //noinspection unchecked
-            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, world, pos, false).apply(new DoubleBlockProperties.PropertyRetriever<>() {
+            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, world, pos, false).get(new Property<AbstractOpenableStorageBlockEntity, SidedInventory>() {
                 @Override
-                public SidedInventory getFromBoth(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
+                public SidedInventory get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
                     return VariableSidedInventory.of(first.getInventory(), second.getInventory());
                 }
 
                 @Override
-                public SidedInventory getFrom(AbstractOpenableStorageBlockEntity single) {
+                public SidedInventory get(AbstractOpenableStorageBlockEntity single) {
                     return single.getInventory();
                 }
-
-                @Override
-                public SidedInventory getFallback() {
-                    return null;
-                }
-            });
+            }).orElse(null);
         }
         return null;
     }

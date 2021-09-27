@@ -3,7 +3,6 @@ package ninjaphenix.expandedstorage.client;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
@@ -33,6 +32,8 @@ import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.Utils;
 import ninjaphenix.expandedstorage.block.AbstractChestBlock;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
+import ninjaphenix.expandedstorage.block.misc.Property;
+import ninjaphenix.expandedstorage.block.misc.PropertyRetriever;
 
 public final class ChestBlockEntityRenderer implements BlockEntityRenderer<ChestBlockEntity> {
     // todo: hopefully we can remove this mess once *hopefully* this is all json, 1.18
@@ -45,27 +46,21 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
     public static final EntityModelLayer BACK_LAYER = new EntityModelLayer(Utils.id("back_chest"), "main");
     private static final BlockState DEFAULT_STATE = Registry.BLOCK.get(Utils.id("wood_chest")).getDefaultState();
 
-    private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Float2FloatFunction> LID_OPENNESS_FUNCTION_GETTER = new DoubleBlockProperties.PropertyRetriever<>() {
+    private static final Property<ChestBlockEntity, Float2FloatFunction> LID_OPENNESS_FUNCTION_GETTER = new Property<>() {
         @Override
-        public Float2FloatFunction getFromBoth(ChestBlockEntity first, ChestBlockEntity second) {
+        public Float2FloatFunction get(ChestBlockEntity first, ChestBlockEntity second) {
             return (delta) -> Math.max(first.getLidOpenness(delta), second.getLidOpenness(delta));
         }
 
         @Override
-        public Float2FloatFunction getFrom(ChestBlockEntity single) {
+        public Float2FloatFunction get(ChestBlockEntity single) {
             return single::getLidOpenness;
-        }
-
-        @Override
-        public Float2FloatFunction getFallback() {
-            // This somehow still gets called
-            return f -> f;
         }
     };
 
-    private static final DoubleBlockProperties.PropertyRetriever<ChestBlockEntity, Int2IntFunction> BRIGHTNESS_PROPERTY = new DoubleBlockProperties.PropertyRetriever<>() {
+    private static final Property<ChestBlockEntity, Int2IntFunction> BRIGHTNESS_PROPERTY = new Property<>() {
         @Override
-        public Int2IntFunction getFromBoth(ChestBlockEntity first, ChestBlockEntity second) {
+        public Int2IntFunction get(ChestBlockEntity first, ChestBlockEntity second) {
             return i -> {
                 //noinspection ConstantConditions
                 int firstLightColor = WorldRenderer.getLightmapCoordinates(first.getWorld(), first.getPos());
@@ -80,13 +75,7 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
         }
 
         @Override
-        public Int2IntFunction getFrom(ChestBlockEntity single) {
-            return i -> i;
-        }
-
-        @Override
-        public Int2IntFunction getFallback() {
-            // This somehow still gets called
+        public Int2IntFunction get(ChestBlockEntity single) {
             return i -> i;
         }
     };
@@ -199,15 +188,15 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
         stack.translate(0.5D, 0.5D, 0.5D);
         stack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-state.get(Properties.HORIZONTAL_FACING).asRotation()));
         stack.translate(-0.5D, -0.5D, -0.5D);
-        DoubleBlockProperties.PropertySource<ChestBlockEntity> retriever;
+        PropertyRetriever<ChestBlockEntity> retriever;
         if (entity.hasWorld()) {
             retriever = AbstractChestBlock.createPropertyRetriever(block, state, entity.getWorld(), entity.getPos(), true);
         } else {
-            retriever = new DoubleBlockProperties.PropertySource.Single<>(entity);
+            retriever = PropertyRetriever.createDirect(entity);
         }
         VertexConsumer consumer = new SpriteIdentifier(TexturedRenderLayers.CHEST_ATLAS_TEXTURE, Common.getChestTexture(blockId, chestType)).getVertexConsumer(source, RenderLayer::getEntityCutout);
-        float lidOpenness = ChestBlockEntityRenderer.getLidOpenness(retriever.apply(ChestBlockEntityRenderer.LID_OPENNESS_FUNCTION_GETTER).get(delta));
-        int brightness = retriever.apply(ChestBlockEntityRenderer.BRIGHTNESS_PROPERTY).applyAsInt(light);
+        float lidOpenness = ChestBlockEntityRenderer.getLidOpenness(retriever.get(ChestBlockEntityRenderer.LID_OPENNESS_FUNCTION_GETTER).orElse(f -> f).get(delta));
+        int brightness = retriever.get(ChestBlockEntityRenderer.BRIGHTNESS_PROPERTY).orElse(i -> i).applyAsInt(light);
         if (chestType == CursedChestType.SINGLE) {
             ChestBlockEntityRenderer.renderBottom(stack, consumer, singleBottom, brightness, overlay);
             ChestBlockEntityRenderer.renderTop(stack, consumer, singleLid, brightness, overlay, lidOpenness);

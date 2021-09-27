@@ -17,6 +17,10 @@ loom {
         }
     }
 
+    mixin {
+        useLegacyMixinAp.set(false)
+    }
+
     accessWidenerPath.set(file("src/main/resources/expandedstorage.accessWidener"))
 }
 
@@ -55,8 +59,8 @@ dependencies {
     modCompileOnly(libs.statement, excludeFabric)
     modCompileOnly(libs.towelette, excludeFabric)
     modCompileOnly(libs.heyThatsMine)
-    modRuntime("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
-    modRuntime(libs.heyThatsMine)
+    modRuntimeOnly("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
+    modRuntimeOnly(libs.heyThatsMine)
 }
 
 tasks.withType<ProcessResources> {

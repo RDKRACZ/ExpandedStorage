@@ -26,10 +26,7 @@ subprojects {
         main {
             java {
                 setSrcDirs(listOf(
-                        "src/barrel/java",
-                        "src/base/java",
-                        "src/chest/java",
-                        "src/old_chest/java",
+                        "src/main/java",
                         rootDir.resolve("common/${project.name}Src/barrel/java"),
                         rootDir.resolve("common/${project.name}Src/base/java"),
                         rootDir.resolve("common/${project.name}Src/chest/java"),
@@ -38,11 +35,7 @@ subprojects {
             }
             resources {
                 setSrcDirs(listOf(
-                        "src/barrel/resources",
-                        "src/base/resources",
-                        "src/chest/resources",
-                        "src/old_chest/resources",
-                        "src/common/resources",
+                        "src/main/resources",
                         rootDir.resolve("common/${project.name}Src/barrel/resources"),
                         rootDir.resolve("common/${project.name}Src/base/resources"),
                         rootDir.resolve("common/${project.name}Src/chest/resources"),

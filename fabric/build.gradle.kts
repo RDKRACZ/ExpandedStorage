@@ -16,7 +16,7 @@ loom {
         }
     }
 
-    accessWidener = file("src/base/resources/expandedstorage_base.accessWidener")
+    accessWidener = file("src/main/resources/expandedstorage_base.accessWidener")
 }
 
 dependencies {

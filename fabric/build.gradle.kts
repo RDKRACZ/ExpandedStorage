@@ -32,6 +32,7 @@ repositories {
             includeGroup("com.github.Virtuoel")
         }
     }
+    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
     mavenLocal()
 }
 
@@ -54,6 +55,8 @@ dependencies {
     modCompileOnly(libs.statement, excludeFabric)
     modCompileOnly(libs.towelette, excludeFabric)
     modCompileOnly(libs.heyThatsMine)
+    modRuntime("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
+    modRuntime(libs.heyThatsMine)
 }
 
 tasks.withType<ProcessResources> {

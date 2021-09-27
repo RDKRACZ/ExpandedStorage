@@ -85,7 +85,8 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
 
         @Override
         public Int2IntFunction getFallback() {
-            return null;
+            // This somehow still gets called
+            return i -> i;
         }
     };
 

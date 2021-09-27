@@ -60,7 +60,7 @@ public final class Common {
     public static final ResourceLocation OLD_CHEST_BLOCK_TYPE = Utils.id("old_cursed_chest");
 
     private static final Map<Predicate<Block>, BlockUpgradeBehaviour> BLOCK_UPGRADE_BEHAVIOURS = new HashMap<>();
-    private static final Map<Tuple<ResourceLocation, ResourceLocation>, AbstractStorageBlock> BLOCKS = new HashMap<>();
+    private static final Map<BlockTierId, AbstractStorageBlock> BLOCKS = new HashMap<>();
     private static final Map<ResourceLocation, TextureCollection> CHEST_TEXTURES = PlatformUtils.getInstance().isClient() ? new HashMap<>() : null;
 
     private static final int IRON_STACK_COUNT = 54;
@@ -480,12 +480,16 @@ public final class Common {
         Common.BLOCK_UPGRADE_BEHAVIOURS.put(target, behaviour);
     }
 
+    record BlockTierId(ResourceLocation blockType, ResourceLocation blockTier) {
+
+    }
+
     private static void registerTieredBlock(AbstractStorageBlock block) {
-        Common.BLOCKS.putIfAbsent(new Tuple<>(block.getBlockType(), block.getBlockTier()), block);
+        Common.BLOCKS.putIfAbsent(new BlockTierId(block.getBlockType(), block.getBlockTier()), block);
     }
 
     public static AbstractStorageBlock getTieredBlock(ResourceLocation blockType, ResourceLocation tier) {
-        return Common.BLOCKS.get(new Tuple<>(blockType, tier));
+        return Common.BLOCKS.get(new BlockTierId(blockType, tier));
     }
 
     public static void declareChestTextures(ResourceLocation block, ResourceLocation singleTexture, ResourceLocation leftTexture, ResourceLocation rightTexture, ResourceLocation topTexture, ResourceLocation bottomTexture, ResourceLocation frontTexture, ResourceLocation backTexture) {

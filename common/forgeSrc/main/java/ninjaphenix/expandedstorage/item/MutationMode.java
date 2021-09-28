@@ -3,6 +3,8 @@ package ninjaphenix.expandedstorage.item;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
+import java.util.Locale;
+
 @Internal
 @Experimental
 public enum MutationMode {
@@ -21,6 +23,11 @@ public enum MutationMode {
 
     public byte toByte() {
         return (byte) ordinal();
+    }
+
+    @Override
+    public String toString() {
+        return this.name().toLowerCase(Locale.ROOT);
     }
 
     public MutationMode next() {

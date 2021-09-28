@@ -195,7 +195,7 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
             retriever = PropertyRetriever.createDirect(entity);
         }
         VertexConsumer consumer = new SpriteIdentifier(TexturedRenderLayers.CHEST_ATLAS_TEXTURE, Common.getChestTexture(blockId, chestType)).getVertexConsumer(source, RenderLayer::getEntityCutout);
-        float lidOpenness = ChestBlockEntityRenderer.getLidOpenness(retriever.get(ChestBlockEntityRenderer.LID_OPENNESS_FUNCTION_GETTER).orElse(f -> f).get(delta));
+        float lidOpenness = ChestBlockEntityRenderer.getLidOpenness(retriever.get(ChestBlockEntityRenderer.LID_OPENNESS_FUNCTION_GETTER).orElse(f -> 0).get(delta));
         int brightness = retriever.get(ChestBlockEntityRenderer.BRIGHTNESS_PROPERTY).orElse(i -> i).applyAsInt(light);
         if (chestType == CursedChestType.SINGLE) {
             ChestBlockEntityRenderer.renderBottom(stack, consumer, singleBottom, brightness, overlay);

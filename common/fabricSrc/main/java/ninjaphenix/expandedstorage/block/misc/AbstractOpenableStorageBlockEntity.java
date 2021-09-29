@@ -242,10 +242,9 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
+    public void writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
         Inventories.writeNbt(tag, items);
-        return tag;
     }
 
     public DefaultedList<ItemStack> getItems() {

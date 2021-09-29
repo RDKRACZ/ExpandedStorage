@@ -6,29 +6,19 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.ContainerLock;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
-import net.minecraft.state.property.Properties;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -38,7 +28,6 @@ import ninjaphenix.expandedstorage.block.OldChestBlock;
 import ninjaphenix.expandedstorage.block.misc.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
-import ninjaphenix.expandedstorage.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.block.AbstractStorageBlock;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.item.BlockUpgradeBehaviour;
@@ -250,40 +239,40 @@ public final class Common {
         BlockPos pos = context.getBlockPos();
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        boolean isExpandedStorageBarrel = block instanceof BarrelBlock;
-        int containerSize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : ((BarrelBlock) Common.getTieredBlock(BARREL_BLOCK_TYPE, ((BarrelBlock) block).getBlockTier())).getSlotCount();
-        if (isExpandedStorageBarrel && ((BarrelBlock) block).getBlockTier() == from || !isExpandedStorageBarrel && from == Utils.WOOD_TIER.getId()) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            //noinspection ConstantConditions
-            NbtCompound tag = blockEntity.writeNbt(new NbtCompound());
-            boolean verifiedSize = blockEntity instanceof Inventory container && container.size() == containerSize;
-            if (!verifiedSize) { // Cannot verify container size, we'll let it upgrade if it has or has less than 27 items
-                if (tag.contains("Items", NbtElement.LIST_TYPE)) {
-                    NbtList items = tag.getList("Items", NbtElement.COMPOUND_TYPE);
-                    if (items.size() <= containerSize) {
-                        verifiedSize = true;
-                    }
-                }
-            }
-            if (verifiedSize) {
-                AbstractOpenableStorageBlock toBlock = (AbstractOpenableStorageBlock) Common.getTieredBlock(BARREL_BLOCK_TYPE, to);
-                DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
-                ContainerLock code = ContainerLock.fromNbt(tag);
-                Inventories.readNbt(tag, inventory);
-                world.removeBlockEntity(pos);
-                BlockState newState = toBlock.getDefaultState().with(Properties.FACING, state.get(Properties.FACING));
-                if (world.setBlockState(pos, newState)) {
-                    BlockEntity newEntity = world.getBlockEntity(pos);
-                    //noinspection ConstantConditions
-                    NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
-                    Inventories.writeNbt(newTag, inventory);
-                    code.writeNbt(newTag);
-                    newEntity.readNbt(newTag);
-                    context.getStack().decrement(1);
-                    return true;
-                }
-            }
-        }
+        //boolean isExpandedStorageBarrel = block instanceof BarrelBlock;
+        //int containerSize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : ((BarrelBlock) Common.getTieredBlock(BARREL_BLOCK_TYPE, ((BarrelBlock) block).getBlockTier())).getSlotCount();
+        //if (isExpandedStorageBarrel && ((BarrelBlock) block).getBlockTier() == from || !isExpandedStorageBarrel && from == Utils.WOOD_TIER.getId()) {
+        //    BlockEntity blockEntity = world.getBlockEntity(pos);
+        //    //noinspection ConstantConditions
+        //    NbtCompound tag = blockEntity.writeNbt(new NbtCompound());
+        //    boolean verifiedSize = blockEntity instanceof Inventory container && container.size() == containerSize;
+        //    if (!verifiedSize) { // Cannot verify container size, we'll let it upgrade if it has or has less than 27 items
+        //        if (tag.contains("Items", NbtElement.LIST_TYPE)) {
+        //            NbtList items = tag.getList("Items", NbtElement.COMPOUND_TYPE);
+        //            if (items.size() <= containerSize) {
+        //                verifiedSize = true;
+        //            }
+        //        }
+        //    }
+        //    if (verifiedSize) {
+        //        AbstractOpenableStorageBlock toBlock = (AbstractOpenableStorageBlock) Common.getTieredBlock(BARREL_BLOCK_TYPE, to);
+        //        DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
+        //        ContainerLock code = ContainerLock.fromNbt(tag);
+        //        Inventories.readNbt(tag, inventory);
+        //        world.removeBlockEntity(pos);
+        //        BlockState newState = toBlock.getDefaultState().with(Properties.FACING, state.get(Properties.FACING));
+        //        if (world.setBlockState(pos, newState)) {
+        //            BlockEntity newEntity = world.getBlockEntity(pos);
+        //            //noinspection ConstantConditions
+        //            NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
+        //            Inventories.writeNbt(newTag, inventory);
+        //            code.writeNbt(newTag);
+        //            newEntity.readNbt(newTag);
+        //            context.getStack().decrement(1);
+        //            return true;
+        //        }
+        //    }
+        //}
         return false;
     }
 
@@ -351,48 +340,48 @@ public final class Common {
     }
 
     private static void upgradeSingleBlockToChest(World world, BlockState state, BlockPos pos, Identifier from, Identifier to) {
-        Block block = state.getBlock();
-        boolean isExpandedStorageChest = block instanceof ChestBlock;
-        int containerSize = !isExpandedStorageChest ? Utils.WOOD_STACK_COUNT : ((ChestBlock) Common.getTieredBlock(CHEST_BLOCK_TYPE, ((ChestBlock) block).getBlockTier())).getSlotCount();
-        if (isExpandedStorageChest && ((ChestBlock) block).getBlockTier() == from || !isExpandedStorageChest && from == Utils.WOOD_TIER.getId()) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            //noinspection ConstantConditions
-            NbtCompound tag = blockEntity.writeNbt(new NbtCompound());
-            boolean verifiedSize = blockEntity instanceof Inventory container && container.size() == containerSize;
-            if (!verifiedSize) { // Cannot verify container size, we'll let it upgrade if it has or has less than 27 items
-                if (tag.contains("Items", NbtElement.LIST_TYPE)) {
-                    NbtList items = tag.getList("Items", NbtElement.COMPOUND_TYPE);
-                    if (items.size() <= containerSize) {
-                        verifiedSize = true;
-                    }
-                }
-            }
-            if (verifiedSize) {
-                AbstractOpenableStorageBlock toBlock = (AbstractOpenableStorageBlock) Common.getTieredBlock(CHEST_BLOCK_TYPE, to);
-                DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
-                ContainerLock code = ContainerLock.fromNbt(tag);
-                Inventories.readNbt(tag, inventory);
-                world.removeBlockEntity(pos);
-                // Needs fixing up to check for vanilla states.
-                BlockState newState = toBlock.getDefaultState()
-                                             .with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING))
-                                             .with(Properties.WATERLOGGED, state.get(Properties.WATERLOGGED));
-                if (state.contains(ChestBlock.CURSED_CHEST_TYPE)) {
-                    newState = newState.with(ChestBlock.CURSED_CHEST_TYPE, state.get(ChestBlock.CURSED_CHEST_TYPE));
-                } else if (state.contains(Properties.CHEST_TYPE)) {
-                    ChestType type = state.get(Properties.CHEST_TYPE);
-                    newState = newState.with(ChestBlock.CURSED_CHEST_TYPE, type == ChestType.LEFT ? CursedChestType.RIGHT : type == ChestType.RIGHT ? CursedChestType.LEFT : CursedChestType.SINGLE);
-                }
-                if (world.setBlockState(pos, newState)) {
-                    BlockEntity newEntity = world.getBlockEntity(pos);
-                    //noinspection ConstantConditions
-                    NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
-                    Inventories.writeNbt(newTag, inventory);
-                    code.writeNbt(newTag);
-                    newEntity.readNbt(newTag);
-                }
-            }
-        }
+        //Block block = state.getBlock();
+        //boolean isExpandedStorageChest = block instanceof ChestBlock;
+        //int containerSize = !isExpandedStorageChest ? Utils.WOOD_STACK_COUNT : ((ChestBlock) Common.getTieredBlock(CHEST_BLOCK_TYPE, ((ChestBlock) block).getBlockTier())).getSlotCount();
+        //if (isExpandedStorageChest && ((ChestBlock) block).getBlockTier() == from || !isExpandedStorageChest && from == Utils.WOOD_TIER.getId()) {
+        //    BlockEntity blockEntity = world.getBlockEntity(pos);
+        //    //noinspection ConstantConditions
+        //    NbtCompound tag = blockEntity.writeNbt(new NbtCompound());
+        //    boolean verifiedSize = blockEntity instanceof Inventory container && container.size() == containerSize;
+        //    if (!verifiedSize) { // Cannot verify container size, we'll let it upgrade if it has or has less than 27 items
+        //        if (tag.contains("Items", NbtElement.LIST_TYPE)) {
+        //            NbtList items = tag.getList("Items", NbtElement.COMPOUND_TYPE);
+        //            if (items.size() <= containerSize) {
+        //                verifiedSize = true;
+        //            }
+        //        }
+        //    }
+        //    if (verifiedSize) {
+        //        AbstractOpenableStorageBlock toBlock = (AbstractOpenableStorageBlock) Common.getTieredBlock(CHEST_BLOCK_TYPE, to);
+        //        DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
+        //        ContainerLock code = ContainerLock.fromNbt(tag);
+        //        Inventories.readNbt(tag, inventory);
+        //        world.removeBlockEntity(pos);
+        //        // Needs fixing up to check for vanilla states.
+        //        BlockState newState = toBlock.getDefaultState()
+        //                                     .with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING))
+        //                                     .with(Properties.WATERLOGGED, state.get(Properties.WATERLOGGED));
+        //        if (state.contains(ChestBlock.CURSED_CHEST_TYPE)) {
+        //            newState = newState.with(ChestBlock.CURSED_CHEST_TYPE, state.get(ChestBlock.CURSED_CHEST_TYPE));
+        //        } else if (state.contains(Properties.CHEST_TYPE)) {
+        //            ChestType type = state.get(Properties.CHEST_TYPE);
+        //            newState = newState.with(ChestBlock.CURSED_CHEST_TYPE, type == ChestType.LEFT ? CursedChestType.RIGHT : type == ChestType.RIGHT ? CursedChestType.LEFT : CursedChestType.SINGLE);
+        //        }
+        //        if (world.setBlockState(pos, newState)) {
+        //            BlockEntity newEntity = world.getBlockEntity(pos);
+        //            //noinspection ConstantConditions
+        //            NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
+        //            Inventories.writeNbt(newTag, inventory);
+        //            code.writeNbt(newTag);
+        //            newEntity.readNbt(newTag);
+        //        }
+        //    }
+        //}
     }
 
     private static boolean tryUpgradeBlockToOldChest(ItemUsageContext context, Identifier from, Identifier to) {
@@ -417,24 +406,24 @@ public final class Common {
     }
 
     private static void upgradeSingleBlockToOldChest(World world, BlockState state, BlockPos pos, Identifier from, Identifier to) {
-        if (((OldChestBlock) state.getBlock()).getBlockTier() == from) {
-            AbstractOpenableStorageBlock toBlock = (AbstractOpenableStorageBlock) Common.getTieredBlock(OLD_CHEST_BLOCK_TYPE, to);
-            DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
-            //noinspection ConstantConditions
-            NbtCompound tag = world.getBlockEntity(pos).writeNbt(new NbtCompound());
-            ContainerLock code = ContainerLock.fromNbt(tag);
-            Inventories.readNbt(tag, inventory);
-            world.removeBlockEntity(pos);
-            BlockState newState = toBlock.getDefaultState().with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING)).with(OldChestBlock.CURSED_CHEST_TYPE, state.get(OldChestBlock.CURSED_CHEST_TYPE));
-            if (world.setBlockState(pos, newState)) {
-                BlockEntity newEntity = world.getBlockEntity(pos);
-                //noinspection ConstantConditions
-                NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
-                Inventories.writeNbt(newTag, inventory);
-                code.writeNbt(newTag);
-                newEntity.readNbt(newTag);
-            }
-        }
+        //if (((OldChestBlock) state.getBlock()).getBlockTier() == from) {
+        //    AbstractOpenableStorageBlock toBlock = (AbstractOpenableStorageBlock) Common.getTieredBlock(OLD_CHEST_BLOCK_TYPE, to);
+        //    DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
+        //    //noinspection ConstantConditions
+        //    NbtCompound tag = world.getBlockEntity(pos).writeNbt(new NbtCompound());
+        //    ContainerLock code = ContainerLock.fromNbt(tag);
+        //    Inventories.readNbt(tag, inventory);
+        //    world.removeBlockEntity(pos);
+        //    BlockState newState = toBlock.getDefaultState().with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING)).with(OldChestBlock.CURSED_CHEST_TYPE, state.get(OldChestBlock.CURSED_CHEST_TYPE));
+        //    if (world.setBlockState(pos, newState)) {
+        //        BlockEntity newEntity = world.getBlockEntity(pos);
+        //        //noinspection ConstantConditions
+        //        NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
+        //        Inventories.writeNbt(newTag, inventory);
+        //        code.writeNbt(newTag);
+        //        newEntity.readNbt(newTag);
+        //    }
+        //}
     }
 
     static void registerBaseContent(Consumer<Pair<Identifier, Item>[]> itemRegistration) {

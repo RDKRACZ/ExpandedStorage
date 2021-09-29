@@ -33,13 +33,12 @@ public abstract class AbstractStorageBlockEntity extends BlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
+    public void writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
         lockKey.writeNbt(tag);
         if (title != null) {
             tag.putString("CustomName", Text.Serializer.toJson(title));
         }
-        return tag;
     }
 
     public boolean usableBy(ServerPlayerEntity player) {

@@ -8,7 +8,6 @@ import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -41,7 +40,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static net.minecraft.state.property.Properties.FACING;
-import static net.minecraft.state.property.Properties.WATERLOGGED;
 import static net.minecraft.util.BlockRotation.CLOCKWISE_180;
 import static net.minecraft.util.BlockRotation.CLOCKWISE_90;
 
@@ -164,29 +162,29 @@ public class StorageMutator extends Item {
     }
 
     private void convertBlock(World world, BlockState state, BlockPos pos, Block block, int slotCount, @Nullable CursedChestType type, Predicate<BlockEntity> check) {
-        BlockEntity targetBlockEntity = world.getBlockEntity(pos);
-        if (check.test(targetBlockEntity)) {
-            DefaultedList<ItemStack> invData = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
-            //noinspection ConstantConditions
-            Inventories.readNbt(targetBlockEntity.writeNbt(new NbtCompound()), invData);
-            world.removeBlockEntity(pos);
-            BlockState newState = block.getDefaultState();
-            if (state.contains(WATERLOGGED)) {
-                newState = newState.with(WATERLOGGED, state.get(WATERLOGGED));
-            }
-            if (state.contains(FACING)) {
-                newState = newState.with(FACING, state.get(FACING));
-            } else if (state.contains(Properties.HORIZONTAL_FACING)) {
-                newState = newState.with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING));
-            }
-            if (type != null) {
-                newState = newState.with(ChestBlock.CURSED_CHEST_TYPE, type);
-            }
-            world.setBlockState(pos, newState);
-            BlockEntity newEntity = world.getBlockEntity(pos);
-            //noinspection ConstantConditions
-            newEntity.readNbt(Inventories.writeNbt(newEntity.writeNbt(new NbtCompound()), invData));
-        }
+        //BlockEntity targetBlockEntity = world.getBlockEntity(pos);
+        //if (check.test(targetBlockEntity)) {
+        //    DefaultedList<ItemStack> invData = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
+        //    //noinspection ConstantConditions
+        //    Inventories.readNbt(targetBlockEntity.writeNbt(new NbtCompound()), invData);
+        //    world.removeBlockEntity(pos);
+        //    BlockState newState = block.getDefaultState();
+        //    if (state.contains(WATERLOGGED)) {
+        //        newState = newState.with(WATERLOGGED, state.get(WATERLOGGED));
+        //    }
+        //    if (state.contains(FACING)) {
+        //        newState = newState.with(FACING, state.get(FACING));
+        //    } else if (state.contains(Properties.HORIZONTAL_FACING)) {
+        //        newState = newState.with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING));
+        //    }
+        //    if (type != null) {
+        //        newState = newState.with(ChestBlock.CURSED_CHEST_TYPE, type);
+        //    }
+        //    world.setBlockState(pos, newState);
+        //    BlockEntity newEntity = world.getBlockEntity(pos);
+        //    //noinspection ConstantConditions
+        //    newEntity.readNbt(Inventories.writeNbt(newEntity.writeNbt(new NbtCompound()), invData));
+        //}
     }
 
     protected ActionResult useModifierOnBlock(ItemUsageContext context, BlockState state, BlockPos pos, @SuppressWarnings("unused") Type type) {

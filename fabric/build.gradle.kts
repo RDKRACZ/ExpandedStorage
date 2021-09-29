@@ -47,7 +47,7 @@ val excludeFabric: (ModuleDependency) -> Unit = {
 
 dependencies {
     minecraft(libs.minecraft.fabric)
-    mappings("net.fabricmc:yarn:1.17.1+build.61")
+    mappings("net.fabricmc:yarn:${properties["minecraft_version"]}+build.${properties["yarn_version"]}")
 
     modImplementation(libs.fabric.loader)
     modApi(libs.fabric.api)
@@ -59,8 +59,8 @@ dependencies {
     modCompileOnly(libs.statement, excludeFabric)
     modCompileOnly(libs.towelette, excludeFabric)
     modCompileOnly(libs.heyThatsMine)
-    modRuntimeOnly("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
-    modRuntimeOnly(libs.heyThatsMine)
+    //modRuntimeOnly("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
+    //modRuntimeOnly(libs.heyThatsMine)
 }
 
 tasks.withType<ProcessResources> {
@@ -92,24 +92,22 @@ if (hasProperty("yv")) {
     }
 }
 
-afterEvaluate {
-    val jarTask: Jar = tasks.getByName<Jar>("jar") {
-        archiveClassifier.set("dev")
-    }
+val jarTask: Jar = tasks.getByName<Jar>("jar") {
+    archiveClassifier.set("dev")
+}
 
-    val remapJarTask: RemapJarTask = tasks.getByName<RemapJarTask>("remapJar") {
-        archiveClassifier.set("fat")
-        dependsOn(jarTask)
-    }
+val remapJarTask: RemapJarTask = tasks.getByName<RemapJarTask>("remapJar") {
+    archiveClassifier.set("fat")
+    dependsOn(jarTask)
+}
 
-    val minifyJarTask = tasks.register<MinifyJsonTask>("minJar") {
-        input.set(remapJarTask.outputs.files.singleFile)
-        archiveClassifier.set("")
-        from(rootDir.resolve("LICENSE"))
-        dependsOn(remapJarTask)
-    }
+val minifyJarTask = tasks.register<MinifyJsonTask>("minJar") {
+    input.set(remapJarTask.outputs.files.singleFile)
+    archiveClassifier.set("")
+    from(rootDir.resolve("LICENSE"))
+    dependsOn(remapJarTask)
+}
 
-    tasks.getByName("build") {
-        dependsOn(minifyJarTask)
-    }
+tasks.getByName("build") {
+    dependsOn(minifyJarTask)
 }

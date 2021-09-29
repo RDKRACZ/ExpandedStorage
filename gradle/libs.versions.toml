@@ -10,9 +10,9 @@ minecraft-forge = { group = "net.minecraftforge", name = "forge", version = "1.1
 containerLibrary-forge = { group = "ninjaphenix.container_library", name = "forge", version.ref = "containerlib" }
 containerLibrary-forge-runtime = { group = "local", name = "ninjaphenix-container-library", version = "1.0.1+1.17.1-named" }
 # Fabric Deps
-minecraft-fabric = { group = "com.mojang", name = "minecraft", version = "21w38a" }
+minecraft-fabric = { group = "com.mojang", name = "minecraft", version = "21w39a" }
 fabric-loader = { group = "net.fabricmc", name = "fabric-loader", version = "0.11.7" }
-fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.40.4+1.18" }
+fabric-api = { group = "net.fabricmc.fabric-api", name = "fabric-api", version = "0.40.5+1.18" }
 statement = { group = "com.github.Virtuoel", name = "Statement", version = "31a2c3f" }
 towelette = { group = "com.github.Virtuoel", name = "Towelette", version = "e5e39eb" }
 heyThatsMine = { group = "local", name = "htm", version = "dda0f76870e3a424af53416603ff489b1c733b3d" }

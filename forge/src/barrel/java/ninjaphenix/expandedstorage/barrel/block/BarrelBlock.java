@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.barrel.block;
+package ninjaphenix.expandedstorage.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,8 +12,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import ninjaphenix.expandedstorage.barrel.BarrelCommon;
-import ninjaphenix.expandedstorage.barrel.block.misc.BarrelBlockEntity;
-import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
+import ninjaphenix.expandedstorage.block.misc.BarrelBlockEntity;
+import ninjaphenix.expandedstorage.internal_api.block.AbstractOpenableStorageBlock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

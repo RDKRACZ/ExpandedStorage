@@ -17,9 +17,9 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.IForgeRegistry;
 import ninjaphenix.expandedstorage.base.BaseCommon;
-import ninjaphenix.expandedstorage.base.internal_api.BaseApi;
-import ninjaphenix.expandedstorage.base.internal_api.Utils;
-import ninjaphenix.expandedstorage.base.internal_api.tier.Tier;
+import ninjaphenix.expandedstorage.internal_api.BaseApi;
+import ninjaphenix.expandedstorage.internal_api.Utils;
+import ninjaphenix.expandedstorage.internal_api.tier.Tier;
 import ninjaphenix.expandedstorage.old_chest.block.OldChestBlock;
 import ninjaphenix.expandedstorage.old_chest.block.misc.OldChestBlockEntity;
 

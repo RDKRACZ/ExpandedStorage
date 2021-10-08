@@ -5,7 +5,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import ninjaphenix.expandedstorage.base.internal_api.block.AbstractChestBlock;
+import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
 import ninjaphenix.expandedstorage.old_chest.OldChestCommon;
 import ninjaphenix.expandedstorage.old_chest.block.misc.OldChestBlockEntity;
 import org.jetbrains.annotations.NotNull;

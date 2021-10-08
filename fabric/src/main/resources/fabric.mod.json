@@ -8,18 +8,18 @@
   },
   "entrypoints": {
     "main": [
-      "ninjaphenix.expandedstorage.base.Main"
+      "ninjaphenix.expandedstorage.BaseMain"
     ],
     "rei_plugins": [
-      "ninjaphenix.expandedstorage.base.client.ReiCompat"
+      "ninjaphenix.expandedstorage.client.ReiCompat"
     ],
     "modmenu": [
-      "ninjaphenix.expandedstorage.base.client.ModMenuCompat"
+      "ninjaphenix.expandedstorage.client.ModMenuCompat"
     ],
     "expandedstorage-module": [
-      "ninjaphenix.expandedstorage.barrel.Main",
-      "ninjaphenix.expandedstorage.chest.Main",
-      "ninjaphenix.expandedstorage.old_chest.Main"
+      "ninjaphenix.expandedstorage.BarrelMain",
+      "ninjaphenix.expandedstorage.ChestMain",
+      "ninjaphenix.expandedstorage.OldChestMain"
     ]
   },
   "environment": "*",

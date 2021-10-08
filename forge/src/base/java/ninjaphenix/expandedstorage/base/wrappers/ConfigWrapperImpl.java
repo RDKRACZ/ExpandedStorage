@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.base.wrappers;
+package ninjaphenix.expandedstorage.wrappers;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.toml.TomlFormat;
@@ -7,11 +7,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraftforge.fml.loading.FMLPaths;
 import ninjaphenix.expandedstorage.base.BaseCommon;
-import ninjaphenix.expandedstorage.base.config.Config;
-import ninjaphenix.expandedstorage.base.config.ConfigV0;
-import ninjaphenix.expandedstorage.base.config.Converter;
-import ninjaphenix.expandedstorage.base.config.LegacyFactory;
-import ninjaphenix.expandedstorage.base.internal_api.Utils;
+import ninjaphenix.expandedstorage.config.Config;
+import ninjaphenix.expandedstorage.config.ConfigV0;
+import ninjaphenix.expandedstorage.config.Converter;
+import ninjaphenix.expandedstorage.config.LegacyFactory;
+import ninjaphenix.expandedstorage.internal_api.Utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.barrel.block.misc;
+package ninjaphenix.expandedstorage.block.misc;
 
 import net.minecraft.core.Vec3i;
 import net.minecraft.resources.ResourceLocation;
@@ -9,8 +9,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import ninjaphenix.expandedstorage.barrel.block.BarrelBlock;
-import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.block.BarrelBlock;
+import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
 
 public class BarrelBlockEntity extends AbstractOpenableStorageBlockEntity {
     private int observerCount;

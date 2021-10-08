@@ -1,8 +1,8 @@
-package ninjaphenix.expandedstorage.base.config;
+package ninjaphenix.expandedstorage.config;
 
 import com.electronwill.nightconfig.core.Config;
 import net.minecraft.resources.ResourceLocation;
-import ninjaphenix.expandedstorage.base.internal_api.Utils;
+import ninjaphenix.expandedstorage.internal_api.Utils;
 import org.jetbrains.annotations.Nullable;
 
 public final class LegacyFactory implements Converter<Config, ConfigV0> {

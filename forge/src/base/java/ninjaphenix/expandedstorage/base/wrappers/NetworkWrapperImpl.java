@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.base.wrappers;
+package ninjaphenix.expandedstorage.wrappers;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -21,9 +21,9 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
-import ninjaphenix.expandedstorage.base.internal_api.Utils;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.ServerMenuFactory;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.SyncedMenuFactory;
+import ninjaphenix.expandedstorage.internal_api.Utils;
+import ninjaphenix.expandedstorage.internal_api.inventory.ServerMenuFactory;
+import ninjaphenix.expandedstorage.internal_api.inventory.SyncedMenuFactory;
 import ninjaphenix.expandedstorage.base.inventory.PagedMenu;
 import ninjaphenix.expandedstorage.base.inventory.ScrollableMenu;
 import ninjaphenix.expandedstorage.base.inventory.SingleMenu;

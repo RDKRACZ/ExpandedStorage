@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.base.internal_api.block.misc;
+package ninjaphenix.expandedstorage.internal_api.block.misc;
 
 import com.google.common.base.Suppliers;
 import net.minecraft.core.BlockPos;
@@ -24,8 +24,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
-import ninjaphenix.expandedstorage.base.internal_api.block.AbstractOpenableStorageBlock;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractMenu;
+import ninjaphenix.expandedstorage.internal_api.block.AbstractOpenableStorageBlock;
+import ninjaphenix.expandedstorage.internal_api.inventory.AbstractMenu;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;

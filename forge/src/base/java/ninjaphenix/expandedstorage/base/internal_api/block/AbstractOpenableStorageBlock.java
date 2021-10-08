@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.base.internal_api.block;
+package ninjaphenix.expandedstorage.internal_api.block;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -21,10 +21,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
-import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractStorageBlockEntity;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.SyncedMenuFactory;
-import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
+import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractStorageBlockEntity;
+import ninjaphenix.expandedstorage.internal_api.inventory.SyncedMenuFactory;
+import ninjaphenix.expandedstorage.wrappers.NetworkWrapper;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;

@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.base.wrappers;
+package ninjaphenix.expandedstorage.wrappers;
 
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -16,8 +16,8 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.network.IContainerFactory;
-import ninjaphenix.expandedstorage.base.internal_api.Utils;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.ClientMenuFactory;
+import ninjaphenix.expandedstorage.internal_api.Utils;
+import ninjaphenix.expandedstorage.internal_api.inventory.ClientMenuFactory;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Supplier;

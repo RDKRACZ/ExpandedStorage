@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkEvent;
-import ninjaphenix.expandedstorage.base.client.menu.PickScreen;
+import ninjaphenix.expandedstorage.client.menu.PickScreen;
 
 import java.util.HashSet;
 import java.util.Set;

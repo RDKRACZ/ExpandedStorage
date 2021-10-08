@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.base.internal_api.block;
+package ninjaphenix.expandedstorage.internal_api.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,13 +23,13 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import ninjaphenix.expandedstorage.base.internal_api.Utils;
-import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
-import ninjaphenix.expandedstorage.base.internal_api.block.misc.AbstractStorageBlockEntity;
-import ninjaphenix.expandedstorage.base.internal_api.block.misc.CursedChestType;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.CombinedIItemHandlerModifiable;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.SyncedMenuFactory;
-import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
+import ninjaphenix.expandedstorage.internal_api.Utils;
+import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractStorageBlockEntity;
+import ninjaphenix.expandedstorage.internal_api.block.misc.CursedChestType;
+import ninjaphenix.expandedstorage.internal_api.inventory.CombinedIItemHandlerModifiable;
+import ninjaphenix.expandedstorage.internal_api.inventory.SyncedMenuFactory;
+import ninjaphenix.expandedstorage.wrappers.NetworkWrapper;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;

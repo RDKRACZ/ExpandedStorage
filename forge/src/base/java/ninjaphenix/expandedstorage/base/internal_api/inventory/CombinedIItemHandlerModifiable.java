@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.base.internal_api.inventory;
+package ninjaphenix.expandedstorage.internal_api.inventory;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;

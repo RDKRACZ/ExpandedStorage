@@ -9,8 +9,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkHooks;
-import ninjaphenix.expandedstorage.base.internal_api.inventory.AbstractMenu;
-import ninjaphenix.expandedstorage.base.wrappers.NetworkWrapper;
+import ninjaphenix.expandedstorage.internal_api.inventory.AbstractMenu;
+import ninjaphenix.expandedstorage.wrappers.NetworkWrapper;
 
 import java.util.function.Supplier;
 

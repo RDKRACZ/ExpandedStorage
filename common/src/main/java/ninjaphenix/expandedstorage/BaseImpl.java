@@ -4,17 +4,13 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
-import ninjaphenix.expandedstorage.client.menu.PickScreen;
 import ninjaphenix.expandedstorage.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.internal_api.Utils;
 import ninjaphenix.expandedstorage.internal_api.block.AbstractStorageBlock;
 import ninjaphenix.expandedstorage.internal_api.item.BlockUpgradeBehaviour;
 import ninjaphenix.expandedstorage.internal_api.tier.Tier;
 import ninjaphenix.expandedstorage.base.item.StorageConversionKit;
-import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
@@ -28,8 +24,6 @@ public final class BaseImpl implements BaseApi {
     private final Map<Predicate<Block>, BlockUpgradeBehaviour> BLOCK_UPGRADE_BEHAVIOURS = new HashMap<>();
     private final Map<Pair<ResourceLocation, ResourceLocation>, AbstractStorageBlock> BLOCKS = new HashMap<>();
     private Map<ResourceLocation, Item> items = new LinkedHashMap<>();
-    private Item tabIcon = Items.ENDER_CHEST;
-    private int suitability = -1;
 
     private BaseImpl() {
 
@@ -83,15 +77,6 @@ public final class BaseImpl implements BaseApi {
     }
 
     @Override
-    public void registerContainerButtonSettings(ResourceLocation screenType, ResourceLocation texture, Component text) {
-        if (PlatformUtils.getInstance().isClient()) {
-            PickScreen.declareButtonSettings(screenType, texture, text);
-        } else {
-            throw new IllegalStateException("registerContainerButtonSettings is client only");
-        }
-    }
-
-    @Override
     public void registerTieredBlock(AbstractStorageBlock block) {
         BLOCKS.putIfAbsent(new Pair<>(block.getBlockType(), block.getBlockTier()), block);
     }
@@ -107,19 +92,5 @@ public final class BaseImpl implements BaseApi {
         Map<ResourceLocation, Item> items = this.items;
         this.items = null;
         return items;
-    }
-
-    @Override
-    public void offerTabIcon(Item tabIcon, int suitability) {
-        if (this.suitability < suitability) {
-            this.suitability = suitability;
-            this.tabIcon = tabIcon;
-        }
-    }
-
-    @Override
-    @ApiStatus.Internal
-    public ItemStack tabIcon() {
-        return new ItemStack(tabIcon);
     }
 }

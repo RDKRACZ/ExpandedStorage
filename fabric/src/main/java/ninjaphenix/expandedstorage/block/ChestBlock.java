@@ -19,9 +19,8 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
+import ninjaphenix.expandedstorage.CommonMain;
 import ninjaphenix.expandedstorage.internal_api.block.misc.CursedChestType;
-import ninjaphenix.expandedstorage.ChestCommon;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,7 +71,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
 
     @Override
     public ResourceLocation getBlockType() {
-        return ChestCommon.BLOCK_TYPE;
+        return CommonMain.CHEST_BLOCK_TYPE;
     }
 
     @Override
@@ -94,7 +93,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
     @NotNull
     @Override
     public BlockEntity newBlockEntity(BlockGetter getter) {
-        return new ChestBlockEntity(ChestCommon.getBlockEntityType(), this.getBlockId());
+        return new ChestBlockEntity(CommonMain.getChestBlockEntityType(), this.getBlockId());
     }
 
     @Override
@@ -105,7 +104,7 @@ public final class ChestBlock extends AbstractChestBlock<ChestBlockEntity> imple
 
     @Override
     protected BlockEntityType<ChestBlockEntity> getBlockEntityType() {
-        return ChestCommon.getBlockEntityType();
+        return CommonMain.getChestBlockEntityType();
     }
 
     @Override

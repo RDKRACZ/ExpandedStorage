@@ -19,7 +19,6 @@ public enum CursedChestType implements StringRepresentable {
     private final int offset;
 
     CursedChestType(String name, int offset) {
-        // todo: can maybe replace name with accessing Enum's name() private field
         this.name = name;
         this.offset = offset;
     }

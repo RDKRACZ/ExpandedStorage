@@ -2,24 +2,13 @@
   "schemaVersion": 1,
   "accessWidener": "expandedstorage_base.accessWidener",
   "depends": {
-    "fabric": ">=0.29.3",
-    "fabricloader": ">=0.7.4",
-    "minecraft": "~1.16.4"
+    "fabric": ">=0.40.6",
+    "fabricloader": ">=0.11.6",
+    "minecraft": ">=1.16.5"
   },
   "entrypoints": {
     "main": [
-      "ninjaphenix.expandedstorage.BaseMain"
-    ],
-    "rei_plugins": [
-      "ninjaphenix.expandedstorage.client.ReiCompat"
-    ],
-    "modmenu": [
-      "ninjaphenix.expandedstorage.client.ModMenuCompat"
-    ],
-    "expandedstorage-module": [
-      "ninjaphenix.expandedstorage.BarrelMain",
-      "ninjaphenix.expandedstorage.ChestMain",
-      "ninjaphenix.expandedstorage.OldChestMain"
+      "ninjaphenix.expandedstorage.Main"
     ]
   },
   "environment": "*",

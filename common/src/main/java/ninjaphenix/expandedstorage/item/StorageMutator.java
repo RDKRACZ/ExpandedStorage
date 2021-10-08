@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.base.item;
+package ninjaphenix.expandedstorage.item;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -26,14 +26,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
+import ninjaphenix.expandedstorage.CommonMain;
 import ninjaphenix.expandedstorage.block.BarrelBlock;
 import ninjaphenix.expandedstorage.internal_api.BaseApi;
 import ninjaphenix.expandedstorage.internal_api.Utils;
-import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
-import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.block.AbstractChestBlock;
+import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.internal_api.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.internal_api.item.MutationMode;
-import ninjaphenix.expandedstorage.ChestCommon;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 import org.jetbrains.annotations.Nullable;
 
@@ -118,8 +118,8 @@ public class StorageMutator extends Item {
                             if (direction != null) {
                                 CursedChestType type = ChestBlock.getChestType(state.getValue(HORIZONTAL_FACING), direction);
                                 Predicate<BlockEntity> isRandomizable = b -> b instanceof RandomizableContainerBlockEntity;
-                                this.convertBlock(level, state, pos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type, isRandomizable);
-                                this.convertBlock(level, otherState, otherPos, BaseApi.getInstance().getTieredBlock(ChestCommon.BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type.getOpposite(), isRandomizable);
+                                this.convertBlock(level, state, pos, BaseApi.getInstance().getTieredBlock(CommonMain.CHEST_BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type, isRandomizable);
+                                this.convertBlock(level, otherState, otherPos, BaseApi.getInstance().getTieredBlock(CommonMain.CHEST_BLOCK_TYPE, Utils.WOOD_TIER.getId()), Utils.WOOD_STACK_COUNT, type.getOpposite(), isRandomizable);
                                 tag.remove("pos");
                                 //noinspection ConstantConditions
                                 player.displayClientMessage(new TranslatableComponent("tooltip.expandedstorage.storage_mutator.merge_end"), true);

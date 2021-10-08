@@ -1,4 +1,4 @@
-package ninjaphenix.expandedstorage.internal_api.block.misc;
+package ninjaphenix.expandedstorage.block.misc;
 
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -6,6 +6,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
@@ -15,9 +16,11 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import ninjaphenix.expandedstorage.internal_api.block.AbstractOpenableStorageBlock;
-import ninjaphenix.expandedstorage.internal_api.inventory.AbstractMenu;
-import ninjaphenix.expandedstorage.internal_api.inventory.CombinedContainer;
+import ninjaphenix.container_library.api.helpers.VariableSidedInventory;
+import ninjaphenix.container_library.api.inventory.AbstractHandler;
+import ninjaphenix.container_library.api.v2.OpenableBlockEntityV2;
+import ninjaphenix.expandedstorage.block.AbstractOpenableStorageBlock;
+import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractStorageBlockEntity;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +30,7 @@ import java.util.function.IntUnaryOperator;
 
 @Internal
 @Experimental
-public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements WorldlyContainer {
+public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements WorldlyContainer, OpenableBlockEntityV2 {
     private final ResourceLocation blockId;
     protected Component menuTitle;
     private int slots;
@@ -44,10 +47,10 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
 
     protected static int countObservers(Level level, WorldlyContainer container, int x, int y, int z) {
         return level.getEntitiesOfClass(Player.class, new AABB(x - 5, y - 5, z - 5, x + 6, y + 6, z + 6)).stream()
-                    .filter(player -> player.containerMenu instanceof AbstractMenu<?>)
-                    .map(player -> ((AbstractMenu<?>) player.containerMenu).getContainer())
+                    .filter(player -> player.containerMenu instanceof AbstractHandler)
+                    .map(player -> ((AbstractHandler) player.containerMenu).getInventory())
                     .filter(openContainer -> openContainer == container ||
-                            openContainer instanceof CombinedContainer compoundContainer && compoundContainer.consistsPartlyOf(container))
+                            openContainer instanceof VariableSidedInventory inventory && inventory.containsPart(container))
                     .mapToInt(inv -> 1).sum();
     }
 
@@ -59,6 +62,11 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
             inventory = NonNullList.withSize(slots, ItemStack.EMPTY);
             menuTitle = block.getMenuTitle();
         }
+    }
+
+    @Override
+    public boolean canBeUsedBy(ServerPlayer player) {
+        return this.stillValid(player) && this.canPlayerInteractWith(player);
     }
 
     @Override

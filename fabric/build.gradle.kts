@@ -46,6 +46,7 @@ repositories {
         url = uri("https://jitpack.io/")
         content {
             includeGroup("com.github.Virtuoel")
+            includeGroup("com.github.NinjaPhenix")
         }
     }
     maven {
@@ -70,10 +71,13 @@ dependencies {
     modCompileOnly("me.shedaniel:RoughlyEnoughItems:${properties["rei_version"]}", excludeFabric)
     modRuntime("me.shedaniel:RoughlyEnoughItems:${properties["rei_version"]}")
 
-    modCompileOnly("io.github.prospector:modmenu:${properties["modmenu_version"]}", excludeFabric)
-    modRuntime("io.github.prospector:modmenu:${properties["modmenu_version"]}")
+    modCompileOnly("com.terraformersmc:modmenu:${properties["modmenu_version"]}", excludeFabric)
+    modRuntime("com.terraformersmc:modmenu:${properties["modmenu_version"]}")
 
     modCompileOnly("de.siphalor:amecsapi-1.16:1.1+")
+
+    modCompileOnly("com.github.NinjaPhenix:container-library:6e6878595b16115e8878f841821c7bcfbfef5546:fabric", excludeFabric)
+    modRuntime("com.github.NinjaPhenix:container-library:6e6878595b16115e8878f841821c7bcfbfef5546:fabric")
 }
 
 tasks.withType<ProcessResources>() {

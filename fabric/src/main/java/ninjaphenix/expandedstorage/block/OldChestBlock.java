@@ -4,8 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import ninjaphenix.expandedstorage.internal_api.block.AbstractChestBlock;
-import ninjaphenix.expandedstorage.OldChestCommon;
+import ninjaphenix.expandedstorage.CommonMain;
 import ninjaphenix.expandedstorage.block.misc.OldChestBlockEntity;
 
 public final class OldChestBlock extends AbstractChestBlock<OldChestBlockEntity> {
@@ -16,16 +15,16 @@ public final class OldChestBlock extends AbstractChestBlock<OldChestBlockEntity>
 
     @Override
     protected BlockEntityType<OldChestBlockEntity> getBlockEntityType() {
-        return OldChestCommon.getBlockEntityType();
+        return CommonMain.getOldChestBlockEntityType();
     }
 
     @Override
     public ResourceLocation getBlockType() {
-        return OldChestCommon.BLOCK_TYPE;
+        return CommonMain.OLD_CHEST_BLOCK_TYPE;
     }
 
     @Override
     public BlockEntity newBlockEntity(BlockGetter getter) {
-        return new OldChestBlockEntity(OldChestCommon.getBlockEntityType(), this.getBlockId());
+        return new OldChestBlockEntity(CommonMain.getOldChestBlockEntityType(), this.getBlockId());
     }
 }

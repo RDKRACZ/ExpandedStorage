@@ -5,6 +5,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DoubleBlockCombiner;
@@ -12,7 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.TickableBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import ninjaphenix.expandedstorage.internal_api.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.block.AbstractChestBlock;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 
 public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity implements TickableBlockEntity {
@@ -104,5 +105,14 @@ public final class ChestBlockEntity extends AbstractOpenableStorageBlockEntity i
             level.blockEvent(worldPosition, block, ChestBlock.SET_OBSERVER_COUNT_EVENT, observerCount);
             level.updateNeighborsAt(worldPosition, block);
         }
+    }
+
+    @Override
+    public Container getInventory() {
+        if (this.getBlockState().getBlock() instanceof AbstractChestBlock<?> block) {
+            return block.getContainer(this.getBlockState(), this.getLevel(), this.getBlockPos());
+        }
+
+        return null;
     }
 }

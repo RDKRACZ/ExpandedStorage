@@ -36,6 +36,7 @@ import java.util.function.BiPredicate;
 @Experimental
 public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockEntity> extends AbstractOpenableStorageBlock implements InventoryProvider {
     public static final EnumProperty<CursedChestType> CURSED_CHEST_TYPE = EnumProperty.of("type", CursedChestType.class);
+
     public AbstractChestBlock(Settings properties, Identifier blockId, Identifier blockTier, Identifier openingStat, int slots) {
         super(properties, blockId, blockTier, openingStat, slots);
         this.setDefaultState(this.getStateManager().getDefaultState()
@@ -164,8 +165,13 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
             if (offsetState.get(AbstractChestBlock.CURSED_CHEST_TYPE) == newType.getOpposite() && facing == offsetState.get(Properties.HORIZONTAL_FACING)) {
                 return state.with(AbstractChestBlock.CURSED_CHEST_TYPE, newType);
             }
-        } else if (world.getBlockState(pos.offset(getDirectionToAttached(state))).getBlock() != this) {
-            return state.with(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE);
+        } else {
+            BlockState otherState = world.getBlockState(pos.offset(AbstractChestBlock.getDirectionToAttached(state)));
+            if (otherState.getBlock() != this ||
+                    otherState.get(CURSED_CHEST_TYPE) != state.get(CURSED_CHEST_TYPE).getOpposite() ||
+                    state.get(Properties.HORIZONTAL_FACING) != state.get(Properties.HORIZONTAL_FACING)) {
+                return state.with(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE);
+            }
         }
         return super.getStateForNeighborUpdate(state, offset, offsetState, world, pos, offsetPos);
     }

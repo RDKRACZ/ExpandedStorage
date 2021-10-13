@@ -36,6 +36,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 @Experimental
 public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockEntity> extends AbstractOpenableStorageBlock implements WorldlyContainerHolder {
     public static final EnumProperty<CursedChestType> CURSED_CHEST_TYPE = EnumProperty.create("type", CursedChestType.class);
+
     public AbstractChestBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier, ResourceLocation openingStat, int slots) {
         super(properties, blockId, blockTier, openingStat, slots);
         this.registerDefaultState(this.getStateDefinition().any()
@@ -164,8 +165,13 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
             if (offsetState.getValue(AbstractChestBlock.CURSED_CHEST_TYPE) == newType.getOpposite() && facing == offsetState.getValue(BlockStateProperties.HORIZONTAL_FACING)) {
                 return state.setValue(AbstractChestBlock.CURSED_CHEST_TYPE, newType);
             }
-        } else if (world.getBlockState(pos.relative(getDirectionToAttached(state))).getBlock() != this) {
-            return state.setValue(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE);
+        } else {
+            BlockState otherState = world.getBlockState(pos.relative(AbstractChestBlock.getDirectionToAttached(state)));
+            if (otherState.getBlock() != this ||
+                    otherState.getValue(CURSED_CHEST_TYPE) != state.getValue(CURSED_CHEST_TYPE).getOpposite() ||
+                    state.getValue(BlockStateProperties.HORIZONTAL_FACING) != state.getValue(BlockStateProperties.HORIZONTAL_FACING)) {
+                return state.setValue(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE);
+            }
         }
         return super.updateShape(state, offset, offsetState, world, pos, offsetPos);
     }

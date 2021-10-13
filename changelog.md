@@ -1,0 +1,6 @@
+- Avoid splitting upgrade tooltips over 2 lines on forge since it has automatic tooltip wrapping.
+- Fix inefficiency in transfer-api-v1 impl, thanks Technici4n
+- Add French translations, thanks Wombhy.
+- Fix a minor bug in update neighbour logic.
+- Fix old chests counting observers when it need not.
+- Fix odd behaviour when placed by carrier.

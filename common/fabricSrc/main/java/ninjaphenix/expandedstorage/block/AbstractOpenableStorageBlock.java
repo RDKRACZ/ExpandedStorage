@@ -3,7 +3,9 @@ package ninjaphenix.expandedstorage.block;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ChestBlock;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -73,5 +75,6 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
 
     public void onInitialOpen(ServerPlayerEntity player) {
         player.incrementStat(openingStat);
+        PiglinBrain.onGuardedBlockInteracted(player, true);
     }
 }

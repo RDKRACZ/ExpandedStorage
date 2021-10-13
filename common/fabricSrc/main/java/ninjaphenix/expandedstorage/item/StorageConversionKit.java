@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -13,6 +14,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.Utils;
+import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -27,8 +29,13 @@ public final class StorageConversionKit extends Item {
         super(properties);
         this.from = from;
         this.to = to;
-        this.instructionsFirst = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_1", Utils.ALT_USE).formatted(Formatting.GRAY);
-        this.instructionsSecond = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_2", Utils.ALT_USE).formatted(Formatting.GRAY);
+        if (PlatformUtils.getInstance().isForge()) {
+            this.instructionsFirst = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_1", Utils.ALT_USE).formatted(Formatting.GRAY).append(Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_2", Utils.ALT_USE).formatted(Formatting.GRAY));
+            this.instructionsSecond = new LiteralText("");
+        } else {
+            this.instructionsFirst = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_1", Utils.ALT_USE).formatted(Formatting.GRAY);
+            this.instructionsSecond = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_2", Utils.ALT_USE).formatted(Formatting.GRAY);
+        }
     }
 
     @Override

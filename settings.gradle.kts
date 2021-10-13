@@ -5,9 +5,10 @@ pluginManagement {
         eachPlugin {
             if (requested.id.toString() == "net.minecraftforge.gradle") {
                 useModule("net.minecraftforge.gradle:ForgeGradle:${requested.version}")
-            }
-            if (requested.id.toString() == "ninjaphenix.minecraftforge.gradle") {
-                useModule("ninjaphenix.minecraftforge.gradle:ForgeGradle:${requested.version}")
+            } else if (requested.id.toString() == "ninjaphenix.gradle-utils") {
+                useModule("com.gitlab.NinjaPhenix.gradle-utils:gradle-utils:${requested.version}")
+            } else if (requested.id.toString() == "org.spongepowered.mixin") {
+                useModule("org.spongepowered:mixingradle:${requested.version}")
             }
         }
     }
@@ -15,6 +16,10 @@ pluginManagement {
         maven {
             name = "Fabric"
             url = uri("https://maven.fabricmc.net/")
+        }
+        maven {
+            name = "SpongePowered"
+            url = uri("https://repo.spongepowered.org/repository/maven-public/")
         }
         maven {
             name = "MinecraftForge"
@@ -28,8 +33,8 @@ pluginManagement {
                 }
             }
             filter {
-                includeGroup("com.gitlab.ninjaphenix")
-                includeGroup("com.gitlab.ninjaphenix.gradle-utils")
+                includeGroup("com.gitlab.NinjaPhenix")
+                includeGroup("com.gitlab.NinjaPhenix.gradle-utils")
             }
         }
         gradlePluginPortal()

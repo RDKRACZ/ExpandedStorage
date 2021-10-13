@@ -2,8 +2,8 @@ import com.gitlab.ninjaphenix.gradle.api.task.MinifyJsonTask
 import net.fabricmc.loom.task.RemapJarTask
 
 plugins {
-    alias(libs.plugins.gradleUtils)
-    alias(libs.plugins.fabricLoom)
+    alias(libs.plugins.gradle.utils)
+    alias(libs.plugins.gradle.fabric)
 }
 
 loom {
@@ -25,15 +25,10 @@ loom {
 }
 
 repositories {
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = "JitPack"
-                url = uri("https://jitpack.io/")
-            }
-        }
-        filter {
-            includeGroup("com.github.Virtuoel")
+    maven {
+        url  = uri("https://cursemaven.com")
+        content {
+            includeGroup("curse.maven")
         }
     }
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
@@ -46,21 +41,26 @@ val excludeFabric: (ModuleDependency) -> Unit = {
 }
 
 dependencies {
-    minecraft(libs.minecraft.fabric)
-    mappings("net.fabricmc:yarn:1.17.1+build.61")
+    minecraft(group = "com.mojang", name = "minecraft", version = "1.17.1")
+    mappings(group = "net.fabricmc", name = "yarn", version = "1.17.1+build.61")
 
-    modImplementation(libs.fabric.loader)
-    modApi(libs.fabric.api)
-    modImplementation(libs.containerLibrary.fabric) {
+    modImplementation(group = "net.fabricmc", name = "fabric-loader", version = properties["fabric_loader_version"] as String)
+    implementation(group = "org.jetbrains", name = "annotations", version = properties["jetbrains_annotations_version"] as String)
+    modImplementation(group = "net.fabricmc.fabric-api", name = "fabric-api", version = properties["fabric_api_version"] as String)
+    modImplementation(group = "ninjaphenix", name = "container_library", version = "1.2.2+1.17.1", classifier = "fabric") {
         isTransitive = false
     }
 
     // For chest module
-    modCompileOnly(libs.statement, excludeFabric)
-    modCompileOnly(libs.towelette, excludeFabric)
-    modCompileOnly(libs.heyThatsMine)
+    modCompileOnly(group = "curse.maven", name = "statement-340604", version = "3423826") {
+        also(excludeFabric)
+    }
+    modCompileOnly(group = "curse.maven", name = "towelette-309338", version = "3398761") {
+        also(excludeFabric)
+    }
+
     modRuntimeOnly("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
-    modRuntimeOnly(libs.heyThatsMine)
+    modImplementation(group = "local", name = "htm", version = "dda0f76870e3a424af53416603ff489b1c733b3d")
 }
 
 tasks.withType<ProcessResources> {

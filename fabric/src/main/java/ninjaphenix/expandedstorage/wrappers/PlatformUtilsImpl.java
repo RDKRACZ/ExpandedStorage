@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 
 public final class PlatformUtilsImpl extends PlatformUtils {
     PlatformUtilsImpl() {
-        super(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT);
+        super(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT, false);
     }
 
     @Override

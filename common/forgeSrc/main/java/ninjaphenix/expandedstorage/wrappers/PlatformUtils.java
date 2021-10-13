@@ -13,13 +13,19 @@ import net.minecraft.world.level.block.state.BlockState;
 public abstract class PlatformUtils {
     private static PlatformUtils INSTANCE;
     private final boolean isClient;
+    private final boolean isForge;
 
-    protected PlatformUtils(boolean isClient) {
+    protected PlatformUtils(boolean isClient, boolean isForge) {
         this.isClient = isClient;
+        this.isForge = isForge;
     }
 
-    public boolean isClient() {
+    public final boolean isClient() {
         return isClient;
+    }
+
+    public final boolean isForge() {
+        return isForge;
     }
 
     public static PlatformUtils getInstance() {

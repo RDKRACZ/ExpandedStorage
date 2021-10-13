@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 
 final class PlatformUtilsImpl extends PlatformUtils {
     PlatformUtilsImpl() {
-        super(FMLLoader.getDist() == Dist.CLIENT);
+        super(FMLLoader.getDist() == Dist.CLIENT, true);
     }
 
     @Override

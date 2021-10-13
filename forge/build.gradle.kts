@@ -2,8 +2,13 @@ import com.gitlab.ninjaphenix.gradle.api.task.MinifyJsonTask
 import org.gradle.jvm.tasks.Jar
 
 plugins {
-    alias(libs.plugins.gradleUtils)
-    alias(libs.plugins.forgeGradle)
+    alias(libs.plugins.gradle.utils)
+    alias(libs.plugins.gradle.forge)
+    alias(libs.plugins.gradle.mixin)
+}
+
+mixin {
+    disableAnnotationProcessorCheck()
 }
 
 minecraft {
@@ -51,15 +56,17 @@ minecraft {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
-    minecraft(libs.minecraft.forge)
-    implementation(fg.deobf(libs.containerLibrary.forge.asProvider()))
-    runtimeOnly(libs.containerLibrary.forge.runtime)
-    implementation(libs.jetbrainAnnotations)
+    minecraft("net.minecraftforge:forge:1.17.1-37.0.59")
+    implementation(group = "org.spongepowered", name = "mixin", version = properties["mixin_version"] as String)
+    annotationProcessor(group = "org.spongepowered", name = "mixin", version = properties["mixin_version"] as String, classifier = "processor")
+    implementation(fg.deobf("ninjaphenix:container_library:1.2.2+1.17.1:forge"))
+    //runtimeOnly(group = "com.github.NinjaPhenix", name = "container_library", version = "1.2.2", classifier = "forge")
+    implementation(group = "org.jetbrains", name = "annotations", version = properties["jetbrains_annotations_version"] as String)
 }
 
 tasks.withType<ProcessResources> {

@@ -1,7 +1,7 @@
 modLoader = "javafml"
 loaderVersion = "[37,)"
 issueTrackerURL = "https://github.com/NinjaPhenix/expanded-storage/issues/"
-license = "All Rights Reserved"
+license = "multiple"
 
 [[mods]]
 modId = "expandedstorage"

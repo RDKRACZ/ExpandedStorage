@@ -25,7 +25,7 @@
   },
   "icon": "icon.png",
   "id": "expandedstorage",
-  "license": "All Rights Reserved",
+  "license": "multiple",
   "name": "Expanded Storage",
   "version": "${version}"
 }

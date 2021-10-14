@@ -39,7 +39,9 @@ public class AbstractChestBlockEntity extends AbstractOpenableStorageBlockEntity
     @Override
     public void setChanged() {
         super.setChanged();
-        this.itemAccess = null;
+        if (PlatformUtils.getInstance().isForge()) {
+            this.itemAccess = null;
+        }
     }
 
     @Override

@@ -209,7 +209,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     }
 
     protected boolean isThis(Inventory inventory) {
-        return inventory == this.inventory.get();
+        return inventory == this.getInventory();
     }
 
     protected void onObserverCountChanged(World world, BlockPos pos, BlockState state, int oldCount, int newCount) {

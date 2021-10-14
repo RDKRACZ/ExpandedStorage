@@ -20,15 +20,20 @@ import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.FabricChestProperties;
 import ninjaphenix.expandedstorage.Utils;
 import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
@@ -50,8 +55,84 @@ public final class PlatformUtilsImpl extends PlatformUtils {
 
     @Override
     public Object createGenericItemAccess(AbstractOpenableStorageBlockEntity entity) {
+        DefaultedList<ItemStack> items = entity.getItems();
+        SidedInventory wrapped = entity.getInventory();
+        SidedInventory transferApiInventory = new SidedInventory() {
+            @Override
+            public int[] getAvailableSlots(Direction direction) {
+                return wrapped.getAvailableSlots(direction);
+            }
+
+            @Override
+            public boolean canInsert(int slot, ItemStack stack, @Nullable Direction direction) {
+                return wrapped.canInsert(slot, stack, direction);
+            }
+
+            @Override
+            public boolean canExtract(int slot, ItemStack stack, Direction direction) {
+                return wrapped.canExtract(slot, stack, direction);
+            }
+
+            @Override
+            public int size() {
+                return wrapped.size();
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return wrapped.isEmpty();
+            }
+
+            @Override
+            public ItemStack getStack(int slot) {
+                return wrapped.getStack(slot);
+            }
+
+            @Override
+            public ItemStack removeStack(int slot, int amount) {
+                return Inventories.splitStack(items, slot, amount);
+            }
+
+            @Override
+            public ItemStack removeStack(int slot) {
+                return wrapped.removeStack(slot);
+            }
+
+            @Override
+            public void setStack(int slot, ItemStack stack) {
+                items.set(slot, stack);
+                if (stack.getCount() > this.getMaxCountPerStack()) {
+                    stack.setCount(this.getMaxCountPerStack());
+                }
+            }
+
+            @Override
+            public void markDirty() {
+                wrapped.markDirty();
+            }
+
+            @Override
+            public boolean canPlayerUse(PlayerEntity player) {
+                return wrapped.canPlayerUse(player);
+            }
+
+            @Override
+            public void clear() {
+                wrapped.clear();
+            }
+
+            @Override
+            public void onOpen(PlayerEntity player) {
+                wrapped.onOpen(player);
+            }
+
+            @Override
+            public void onClose(PlayerEntity player) {
+                wrapped.onClose(player);
+            }
+        };
         //noinspection UnstableApiUsage,deprecation
-        return InventoryStorage.of(entity.getInventory(), null);
+        return InventoryStorage.of(transferApiInventory, null);
     }
 
     @Override

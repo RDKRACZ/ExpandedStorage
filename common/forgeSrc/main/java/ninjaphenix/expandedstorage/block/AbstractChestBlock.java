@@ -47,9 +47,15 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 
+/**
+ * Note to self, do not rename, used by chest tracker.
+ */
 @Internal
 @Experimental
 public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockEntity> extends AbstractOpenableStorageBlock implements WorldlyContainerHolder {
+    /**
+     * Note to self, do not rename, used by chest tracker.
+     */
     public static final EnumProperty<CursedChestType> CURSED_CHEST_TYPE = EnumProperty.create("type", CursedChestType.class);
 
     public AbstractChestBlock(Properties properties, ResourceLocation blockId, ResourceLocation blockTier, ResourceLocation openingStat, int slots) {
@@ -59,6 +65,9 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                                  .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH));
     }
 
+    /**
+     * Note to self, do not rename, used by chest tracker.
+     */
     public static Direction getDirectionToAttached(BlockState state) {
         CursedChestType value = state.getValue(AbstractChestBlock.CURSED_CHEST_TYPE);
         if (value == CursedChestType.TOP) {

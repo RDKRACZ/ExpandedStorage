@@ -47,9 +47,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiPredicate;
 
+/**
+ * Note to self, do not rename, used by chest tracker.
+ */
 @Internal
 @Experimental
 public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockEntity> extends AbstractOpenableStorageBlock implements InventoryProvider {
+    /**
+     * Note to self, do not rename, used by chest tracker.
+     */
     public static final EnumProperty<CursedChestType> CURSED_CHEST_TYPE = EnumProperty.of("type", CursedChestType.class);
 
     public AbstractChestBlock(Settings properties, Identifier blockId, Identifier blockTier, Identifier openingStat, int slots) {
@@ -59,6 +65,9 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
                                  .with(Properties.HORIZONTAL_FACING, Direction.NORTH));
     }
 
+    /**
+     * Note to self, do not rename, used by chest tracker.
+     */
     public static Direction getDirectionToAttached(BlockState state) {
         CursedChestType value = state.get(AbstractChestBlock.CURSED_CHEST_TYPE);
         if (value == CursedChestType.TOP) {

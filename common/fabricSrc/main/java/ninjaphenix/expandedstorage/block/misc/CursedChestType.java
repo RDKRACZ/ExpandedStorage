@@ -21,8 +21,9 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.util.Locale;
 
-@Internal
-@Experimental
+/**
+ * Note to self, do not rename, used by chest tracker.
+ */
 public enum CursedChestType implements StringIdentifiable {
     TOP(-1),
     BOTTOM(-1),

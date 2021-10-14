@@ -40,6 +40,6 @@ public final class OldChestBlock extends AbstractChestBlock<AbstractChestBlockEn
 
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new AbstractChestBlockEntity(Common.getOldChestBlockEntityType(), pos, state, this.getBlockId());
+        return new AbstractChestBlockEntity(Common.getOldChestBlockEntityType(), pos, state, this.getBlockId(), false);
     }
 }

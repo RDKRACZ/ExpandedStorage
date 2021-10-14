@@ -17,16 +17,18 @@ package ninjaphenix.expandedstorage.block.misc;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import ninjaphenix.container_library.api.helpers.VariableInventory;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class AbstractChestBlockEntity extends AbstractOpenableStorageBlockEntity {
-    public AbstractChestBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, Identifier blockId) {
-        super(blockEntityType, pos, state, blockId);
+    public AbstractChestBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, Identifier blockId, boolean observable) {
+        super(blockEntityType, pos, state, blockId, observable);
     }
 
     @Override
@@ -45,5 +47,10 @@ public class AbstractChestBlockEntity extends AbstractOpenableStorageBlockEntity
     public void setCachedState(BlockState state) {
         super.setCachedState(state);
         this.itemAccess = null;
+    }
+
+    @Override
+    protected boolean isThis(Inventory inventory) {
+        return super.isThis(inventory) || inventory instanceof VariableInventory variableInventory && variableInventory.containsPart(this.getInventory());
     }
 }

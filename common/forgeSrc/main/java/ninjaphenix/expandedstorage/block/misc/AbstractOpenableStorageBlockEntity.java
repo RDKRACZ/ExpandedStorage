@@ -149,9 +149,9 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         return arr;
     }
 
-    public AbstractOpenableStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, ResourceLocation blockId) {
+    public AbstractOpenableStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, ResourceLocation blockId, boolean observable) {
         super(blockEntityType, pos, state);
-        this.observerCounter = new ContainerOpenersCounter() {
+        this.observerCounter = !observable ? null : new ContainerOpenersCounter() {
             @Override
             protected void onOpen(Level world, BlockPos pos, BlockState state) {
                 AbstractOpenableStorageBlockEntity.this.onOpen(world, pos, state);
@@ -197,13 +197,13 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     }
 
     private void playerStartUsing(Player player) {
-        if (!player.isSpectator()) {
+        if (!player.isSpectator() && observerCounter != null) {
             observerCounter.incrementOpeners(player, this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
     }
 
     private void playerStopUsing(Player player) {
-        if (!player.isSpectator()) {
+        if (!player.isSpectator() && observerCounter != null) {
             observerCounter.decrementOpeners(player, this.getLevel(), this.getBlockPos(), this.getBlockState());
         }
     }

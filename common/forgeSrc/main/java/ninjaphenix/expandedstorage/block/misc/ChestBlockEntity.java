@@ -19,21 +19,19 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.Container;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DoubleBlockCombiner;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestLidController;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import ninjaphenix.container_library.api.helpers.VariableInventory;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 
 public final class ChestBlockEntity extends AbstractChestBlockEntity {
     private final ChestLidController lidController;
 
     public ChestBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state) {
-        super(blockEntityType, pos, state, ((ChestBlock) state.getBlock()).getBlockId());
+        super(blockEntityType, pos, state, ((ChestBlock) state.getBlock()).getBlockId(), true);
         lidController = new ChestLidController();
     }
 
@@ -67,11 +65,6 @@ public final class ChestBlockEntity extends AbstractChestBlockEntity {
     @Override
     protected void onObserverCountChanged(Level world, BlockPos pos, BlockState state, int oldCount, int newCount) {
         world.blockEvent(pos, state.getBlock(), ChestBlock.SET_OBSERVER_COUNT_EVENT, newCount);
-    }
-
-    @Override
-    protected boolean isThis(Container inventory) {
-        return super.isThis(inventory) || inventory instanceof VariableInventory variableInventory && variableInventory.containsPart(this.getInventory());
     }
 
     @Override

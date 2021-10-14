@@ -217,7 +217,7 @@ public final class Common {
         BlockItem netheriteChestItem = Common.oldChestItem(Common.NETHERITE_TIER, netheriteChestBlock);
         BlockItem[] items = new BlockItem[]{woodChestItem, ironChestItem, goldChestItem, diamondChestItem, obsidianChestItem, netheriteChestItem};
         // Init block entity type
-        oldChestBlockEntityType = BlockEntityType.Builder.of((pos, state) -> new AbstractChestBlockEntity(Common.getOldChestBlockEntityType(), pos, state, ((AbstractStorageBlock) state.getBlock()).getBlockId()), blocks).build(null);
+        oldChestBlockEntityType = BlockEntityType.Builder.of((pos, state) -> new AbstractChestBlockEntity(Common.getOldChestBlockEntityType(), pos, state, ((AbstractStorageBlock) state.getBlock()).getBlockId(), false), blocks).build(null);
         registrationConsumer.accept(blocks, items, oldChestBlockEntityType);
         // Register chest module icon & upgrade behaviours
         Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof OldChestBlock;

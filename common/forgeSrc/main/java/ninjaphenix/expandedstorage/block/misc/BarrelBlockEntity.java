@@ -29,7 +29,7 @@ import ninjaphenix.expandedstorage.block.BarrelBlock;
 
 public class BarrelBlockEntity extends AbstractOpenableStorageBlockEntity {
     public BarrelBlockEntity(BlockEntityType<BarrelBlockEntity> blockEntityType, BlockPos pos, BlockState state) {
-        super(blockEntityType, pos, state, ((BarrelBlock) state.getBlock()).getBlockId());
+        super(blockEntityType, pos, state, ((BarrelBlock) state.getBlock()).getBlockId(), true);
     }
 
     @Override

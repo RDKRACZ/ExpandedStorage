@@ -10,6 +10,8 @@ loom {
     runs {
         named("client") {
             ideConfigGenerated(false)
+            // Todo: remove and release when carrier is updated.
+            property("fabric.debug.loadLate", "expandedstorage")
         }
         named("server") {
             ideConfigGenerated(false)
@@ -29,6 +31,20 @@ repositories {
         url  = uri("https://cursemaven.com")
         content {
             includeGroup("curse.maven")
+        }
+    }
+    maven {
+        name = "Ladysnake maven"
+        url = uri("https://ladysnake.jfrog.io/artifactory/mods")
+        content {
+            includeGroup("io.github.onyxstudios.Cardinal-Components-API")
+        }
+    }
+    maven {
+        name = "Devan maven"
+        url = uri("https://raw.githubusercontent.com/Devan-Kerman/Devan-Repo/master/")
+        content {
+            includeGroup("net.devtech")
         }
     }
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
@@ -58,6 +74,12 @@ dependencies {
     modCompileOnly(group = "curse.maven", name = "towelette-309338", version = "3398761") {
         also(excludeFabric)
     }
+    modImplementation(group = "curse.maven", name = "carrier-409184", version = "3327390") {
+        also(excludeFabric)
+    }
+    modImplementation(group = "io.github.onyxstudios.Cardinal-Components-API", name = "cardinal-components-base", version = properties["cardinal_version"] as String)
+    modImplementation(group = "io.github.onyxstudios.Cardinal-Components-API", name = "cardinal-components-entity", version = properties["cardinal_version"] as String)
+    modRuntimeOnly(group = "net.devtech", name = "arrp", version = "0.4.2")
 
     modRuntimeOnly("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
     modImplementation(group = "local", name = "htm", version = "dda0f76870e3a424af53416603ff489b1c733b3d")

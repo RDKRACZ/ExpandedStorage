@@ -49,6 +49,7 @@ import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity
 import ninjaphenix.expandedstorage.block.misc.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.client.ChestBlockEntityRenderer;
+import ninjaphenix.expandedstorage.compat.carrier.CarrierCompat;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,6 +60,10 @@ public final class Main implements ModInitializer {
         Common.registerChestContent(Main::chestRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new);
         Common.registerOldChestContent(Main::oldChestRegistration);
         Common.registerBarrelContent(Main::barrelRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_barrels")));
+
+        if (FabricLoader.getInstance().isModLoaded("carrier")) {
+            CarrierCompat.initialize();
+        }
 
         /* GOALS
          *

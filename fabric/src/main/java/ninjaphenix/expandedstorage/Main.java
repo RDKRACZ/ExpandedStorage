@@ -61,10 +61,6 @@ public final class Main implements ModInitializer {
         Common.registerOldChestContent(Main::oldChestRegistration);
         Common.registerBarrelContent(Main::barrelRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_barrels")));
 
-        if (FabricLoader.getInstance().isModLoaded("carrier")) {
-            CarrierCompat.initialize();
-        }
-
         /* GOALS
          *
          * Provide a centralised api for kubejs and java to register new tiers and therefore blocks.
@@ -80,8 +76,10 @@ public final class Main implements ModInitializer {
     }
 
     private static void chestRegistration(ChestBlock[] blocks, BlockItem[] items, BlockEntityType<ChestBlockEntity> blockEntityType) {
+        final boolean carrierPresent = FabricLoader.getInstance().isModLoaded("carrier");
         for (ChestBlock block : blocks) {
             Registry.register(Registry.BLOCK, block.getBlockId(), block);
+            if (carrierPresent) CarrierCompat.registerChestBlock(block);
         }
         for (BlockItem item : items) {
             Registry.register(Registry.ITEM, ((ChestBlock) item.getBlock()).getBlockId(), item);
@@ -102,8 +100,10 @@ public final class Main implements ModInitializer {
     }
 
     private static void oldChestRegistration(OldChestBlock[] blocks, BlockItem[] items, BlockEntityType<AbstractChestBlockEntity> blockEntityType) {
+        final boolean carrierPresent = FabricLoader.getInstance().isModLoaded("carrier");
         for (OldChestBlock block : blocks) {
             Registry.register(Registry.BLOCK, block.getBlockId(), block);
+            if (carrierPresent) CarrierCompat.registerOldChestBlock(block);
         }
         for (BlockItem item : items) {
             Registry.register(Registry.ITEM, ((OldChestBlock) item.getBlock()).getBlockId(), item);

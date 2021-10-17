@@ -78,8 +78,8 @@ public final class Main implements ModInitializer {
     private static void chestRegistration(ChestBlock[] blocks, BlockItem[] items, BlockEntityType<ChestBlockEntity> blockEntityType) {
         final boolean carrierPresent = FabricLoader.getInstance().isModLoaded("carrier");
         for (ChestBlock block : blocks) {
-            Registry.register(Registry.BLOCK, block.getBlockId(), block);
             if (carrierPresent) CarrierCompat.registerChestBlock(block);
+            Registry.register(Registry.BLOCK, block.getBlockId(), block);
         }
         for (BlockItem item : items) {
             Registry.register(Registry.ITEM, ((ChestBlock) item.getBlock()).getBlockId(), item);
@@ -102,8 +102,8 @@ public final class Main implements ModInitializer {
     private static void oldChestRegistration(OldChestBlock[] blocks, BlockItem[] items, BlockEntityType<AbstractChestBlockEntity> blockEntityType) {
         final boolean carrierPresent = FabricLoader.getInstance().isModLoaded("carrier");
         for (OldChestBlock block : blocks) {
-            Registry.register(Registry.BLOCK, block.getBlockId(), block);
             if (carrierPresent) CarrierCompat.registerOldChestBlock(block);
+            Registry.register(Registry.BLOCK, block.getBlockId(), block);
         }
         for (BlockItem item : items) {
             Registry.register(Registry.ITEM, ((OldChestBlock) item.getBlock()).getBlockId(), item);

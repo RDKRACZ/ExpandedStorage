@@ -1,2 +1,3 @@
 - Add carrier support (fabric)
 - Use forge's impl for IItemHandler which should be better.
+- Fix some machines not accessing blocked chests.

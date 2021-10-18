@@ -252,7 +252,7 @@ public abstract class AbstractChestBlock<T extends AbstractOpenableStorageBlockE
     public WorldlyContainer getContainer(BlockState state, LevelAccessor world, BlockPos pos) {
         if (state.getBlock() instanceof AbstractChestBlock<?> block) {
             //noinspection unchecked
-            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, world, pos, false).get(new Property<AbstractOpenableStorageBlockEntity, WorldlyContainer>() {
+            return AbstractChestBlock.createPropertyRetriever((AbstractChestBlock<AbstractOpenableStorageBlockEntity>) block, state, world, pos, true).get(new Property<AbstractOpenableStorageBlockEntity, WorldlyContainer>() {
                 @Override
                 public WorldlyContainer get(AbstractOpenableStorageBlockEntity first, AbstractOpenableStorageBlockEntity second) {
                     return VariableSidedInventory.of(first.getInventory(), second.getInventory());

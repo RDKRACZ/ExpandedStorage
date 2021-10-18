@@ -26,6 +26,9 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.SemanticVersion;
+import net.fabricmc.loader.api.Version;
+import net.fabricmc.loader.api.VersionParsingException;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -76,9 +79,9 @@ public final class Main implements ModInitializer {
     }
 
     private static void chestRegistration(ChestBlock[] blocks, BlockItem[] items, BlockEntityType<ChestBlockEntity> blockEntityType) {
-        final boolean carrierPresent = FabricLoader.getInstance().isModLoaded("carrier");
+        final boolean addCarrierSupport = Main.shouldEnableCarrierCompat();
         for (ChestBlock block : blocks) {
-            if (carrierPresent) CarrierCompat.registerChestBlock(block);
+            if (addCarrierSupport) CarrierCompat.registerChestBlock(block);
             Registry.register(Registry.BLOCK, block.getBlockId(), block);
         }
         for (BlockItem item : items) {
@@ -93,6 +96,15 @@ public final class Main implements ModInitializer {
         }
     }
 
+    private static boolean shouldEnableCarrierCompat() {
+        try {
+            Version version = Version.parse("1.8.0");
+            return FabricLoader.getInstance().getModContainer("carrier").map(it -> it.getMetadata().getVersion().compareTo(version) > 0).orElse(false);
+        } catch (VersionParsingException ignored) {
+        }
+        return false;
+    }
+
     @SuppressWarnings({"deprecation", "UnstableApiUsage"})
     private static Storage<ItemVariant> getChestItemAccess(World world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction context) {
         //noinspection unchecked,deprecation,UnstableApiUsage
@@ -100,9 +112,9 @@ public final class Main implements ModInitializer {
     }
 
     private static void oldChestRegistration(OldChestBlock[] blocks, BlockItem[] items, BlockEntityType<AbstractChestBlockEntity> blockEntityType) {
-        final boolean carrierPresent = FabricLoader.getInstance().isModLoaded("carrier");
+        final boolean addCarrierSupport = Main.shouldEnableCarrierCompat();
         for (OldChestBlock block : blocks) {
-            if (carrierPresent) CarrierCompat.registerOldChestBlock(block);
+            if (addCarrierSupport) CarrierCompat.registerOldChestBlock(block);
             Registry.register(Registry.BLOCK, block.getBlockId(), block);
         }
         for (BlockItem item : items) {

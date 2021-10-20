@@ -1,3 +1,1 @@
-- Add carrier support (fabric) (requires future version of carrier, compat won't load until it is present)
-- Use forge's impl for IItemHandler which should be better.
-- Fix some machines not accessing blocked chests.
+- Fix crash with older loader versions, now requires 0.11.7 or newer.

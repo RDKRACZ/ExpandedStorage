@@ -3,7 +3,7 @@
   "accessWidener": "expandedstorage.accessWidener",
   "depends": {
     "fabric": ">=0.39.0",
-    "fabricloader": ">=0.7.4",
+    "fabricloader": ">=0.11.7",
     "minecraft": "~1.17.1",
     "ninjaphenix_container_lib": ">=1.1.0"
   },

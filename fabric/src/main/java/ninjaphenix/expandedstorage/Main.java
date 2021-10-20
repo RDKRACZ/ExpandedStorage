@@ -27,7 +27,6 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.SemanticVersion;
-import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -98,8 +97,13 @@ public final class Main implements ModInitializer {
 
     private static boolean shouldEnableCarrierCompat() {
         try {
-            Version version = Version.parse("1.8.0");
-            return FabricLoader.getInstance().getModContainer("carrier").map(it -> it.getMetadata().getVersion().compareTo(version) > 0).orElse(false);
+            SemanticVersion version = SemanticVersion.parse("1.8.0");
+            return FabricLoader.getInstance().getModContainer("carrier").map(it -> {
+                if (it.getMetadata().getVersion() instanceof SemanticVersion carrierVersion) {
+                    return carrierVersion.compareTo(version) > 0;
+                }
+                return false;
+            }).orElse(false);
         } catch (VersionParsingException ignored) {
         }
         return false;

@@ -26,7 +26,7 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import ninjaphenix.expandedstorage.ForgeChestProperties;
 import ninjaphenix.expandedstorage.Utils;
-import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.AbstractAccessibleStorageBlockEntity;
 
 import java.util.function.Supplier;
 
@@ -46,7 +46,7 @@ final class PlatformUtilsImpl extends PlatformUtils {
     }
 
     @Override
-    public Object createGenericItemAccess(AbstractOpenableStorageBlockEntity entity) {
+    public Object createGenericItemAccess(AbstractAccessibleStorageBlockEntity entity) {
         return new InvWrapper(entity.getInventory());
     }
 

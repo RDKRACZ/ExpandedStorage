@@ -27,7 +27,7 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.block.BarrelBlock;
 
-public class BarrelBlockEntity extends AbstractOpenableStorageBlockEntity {
+public class BarrelBlockEntity extends AbstractOpenableStorageBlockEntity<BarrelBlock> {
     public BarrelBlockEntity(BlockEntityType<BarrelBlockEntity> blockEntityType, BlockPos pos, BlockState state) {
         super(blockEntityType, pos, state, ((BarrelBlock) state.getBlock()).getBlockId(), true);
     }

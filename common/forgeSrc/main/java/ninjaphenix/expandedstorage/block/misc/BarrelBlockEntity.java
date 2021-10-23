@@ -27,7 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import ninjaphenix.expandedstorage.block.BarrelBlock;
 
-public class BarrelBlockEntity extends AbstractOpenableStorageBlockEntity {
+public class BarrelBlockEntity extends AbstractOpenableStorageBlockEntity<BarrelBlock> {
     public BarrelBlockEntity(BlockEntityType<BarrelBlockEntity> blockEntityType, BlockPos pos, BlockState state) {
         super(blockEntityType, pos, state, ((BarrelBlock) state.getBlock()).getBlockId(), true);
     }

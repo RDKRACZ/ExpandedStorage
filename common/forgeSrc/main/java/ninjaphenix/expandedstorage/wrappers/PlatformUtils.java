@@ -15,7 +15,7 @@
  */
 package ninjaphenix.expandedstorage.wrappers;
 
-import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.AbstractAccessibleStorageBlockEntity;
 
 import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
@@ -52,7 +52,7 @@ public abstract class PlatformUtils {
 
     public abstract CreativeModeTab createTab(Supplier<ItemStack> icon);
 
-    public abstract Object createGenericItemAccess(AbstractOpenableStorageBlockEntity abstractOpenableStorageBlockEntity);
+    public abstract Object createGenericItemAccess(AbstractAccessibleStorageBlockEntity entity);
 
     public abstract Object createChestItemAccess(Level world, BlockState state, BlockPos pos, Direction side);
 }

@@ -19,7 +19,6 @@ import com.google.common.base.Suppliers;
 import ninjaphenix.container_library.api.inventory.AbstractHandler;
 import ninjaphenix.container_library.api.v2.OpenableBlockEntityV2;
 import ninjaphenix.expandedstorage.block.AbstractOpenableStorageBlock;
-import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +38,6 @@ import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.state.BlockState;
@@ -47,13 +45,12 @@ import net.minecraft.world.phys.Vec3;
 
 @Internal
 @Experimental
-public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorageBlockEntity implements OpenableBlockEntityV2 {
+public abstract class AbstractOpenableStorageBlockEntity extends AbstractAccessibleStorageBlockEntity implements OpenableBlockEntityV2 {
     private final ResourceLocation blockId;
     private final ContainerOpenersCounter observerCounter;
     protected Component defaultTitle;
     private int slots;
     private NonNullList<ItemStack> items;
-    protected Supplier<Object> itemAccess;
     private final Supplier<WorldlyContainer> inventory = Suppliers.memoize(() -> new WorldlyContainer() {
         private final int[] availableSlots = AbstractOpenableStorageBlockEntity.createAvailableSlots(this.getContainerSize());
 
@@ -180,22 +177,6 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         this.initialise(blockId);
     }
 
-    public static Object getItemAccess(Level world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction direction) {
-        if (blockEntity != null) {
-            AbstractOpenableStorageBlockEntity entity = (AbstractOpenableStorageBlockEntity) blockEntity;
-            if (entity.itemAccess == null) {
-                entity.itemAccess = Suppliers.memoize(() -> entity.createItemAccess(world, state, pos, direction));
-            }
-            return entity.itemAccess.get();
-        }
-        return null;
-
-    }
-
-    protected Object createItemAccess(Level world, BlockState state, BlockPos pos, @Nullable Direction side) {
-        return PlatformUtils.getInstance().createGenericItemAccess(this);
-    }
-
     private void playerStartUsing(Player player) {
         if (!player.isSpectator() && observerCounter != null) {
             observerCounter.incrementOpeners(player, this.getLevel(), this.getBlockPos(), this.getBlockState());
@@ -263,7 +244,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
         return tag;
     }
 
-    public NonNullList<ItemStack> getItems() {
+    public final NonNullList<ItemStack> getItems() {
         return this.items;
     }
 
@@ -273,7 +254,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractStorage
     }
 
     @Override
-    public WorldlyContainer getInventory() {
+    public final WorldlyContainer getInventory() {
         return inventory.get();
     }
 

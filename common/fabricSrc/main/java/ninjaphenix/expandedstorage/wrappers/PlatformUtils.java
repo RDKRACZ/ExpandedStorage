@@ -21,7 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.AbstractAccessibleStorageBlockEntity;
 
 import java.util.function.Supplier;
 
@@ -52,7 +52,7 @@ public abstract class PlatformUtils {
 
     public abstract ItemGroup createTab(Supplier<ItemStack> icon);
 
-    public abstract Object createGenericItemAccess(AbstractOpenableStorageBlockEntity abstractOpenableStorageBlockEntity);
+    public abstract Object createGenericItemAccess(AbstractAccessibleStorageBlockEntity entity);
 
     public abstract Object createChestItemAccess(World world, BlockState state, BlockPos pos, Direction side);
 }

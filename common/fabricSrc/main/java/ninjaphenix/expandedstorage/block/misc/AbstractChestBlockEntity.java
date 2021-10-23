@@ -40,7 +40,7 @@ public class AbstractChestBlockEntity extends AbstractOpenableStorageBlockEntity
     public void markDirty() {
         super.markDirty();
         if (PlatformUtils.getInstance().isForge()) {
-            this.itemAccess = null;
+            this.invalidateCache();
         }
     }
 
@@ -48,7 +48,7 @@ public class AbstractChestBlockEntity extends AbstractOpenableStorageBlockEntity
     @SuppressWarnings("deprecation")
     public void setCachedState(BlockState state) {
         super.setCachedState(state);
-        this.itemAccess = null;
+        this.invalidateCache();
     }
 
     @Override

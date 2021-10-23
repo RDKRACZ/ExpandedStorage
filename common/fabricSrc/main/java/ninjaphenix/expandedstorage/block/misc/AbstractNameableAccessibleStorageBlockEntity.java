@@ -16,50 +16,51 @@
 package ninjaphenix.expandedstorage.block.misc;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.inventory.ContainerLock;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import ninjaphenix.expandedstorage.block.AbstractStorageBlock;
-import org.jetbrains.annotations.ApiStatus.Experimental;
-import org.jetbrains.annotations.ApiStatus.Internal;
 
-@Internal
-@Experimental
-public abstract class AbstractStorageBlockEntity<T extends AbstractStorageBlock> extends BlockEntity {
-    private final Identifier blockId;
-    private ContainerLock lockKey;
+// todo: see if I can move all traits into one class using that one design pattern
+//  e.g. FlyBehaviour behaviour = FlyBehaviour.NONE;
+public abstract class AbstractNameableAccessibleStorageBlockEntity<T extends AbstractStorageBlock> extends AbstractAccessibleStorageBlockEntity<T> {
+    private Text title;
 
-    public AbstractStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, Identifier blockId) {
-        super(blockEntityType, pos, state);
-        lockKey = ContainerLock.EMPTY;
-        this.blockId = blockId;
-        this.initialise(blockId, (T) state.getBlock());
+    public AbstractNameableAccessibleStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, Identifier blockId) {
+        super(blockEntityType, pos, state, blockId);
     }
 
     @Override
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
-        lockKey = ContainerLock.fromNbt(tag);
+        if (tag.contains("CustomName", NbtElement.STRING_TYPE)) {
+            title = Text.Serializer.fromJson(tag.getString("CustomName"));
+        }
     }
 
     @Override
     public NbtCompound writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
-        lockKey.writeNbt(tag);
+        if (title != null) {
+            tag.putString("CustomName", Text.Serializer.toJson(title));
+        }
         return tag;
     }
 
-    public boolean usableBy(ServerPlayerEntity player) {
-        return lockKey == ContainerLock.EMPTY || !player.isSpectator() && lockKey.canOpen(player.getMainHandStack());
+    public final Text getTitle() {
+        return this.hasCustomTitle() ? title : this.getDefaultTitle();
     }
 
-    public final Identifier getBlockId() {
-        return blockId;
+    protected abstract Text getDefaultTitle();
+
+    public final boolean hasCustomTitle() {
+        return title != null;
     }
 
-    protected abstract void initialise(Identifier blockId, T block);
+    public final void setTitle(Text title) {
+        this.title = title;
+    }
 }

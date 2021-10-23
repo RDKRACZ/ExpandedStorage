@@ -23,10 +23,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import ninjaphenix.container_library.api.helpers.VariableInventory;
+import ninjaphenix.expandedstorage.block.AbstractChestBlock;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.Nullable;
 
-public class AbstractChestBlockEntity extends AbstractOpenableStorageBlockEntity {
+public class AbstractChestBlockEntity extends AbstractOpenableStorageBlockEntity<AbstractChestBlock<?>> {
     public AbstractChestBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, ResourceLocation blockId, boolean observable) {
         super(blockEntityType, pos, state, blockId, observable);
     }
@@ -40,7 +41,7 @@ public class AbstractChestBlockEntity extends AbstractOpenableStorageBlockEntity
     public void setChanged() {
         super.setChanged();
         if (PlatformUtils.getInstance().isForge()) {
-            this.invalidateCache();
+            this.invalidateItemAccess();
         }
     }
 
@@ -48,7 +49,7 @@ public class AbstractChestBlockEntity extends AbstractOpenableStorageBlockEntity
     @SuppressWarnings("deprecation")
     public void setBlockState(BlockState state) {
         super.setBlockState(state);
-        this.invalidateCache();
+        this.invalidateItemAccess();
     }
 
     @Override

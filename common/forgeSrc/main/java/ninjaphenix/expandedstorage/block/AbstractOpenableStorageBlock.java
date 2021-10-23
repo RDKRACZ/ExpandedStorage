@@ -31,6 +31,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -90,5 +91,13 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
     public void onInitialOpen(ServerPlayer player) {
         player.awardStat(openingStat);
         PiglinAi.angerNearbyPiglins(player, true);
+    }
+
+    // todo: move, should check for AbstractNameableAccessibleStorageBlockEntity
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        if (level.getBlockEntity(pos) instanceof AbstractOpenableStorageBlockEntity entity && stack.hasCustomHoverName()) {
+            entity.setTitle(stack.getHoverName());
+        }
     }
 }

@@ -21,20 +21,22 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import ninjaphenix.expandedstorage.block.AbstractStorageBlock;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-public abstract class AbstractAccessibleStorageBlockEntity extends AbstractStorageBlockEntity {
+public abstract class AbstractAccessibleStorageBlockEntity<T extends AbstractStorageBlock> extends AbstractStorageBlockEntity<T> {
     private Supplier<Object> itemAccess;
 
-    public AbstractAccessibleStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state) {
-        super(blockEntityType, pos, state);
+    public AbstractAccessibleStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, Identifier blockId) {
+        super(blockEntityType, pos, state, blockId);
     }
 
     public static Object getItemAccess(World world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction direction) {
@@ -53,7 +55,7 @@ public abstract class AbstractAccessibleStorageBlockEntity extends AbstractStora
         return PlatformUtils.getInstance().createGenericItemAccess(this);
     }
 
-    protected void invalidateCache() {
+    protected void invalidateItemAccess() {
         itemAccess = null;
     }
 

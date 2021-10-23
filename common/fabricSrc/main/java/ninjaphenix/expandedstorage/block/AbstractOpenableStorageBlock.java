@@ -18,8 +18,8 @@ package ninjaphenix.expandedstorage.block;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.ChestBlock;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -91,5 +91,13 @@ public abstract class AbstractOpenableStorageBlock extends AbstractStorageBlock 
     public void onInitialOpen(ServerPlayerEntity player) {
         player.incrementStat(openingStat);
         PiglinBrain.onGuardedBlockInteracted(player, true);
+    }
+
+    // todo: move, should check for AbstractNameableAccessibleStorageBlockEntity
+    @Override
+    public void onPlaced(World level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        if (level.getBlockEntity(pos) instanceof AbstractOpenableStorageBlockEntity entity && stack.hasCustomName()) {
+            entity.setTitle(stack.getName());
+        }
     }
 }

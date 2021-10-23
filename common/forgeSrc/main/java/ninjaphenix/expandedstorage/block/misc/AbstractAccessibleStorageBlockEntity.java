@@ -16,6 +16,7 @@
 package ninjaphenix.expandedstorage.block.misc;
 
 import com.google.common.base.Suppliers;
+import ninjaphenix.expandedstorage.block.AbstractStorageBlock;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +24,7 @@ import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -30,11 +32,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-public abstract class AbstractAccessibleStorageBlockEntity extends AbstractStorageBlockEntity {
+public abstract class AbstractAccessibleStorageBlockEntity<T extends AbstractStorageBlock> extends AbstractStorageBlockEntity<T> {
     private Supplier<Object> itemAccess;
 
-    public AbstractAccessibleStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state) {
-        super(blockEntityType, pos, state);
+    public AbstractAccessibleStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, ResourceLocation blockId) {
+        super(blockEntityType, pos, state, blockId);
     }
 
     public static Object getItemAccess(Level world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction direction) {
@@ -53,7 +55,7 @@ public abstract class AbstractAccessibleStorageBlockEntity extends AbstractStora
         return PlatformUtils.getInstance().createGenericItemAccess(this);
     }
 
-    protected void invalidateCache() {
+    protected void invalidateItemAccess() {
         itemAccess = null;
     }
 

@@ -22,10 +22,12 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import ninjaphenix.expandedstorage.FabricChestProperties;
+import ninjaphenix.expandedstorage.block.AbstractChestBlock;
+import ninjaphenix.expandedstorage.block.misc.AbstractAccessibleStorageBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
-import ninjaphenix.expandedstorage.block.misc.AbstractStorageBlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -34,11 +36,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 // todo: find alternative for this, mixins on mod classes aren't allowed but work.
 @Mixin(AbstractOpenableStorageBlockEntity.class)
-public abstract class HTMOpenableBlockEntitySupport extends AbstractStorageBlockEntity implements LockableObject {
+public abstract class HTMOpenableBlockEntitySupport extends AbstractAccessibleStorageBlockEntity<AbstractChestBlock<?>> implements LockableObject {
     private HTMContainerLock htmLock = new HTMContainerLock();
 
-    public HTMOpenableBlockEntitySupport(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state) {
-        super(blockEntityType, pos, state);
+    public HTMOpenableBlockEntitySupport(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, Identifier blockId) {
+        super(blockEntityType, pos, state, blockId);
     }
 
     @Inject(method = "readNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Inventories;readNbt(Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/util/collection/DefaultedList;)V"))

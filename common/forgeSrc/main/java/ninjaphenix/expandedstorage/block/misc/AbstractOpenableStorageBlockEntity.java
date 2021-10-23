@@ -27,7 +27,6 @@ import java.util.function.Supplier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -45,8 +44,7 @@ import net.minecraft.world.phys.Vec3;
 
 @Internal
 @Experimental
-public abstract class AbstractOpenableStorageBlockEntity extends AbstractAccessibleStorageBlockEntity implements OpenableBlockEntityV2 {
-    private final ResourceLocation blockId;
+public abstract class AbstractOpenableStorageBlockEntity<T extends AbstractOpenableStorageBlock> extends AbstractNameableAccessibleStorageBlockEntity<T> implements OpenableBlockEntityV2 {
     private final ContainerOpenersCounter observerCounter;
     protected Component defaultTitle;
     private int slots;
@@ -147,7 +145,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractAccessi
     }
 
     public AbstractOpenableStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, ResourceLocation blockId, boolean observable) {
-        super(blockEntityType, pos, state);
+        super(blockEntityType, pos, state, blockId);
         this.observerCounter = !observable ? null : new ContainerOpenersCounter() {
             @Override
             protected void onOpen(Level world, BlockPos pos, BlockState state) {
@@ -173,8 +171,6 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractAccessi
                 }
             }
         };
-        this.blockId = blockId;
-        this.initialise(blockId);
     }
 
     private void playerStartUsing(Player player) {
@@ -209,32 +205,27 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractAccessi
         observerCounter.recheckOpeners(this.getLevel(), this.getBlockPos(), this.getBlockState());
     }
 
-    private void initialise(ResourceLocation blockId) {
-        if (Registry.BLOCK.get(blockId) instanceof AbstractOpenableStorageBlock block) {
-            slots = block.getSlotCount();
-            items = NonNullList.withSize(slots, ItemStack.EMPTY);
-            defaultTitle = block.getInventoryTitle();
-        }
-    }
-
     @Override
     public Component getDefaultTitle() {
         return defaultTitle;
-    }
-
-    public final ResourceLocation getBlockId() {
-        return blockId;
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
         if (this.getBlockState().getBlock() instanceof AbstractOpenableStorageBlock block) {
-            this.initialise(block.getBlockId());
+            this.initialise(block.getBlockId(), (T) block);
             ContainerHelper.loadAllItems(tag, items);
         } else {
             throw new IllegalStateException("Block Entity attached to wrong block.");
         }
+    }
+
+    @Override
+    protected void initialise(ResourceLocation blockId, T block) {
+        slots = block.getSlotCount();
+        items = NonNullList.withSize(slots, ItemStack.EMPTY);
+        defaultTitle = block.getInventoryTitle();
     }
 
     @Override

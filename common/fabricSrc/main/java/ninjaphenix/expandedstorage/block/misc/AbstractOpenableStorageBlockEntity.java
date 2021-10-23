@@ -32,7 +32,6 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import ninjaphenix.container_library.api.inventory.AbstractHandler;
 import ninjaphenix.container_library.api.v2.OpenableBlockEntityV2;
@@ -45,8 +44,7 @@ import java.util.function.Supplier;
 
 @Internal
 @Experimental
-public abstract class AbstractOpenableStorageBlockEntity extends AbstractAccessibleStorageBlockEntity implements OpenableBlockEntityV2 {
-    private final Identifier blockId;
+public abstract class AbstractOpenableStorageBlockEntity<T extends AbstractOpenableStorageBlock> extends AbstractNameableAccessibleStorageBlockEntity<T> implements OpenableBlockEntityV2 {
     private final ViewerCountManager observerCounter;
     protected Text defaultTitle;
     private int slots;
@@ -147,7 +145,7 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractAccessi
     }
 
     public AbstractOpenableStorageBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, Identifier blockId, boolean observable) {
-        super(blockEntityType, pos, state);
+        super(blockEntityType, pos, state, blockId);
         this.observerCounter = !observable ? null : new ViewerCountManager() {
             @Override
             protected void onContainerOpen(World world, BlockPos pos, BlockState state) {
@@ -173,8 +171,6 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractAccessi
                 }
             }
         };
-        this.blockId = blockId;
-        this.initialise(blockId);
     }
 
     private void playerStartUsing(PlayerEntity player) {
@@ -209,32 +205,27 @@ public abstract class AbstractOpenableStorageBlockEntity extends AbstractAccessi
         observerCounter.updateViewerCount(this.getWorld(), this.getPos(), this.getCachedState());
     }
 
-    private void initialise(Identifier blockId) {
-        if (Registry.BLOCK.get(blockId) instanceof AbstractOpenableStorageBlock block) {
-            slots = block.getSlotCount();
-            items = DefaultedList.ofSize(slots, ItemStack.EMPTY);
-            defaultTitle = block.getInventoryTitle();
-        }
-    }
-
     @Override
     public Text getDefaultTitle() {
         return defaultTitle;
-    }
-
-    public final Identifier getBlockId() {
-        return blockId;
     }
 
     @Override
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
         if (this.getCachedState().getBlock() instanceof AbstractOpenableStorageBlock block) {
-            this.initialise(block.getBlockId());
+            this.initialise(block.getBlockId(), (T) block);
             Inventories.readNbt(tag, items);
         } else {
             throw new IllegalStateException("Block Entity attached to wrong block.");
         }
+    }
+
+    @Override
+    protected void initialise(Identifier blockId, T block) {
+        slots = block.getSlotCount();
+        items = DefaultedList.ofSize(slots, ItemStack.EMPTY);
+        defaultTitle = block.getInventoryTitle();
     }
 
     @Override

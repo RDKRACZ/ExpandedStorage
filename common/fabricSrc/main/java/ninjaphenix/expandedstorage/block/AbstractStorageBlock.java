@@ -48,11 +48,4 @@ public abstract class AbstractStorageBlock extends Block {
     public final Identifier getBlockTier() {
         return blockTier;
     }
-
-    @Override
-    public void onPlaced(World level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        if (level.getBlockEntity(pos) instanceof AbstractStorageBlockEntity entity && stack.hasCustomName()) {
-            entity.setTitle(stack.getName());
-        }
-    }
 }

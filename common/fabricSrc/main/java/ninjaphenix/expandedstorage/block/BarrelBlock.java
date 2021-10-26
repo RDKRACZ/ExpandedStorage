@@ -30,7 +30,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 import ninjaphenix.expandedstorage.Common;
-import ninjaphenix.expandedstorage.block.misc.BarrelBlockEntity;
 
 import java.util.Random;
 

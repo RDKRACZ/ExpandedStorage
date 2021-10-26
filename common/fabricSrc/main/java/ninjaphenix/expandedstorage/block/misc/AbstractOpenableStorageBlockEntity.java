@@ -214,7 +214,7 @@ public abstract class AbstractOpenableStorageBlockEntity<T extends AbstractOpena
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
         if (this.getCachedState().getBlock() instanceof AbstractOpenableStorageBlock block) {
-            this.initialise(block.getBlockId(), (T) block);
+            this.initialise(block.getBlockId(), (T) block); // dead code?
             Inventories.readNbt(tag, items);
         } else {
             throw new IllegalStateException("Block Entity attached to wrong block.");

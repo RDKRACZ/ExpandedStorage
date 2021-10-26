@@ -50,12 +50,12 @@ import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.block.BarrelBlock;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 import ninjaphenix.expandedstorage.block.OldChestBlock;
-import ninjaphenix.expandedstorage.block.misc.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
 import ninjaphenix.expandedstorage.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.block.AbstractStorageBlock;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
+import ninjaphenix.expandedstorage.block.misc.strategies.temp_be.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.item.BlockUpgradeBehaviour;
 import ninjaphenix.expandedstorage.tier.Tier;
 import ninjaphenix.expandedstorage.item.StorageConversionKit;
@@ -253,7 +253,8 @@ public final class Common {
         BlockItem netheriteBarrelItem = Common.barrelItem(Common.NETHERITE_TIER, netheriteBarrelBlock);
         BlockItem[] items = new BlockItem[]{ironBarrelItem, goldBarrelItem, diamondBarrelItem, obsidianBarrelItem, netheriteBarrelItem};
         // Init block entity type
-        barrelBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new BarrelBlockEntity(Common.getBarrelBlockEntityType(), pos, state), blocks).build(null);
+        barrelBlockEntityType = null; // todo: work out item access and lockable.
+        //barrelBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new BarrelBlockEntity(Common.getBarrelBlockEntityType(), pos, state), blocks).build(null);
         registration.accept(blocks, items, barrelBlockEntityType);
         // Register chest module icon & upgrade behaviours
         Predicate<Block> isUpgradableBarrelBlock = (block) -> block instanceof BarrelBlock || block instanceof net.minecraft.block.BarrelBlock || woodenBarrelTag.contains(block);

@@ -24,6 +24,7 @@ import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.ChestType;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.ContainerLock;
@@ -49,6 +50,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.block.BarrelBlock;
 import ninjaphenix.expandedstorage.block.ChestBlock;
+import ninjaphenix.expandedstorage.block.MiniChestBlock;
 import ninjaphenix.expandedstorage.block.OldChestBlock;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
@@ -56,6 +58,7 @@ import ninjaphenix.expandedstorage.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.block.AbstractStorageBlock;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.block.misc.strategies.temp_be.BarrelBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.strategies.temp_be.MiniChestBlockEntity;
 import ninjaphenix.expandedstorage.item.BlockUpgradeBehaviour;
 import ninjaphenix.expandedstorage.tier.Tier;
 import ninjaphenix.expandedstorage.item.StorageConversionKit;
@@ -113,6 +116,16 @@ public final class Common {
 
     private static BlockItem chestItem(Tier tier, ChestBlock block, BiFunction<Block, Item.Settings, BlockItem> blockItemMaker) {
         return blockItemMaker.apply(block, tier.getItemSettings().apply(new Item.Settings().group(GROUP)));
+    }
+
+    private static MiniChestBlock miniChestBlock(Identifier blockId, Identifier stat, Tier tier, Settings settings) {
+        MiniChestBlock block = new MiniChestBlock(tier.getBlockSettings().apply(settings), blockId);
+        // Common.registerTieredBlock(block);
+        return block;
+    }
+
+    private static BlockItem miniChestItem(Tier tier, MiniChestBlock block) {
+        return new BlockItem(block, tier.getItemSettings().apply(new Item.Settings().group(GROUP)));
     }
 
     private static BlockItem oldChestItem(Tier tier, OldChestBlock block) {
@@ -225,6 +238,32 @@ public final class Common {
         Common.defineBlockUpgradeBehaviour(isUpgradableChestBlock, Common::tryUpgradeBlockToOldChest);
     }
 
+    static void registerMiniChestContent(RegistrationConsumer<MiniChestBlock, BlockItem, MiniChestBlockEntity> registrationConsumer) {
+        // Init and register opening stats
+        Identifier woodOpenStat = Common.registerStat(Utils.id("open_wood_mini_chest"));
+        Identifier pumpkinOpenStat = Common.registerStat(Utils.id("open_pumpkin_mini_chest"));
+        Identifier christmasOpenStat = Common.registerStat(Utils.id("open_christmas_mini_chest")); // split for different variants?
+        // Init block settings
+        Settings woodSettings = Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings pumpkinSettings = Settings.of(Material.GOURD, MapColor.ORANGE).strength(1).sounds(BlockSoundGroup.WOOD);
+        // todo: different block with styles encoded as a state
+        Settings christmasVar1Settings = Settings.of(Material.WOOD, MapColor.RED).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings christmasVar2Settings = Settings.of(Material.WOOD, MapColor.WHITE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings christmasVar3Settings = Settings.of(Material.WOOD, MapColor.WHITE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings christmasVar4Settings = Settings.of(Material.WOOD, MapColor.DARK_GREEN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        // Init blocks
+        MiniChestBlock woodChestBlock = Common.miniChestBlock(Utils.id("wood_mini_chest"), woodOpenStat, Utils.WOOD_TIER, woodSettings);
+        MiniChestBlock pumpkinChestBlock = Common.miniChestBlock(Utils.id("pumpkin_mini_chest"), pumpkinOpenStat, Utils.WOOD_TIER, pumpkinSettings);
+        MiniChestBlock[] blocks = new MiniChestBlock[]{woodChestBlock, pumpkinChestBlock};
+        // Init items
+        BlockItem woodChestItem = Common.miniChestItem(Utils.WOOD_TIER, woodChestBlock);
+        BlockItem pumpkinChestItem = Common.miniChestItem(Utils.WOOD_TIER, pumpkinChestBlock);
+        BlockItem[] items = new BlockItem[]{woodChestItem, pumpkinChestItem};
+        // Init block entity type
+        // todo: register BET
+        registrationConsumer.accept(blocks, items, null);
+    }
+
     static void registerBarrelContent(RegistrationConsumer<BarrelBlock, BlockItem, BarrelBlockEntity> registration, Tag<Block> woodenBarrelTag) {
         // Init and register opening stats
         Identifier ironOpenStat = Common.registerStat(Utils.id("open_iron_barrel"));
@@ -253,8 +292,7 @@ public final class Common {
         BlockItem netheriteBarrelItem = Common.barrelItem(Common.NETHERITE_TIER, netheriteBarrelBlock);
         BlockItem[] items = new BlockItem[]{ironBarrelItem, goldBarrelItem, diamondBarrelItem, obsidianBarrelItem, netheriteBarrelItem};
         // Init block entity type
-        barrelBlockEntityType = null; // todo: work out item access and lockable.
-        //barrelBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new BarrelBlockEntity(Common.getBarrelBlockEntityType(), pos, state), blocks).build(null);
+        barrelBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new BarrelBlockEntity(Common.getBarrelBlockEntityType(), pos, state, null, null, null), blocks).build(null);
         registration.accept(blocks, items, barrelBlockEntityType);
         // Register chest module icon & upgrade behaviours
         Predicate<Block> isUpgradableBarrelBlock = (block) -> block instanceof BarrelBlock || block instanceof net.minecraft.block.BarrelBlock || woodenBarrelTag.contains(block);

@@ -30,10 +30,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 import ninjaphenix.expandedstorage.Common;
+import ninjaphenix.expandedstorage.block.misc.strategies.temp_be.BarrelBlockEntity;
 
 import java.util.Random;
 
-public final class BarrelBlock extends AbstractOpenableStorageBlock implements InventoryProvider {
+public final class BarrelBlock extends AbstractOpenableStorageBlock {
     public BarrelBlock(AbstractBlock.Settings properties, Identifier blockId, Identifier blockTier, Identifier openingStat, int slots) {
         super(properties, blockId, blockTier, openingStat, slots);
         this.setDefaultState(this.getStateManager().getDefaultState().with(Properties.FACING, Direction.NORTH).with(Properties.OPEN, false));
@@ -58,22 +59,16 @@ public final class BarrelBlock extends AbstractOpenableStorageBlock implements I
 
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new BarrelBlockEntity(Common.getBarrelBlockEntityType(), pos, state);
+        return new BarrelBlockEntity(Common.getBarrelBlockEntityType(), pos, state, null, null, null);
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (world.getBlockEntity(pos) instanceof BarrelBlockEntity entity) {
-            entity.recountObservers();
+            //entity.recountObservers();
         }
     }
 
-    @Override
-    public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
-        if (world.getBlockEntity(pos) instanceof BarrelBlockEntity entity) {
-            return entity.getInventory();
-        }
-        return null;
-    }
+    // todo: re-add inventory provider, not sure why I removed it.
 }

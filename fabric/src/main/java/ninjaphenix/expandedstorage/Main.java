@@ -45,11 +45,13 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.block.BarrelBlock;
 import ninjaphenix.expandedstorage.block.ChestBlock;
+import ninjaphenix.expandedstorage.block.MiniChestBlock;
 import ninjaphenix.expandedstorage.block.OldChestBlock;
 import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.strategies.temp_be.BarrelBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.strategies.temp_be.MiniChestBlockEntity;
 import ninjaphenix.expandedstorage.client.ChestBlockEntityRenderer;
 import ninjaphenix.expandedstorage.compat.carrier.CarrierCompat;
 import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
@@ -62,6 +64,7 @@ public final class Main implements ModInitializer {
         Common.registerChestContent(Main::chestRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new);
         Common.registerOldChestContent(Main::oldChestRegistration);
         Common.registerBarrelContent(Main::barrelRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_barrels")));
+        Common.registerMiniChestContent(Main::miniChestRegistration);
 
         /* GOALS
          *
@@ -69,6 +72,15 @@ public final class Main implements ModInitializer {
          *  will probably make my own json loaded content at some point...
          * Probably a bunch of other stuff I can't think of.
          */
+    }
+
+    private static void miniChestRegistration(MiniChestBlock[] blocks, BlockItem[] items, BlockEntityType<MiniChestBlockEntity> blockEntityType) {
+        for (MiniChestBlock block : blocks) {
+            Registry.register(Registry.BLOCK, block.getBlockId(), block);
+        }
+        for (BlockItem item : items) {
+            Registry.register(Registry.ITEM, ((MiniChestBlock) item.getBlock()).getBlockId(), item);
+        }
     }
 
     private static void baseRegistration(Pair<Identifier, Item>[] items) {

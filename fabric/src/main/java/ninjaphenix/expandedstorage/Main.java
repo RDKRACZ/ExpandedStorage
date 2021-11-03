@@ -22,6 +22,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.tag.TagFactory;
+import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
@@ -35,6 +36,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
@@ -50,6 +52,8 @@ import ninjaphenix.expandedstorage.block.OldChestBlock;
 import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.strategies.ItemAccess;
+import ninjaphenix.expandedstorage.block.misc.strategies.Lockable;
 import ninjaphenix.expandedstorage.block.misc.strategies.temp_be.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.strategies.temp_be.MiniChestBlockEntity;
 import ninjaphenix.expandedstorage.client.ChestBlockEntityRenderer;
@@ -60,6 +64,22 @@ import org.jetbrains.annotations.Nullable;
 public final class Main implements ModInitializer {
     @Override
     public void onInitialize() {
+        Common.setSharedStrategies((entity) -> new ItemAccess() {
+            private InventoryStorage storage = null;
+            @Override
+            public Object get() {
+                if (storage == null) {
+                    Inventory inventory = null;
+                    storage = InventoryStorage.of(inventory, null);
+                }
+                return storage;
+            }
+
+            @Override
+            public void invalidate() {
+                storage = null;
+            }
+        }, (entity) -> Lockable.NOT_LOCKABLE);
         Common.registerBaseContent(Main::baseRegistration);
         Common.registerChestContent(Main::chestRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new);
         Common.registerOldChestContent(Main::oldChestRegistration);

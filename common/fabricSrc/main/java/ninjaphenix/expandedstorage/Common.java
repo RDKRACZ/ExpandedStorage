@@ -24,7 +24,6 @@ import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.ChestType;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.ContainerLock;
@@ -57,8 +56,11 @@ import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
 import ninjaphenix.expandedstorage.block.AbstractOpenableStorageBlock;
 import ninjaphenix.expandedstorage.block.AbstractStorageBlock;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
+import ninjaphenix.expandedstorage.block.misc.strategies.ItemAccess;
+import ninjaphenix.expandedstorage.block.misc.strategies.Lockable;
 import ninjaphenix.expandedstorage.block.misc.strategies.temp_be.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.strategies.temp_be.MiniChestBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.strategies.temp_be.extendable.OpenableBlockEntity;
 import ninjaphenix.expandedstorage.item.BlockUpgradeBehaviour;
 import ninjaphenix.expandedstorage.tier.Tier;
 import ninjaphenix.expandedstorage.item.StorageConversionKit;
@@ -69,6 +71,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
@@ -95,6 +98,8 @@ public final class Common {
     private static BlockEntityType<ChestBlockEntity> chestBlockEntityType;
     private static BlockEntityType<AbstractChestBlockEntity> oldChestBlockEntityType;
     private static BlockEntityType<BarrelBlockEntity> barrelBlockEntityType;
+    private static Function<OpenableBlockEntity, ItemAccess> itemAccess;
+    private static Function<OpenableBlockEntity, Lockable> lockable;
 
     public static BlockEntityType<ChestBlockEntity> getChestBlockEntityType() {
         return chestBlockEntityType;
@@ -292,7 +297,7 @@ public final class Common {
         BlockItem netheriteBarrelItem = Common.barrelItem(Common.NETHERITE_TIER, netheriteBarrelBlock);
         BlockItem[] items = new BlockItem[]{ironBarrelItem, goldBarrelItem, diamondBarrelItem, obsidianBarrelItem, netheriteBarrelItem};
         // Init block entity type
-        barrelBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new BarrelBlockEntity(Common.getBarrelBlockEntityType(), pos, state, null, null, null), blocks).build(null);
+        barrelBlockEntityType = BlockEntityType.Builder.create(Common::createBarrelBlockEntity, blocks).build(null);
         registration.accept(blocks, items, barrelBlockEntityType);
         // Register chest module icon & upgrade behaviours
         Predicate<Block> isUpgradableBarrelBlock = (block) -> block instanceof BarrelBlock || block instanceof net.minecraft.block.BarrelBlock || woodenBarrelTag.contains(block);
@@ -533,6 +538,15 @@ public final class Common {
 
     private static void defineBlockUpgradeBehaviour(Predicate<Block> target, BlockUpgradeBehaviour behaviour) {
         Common.BLOCK_UPGRADE_BEHAVIOURS.put(target, behaviour);
+    }
+
+    public static BarrelBlockEntity createBarrelBlockEntity(BlockPos pos, BlockState state) {
+        return new BarrelBlockEntity(Common.getBarrelBlockEntityType(), pos, state, ((BarrelBlock) state.getBlock()).getBlockId(), Common.itemAccess.get(), Common.lockable.get());
+    }
+
+    public static void setSharedStrategies(Function<OpenableBlockEntity, ItemAccess> itemAccess, Function<OpenableBlockEntity, Lockable> lockable) {
+        Common.itemAccess = itemAccess;
+        Common.lockable = lockable;
     }
 
     record BlockTierId(Identifier blockType, Identifier blockTier) {

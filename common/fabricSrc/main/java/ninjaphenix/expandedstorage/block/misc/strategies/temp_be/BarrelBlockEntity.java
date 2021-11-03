@@ -24,6 +24,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -177,5 +178,9 @@ public class BarrelBlockEntity extends ExposedInventoryBlockEntity {
     public void onClose(PlayerEntity player) {
         if (player.isSpectator()) return;
         this.getObservable().playerStopViewing(player);
+    }
+
+    public final void updateViewerCount(ServerWorld world, BlockPos pos, BlockState state) {
+        manager.updateViewerCount(world, pos, state);
     }
 }

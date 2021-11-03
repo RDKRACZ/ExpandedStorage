@@ -18,9 +18,7 @@ package ninjaphenix.expandedstorage.block;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.InventoryProvider;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -28,7 +26,6 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldAccess;
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.misc.strategies.temp_be.BarrelBlockEntity;
 
@@ -59,16 +56,14 @@ public final class BarrelBlock extends AbstractOpenableStorageBlock {
 
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new BarrelBlockEntity(Common.getBarrelBlockEntityType(), pos, state, null, null, null);
+        return Common.createBarrelBlockEntity(pos, state);
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (world.getBlockEntity(pos) instanceof BarrelBlockEntity entity) {
-            //entity.recountObservers();
+            entity.updateViewerCount(world, pos, state);
         }
     }
-
-    // todo: re-add inventory provider, not sure why I removed it.
 }

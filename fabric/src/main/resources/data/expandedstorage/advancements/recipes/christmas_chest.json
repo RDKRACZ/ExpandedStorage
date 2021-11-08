@@ -1,9 +1,7 @@
 {
   "parent": "minecraft:recipes/root",
   "rewards": {
-    "recipes": [
-      "expandedstorage:christmas_chest"
-    ]
+    "recipes": ["expandedstorage:christmas_chest"]
   },
   "criteria": {
     "has_chest": {
@@ -24,9 +22,6 @@
     }
   },
   "requirements": [
-    [
-      "has_chest",
-      "has_the_recipe"
-    ]
+    ["has_chest", "has_the_recipe"]
   ]
 }

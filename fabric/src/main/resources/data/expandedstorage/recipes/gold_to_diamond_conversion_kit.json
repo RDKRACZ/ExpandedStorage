@@ -1,10 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "GGG",
-    "DID",
-    "GGG"
-  ],
+  "pattern": ["GGG", "DID", "GGG"],
   "key": {
     "I": {
       "item": "minecraft:gold_ingot"

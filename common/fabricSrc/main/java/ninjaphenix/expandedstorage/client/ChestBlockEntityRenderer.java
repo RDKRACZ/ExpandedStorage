@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2021 NinjaPhenix
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,9 +43,9 @@ import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.ChestBlock;
-import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
 import ninjaphenix.expandedstorage.Utils;
 import ninjaphenix.expandedstorage.block.AbstractChestBlock;
+import ninjaphenix.expandedstorage.block.entity.ChestBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.block.misc.Property;
 import ninjaphenix.expandedstorage.block.misc.PropertyRetriever;

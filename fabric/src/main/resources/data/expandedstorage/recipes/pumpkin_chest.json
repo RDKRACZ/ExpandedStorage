@@ -1,10 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "SSS",
-    "SCS",
-    "SSS"
-  ],
+  "pattern": ["SSS", "SCS", "SSS"],
   "key": {
     "S": {
       "item": "minecraft:pumpkin_seeds"

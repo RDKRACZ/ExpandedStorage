@@ -1,9 +1,4 @@
 {
   "replace": false,
-  "values": [
-    {
-      "id": "minecraft:barrel",
-      "required": true
-    }
-  ]
+  "values": ["minecraft:barrel"]
 }

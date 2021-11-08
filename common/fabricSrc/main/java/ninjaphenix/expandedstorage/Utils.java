@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2021 NinjaPhenix
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,25 +21,18 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import ninjaphenix.expandedstorage.tier.Tier;
-
-import java.util.function.UnaryOperator;
 
 public final class Utils {
     public static final String MOD_ID = "expandedstorage";
     public static final Text ALT_USE = new TranslatableText("tooltip.expandedstorage.alt_use",
             new KeybindText("key.sneak").formatted(Formatting.GOLD),
             new KeybindText("key.use").formatted(Formatting.GOLD));
-
     public static final int WOOD_STACK_COUNT = 27;
-
-    public static final Tier WOOD_TIER = new Tier(Utils.id("wood"), WOOD_STACK_COUNT, UnaryOperator.identity(), UnaryOperator.identity());
-
-    // Item Cooldown
+    public static final Identifier WOOD_TIER_ID = Utils.id("wood");
     public static final int QUARTER_SECOND = 5;
 
     private Utils() {
-
+        throw new IllegalStateException("Should not instantiate this helper class.");
     }
 
     public static Identifier id(String path) {

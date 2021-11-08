@@ -1,0 +1,27 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": ["expandedstorage:red_christmas_mini_chest_cycle"]
+  },
+  "criteria": {
+    "has_chest": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["expandedstorage:green_christmas_mini_chest"]
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "expandedstorage:red_christmas_mini_chest_cycle"
+      }
+    }
+  },
+  "requirements": [
+    ["has_chest", "has_the_recipe"]
+  ]
+}

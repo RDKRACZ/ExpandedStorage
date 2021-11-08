@@ -58,7 +58,7 @@ val excludeFabric: (ModuleDependency) -> Unit = {
 
 dependencies {
     minecraft(group = "com.mojang", name = "minecraft", version = "1.17.1")
-    mappings(group = "net.fabricmc", name = "yarn", version = "1.17.1+build.61")
+    mappings(group = "net.fabricmc", name = "yarn", version = "1.17.1+build.61", classifier = "v2")
 
     modImplementation(group = "net.fabricmc", name = "fabric-loader", version = properties["fabric_loader_version"] as String)
     implementation(group = "org.jetbrains", name = "annotations", version = properties["jetbrains_annotations_version"] as String)

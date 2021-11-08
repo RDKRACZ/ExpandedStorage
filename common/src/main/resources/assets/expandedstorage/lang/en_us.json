@@ -97,5 +97,14 @@
   "stat.expandedstorage.open_old_gold_chest": "[ES] Old Gold Chests Opened",
   "stat.expandedstorage.open_old_diamond_chest": "[ES] Old Diamond Chests Opened",
   "stat.expandedstorage.open_old_obsidian_chest": "[ES] Old Obsidian Chests Opened",
-  "stat.expandedstorage.open_old_netherite_chest": "[ES] Old Netherite Chests Opened"
+  "stat.expandedstorage.open_old_netherite_chest": "[ES] Old Netherite Chests Opened",
+  "block.expandedstorage.vanilla_wood_mini_chest": "Mini Chest",
+  "block.expandedstorage.wood_mini_chest": "Mini Chest",
+  "block.expandedstorage.pumpkin_mini_chest": "Pumpkin Mini Chest",
+  "block.expandedstorage.red_christmas_mini_chest": "Red Mini Present",
+  "block.expandedstorage.white_christmas_mini_chest": "White Mini Present",
+  "block.expandedstorage.snow_christmas_mini_chest": "Candy cane Mini Present",
+  "block.expandedstorage.green_christmas_mini_chest": "Green Mini Present",
+  "block.expandedstorage.lavender_christmas_mini_chest": "Lavender Mini Present",
+  "block.expandedstorage.pink_amethyst_christmas_mini_chest": "Pink Amethyst Mini Present"
 }

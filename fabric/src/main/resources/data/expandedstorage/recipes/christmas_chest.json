@@ -1,10 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    " B ",
-    "RCW",
-    " S "
-  ],
+  "pattern": [" B ", "RCW", " S "],
   "key": {
     "S": {
       "item": "minecraft:spruce_sapling"

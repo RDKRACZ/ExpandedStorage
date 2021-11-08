@@ -8,16 +8,15 @@
     "ninjaphenix_container_lib": ">=1.1.0"
   },
   "entrypoints": {
-    "main": [
-      "ninjaphenix.expandedstorage.Main"
-    ]
+    "main": ["ninjaphenix.expandedstorage.Main"]
   },
   "environment": "*",
+  "authors": ["NinjaPhenix"],
   "mixins": [
-    "expandedstorage.mixins.json"
-  ],
-  "authors": [
-    "NinjaPhenix"
+    {
+      "config": "expandedstorage.mixin.json",
+      "environment": "*"
+    }
   ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/expanded-storage-fabric/",

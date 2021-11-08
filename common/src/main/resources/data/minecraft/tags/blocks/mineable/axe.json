@@ -9,6 +9,15 @@
     "expandedstorage:wood_chest",
     "expandedstorage:pumpkin_chest",
     "expandedstorage:christmas_chest",
-    "expandedstorage:old_wood_chest"
+    "expandedstorage:old_wood_chest",
+    "expandedstorage:vanilla_wood_mini_chest",
+    "expandedstorage:wood_mini_chest",
+    "expandedstorage:pumpkin_mini_chest",
+    "expandedstorage:red_christmas_mini_chest",
+    "expandedstorage:white_christmas_mini_chest",
+    "expandedstorage:snow_christmas_mini_chest",
+    "expandedstorage:green_christmas_mini_chest",
+    "expandedstorage:lavender_christmas_mini_chest",
+    "expandedstorage:pink_amethyst_christmas_mini_chest"
   ]
 }

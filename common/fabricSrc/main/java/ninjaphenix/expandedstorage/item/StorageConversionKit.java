@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2021 NinjaPhenix
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,7 +29,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.Utils;
-import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -40,16 +39,16 @@ public final class StorageConversionKit extends Item {
     private final Text instructionsFirst;
     private final Text instructionsSecond;
 
-    public StorageConversionKit(Settings properties, Identifier from, Identifier to) {
+    public StorageConversionKit(Settings properties, Identifier from, Identifier to, boolean manuallyWrapTooltips) {
         super(properties);
         this.from = from;
         this.to = to;
-        if (PlatformUtils.getInstance().isForge()) {
-            this.instructionsFirst = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_1", Utils.ALT_USE).formatted(Formatting.GRAY).append(Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_2", Utils.ALT_USE).formatted(Formatting.GRAY));
-            this.instructionsSecond = new LiteralText("");
-        } else {
+        if (manuallyWrapTooltips) {
             this.instructionsFirst = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_1", Utils.ALT_USE).formatted(Formatting.GRAY);
             this.instructionsSecond = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_2", Utils.ALT_USE).formatted(Formatting.GRAY);
+        } else {
+            this.instructionsFirst = Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_1", Utils.ALT_USE).formatted(Formatting.GRAY).append(Utils.translation("tooltip.expandedstorage.conversion_kit_" + from.getPath() + "_" + to.getPath() + "_2", Utils.ALT_USE).formatted(Formatting.GRAY));
+            this.instructionsSecond = new LiteralText("");
         }
     }
 

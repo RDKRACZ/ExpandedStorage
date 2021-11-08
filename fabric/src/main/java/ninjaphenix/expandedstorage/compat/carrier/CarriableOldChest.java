@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2021 NinjaPhenix
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
-import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
+import ninjaphenix.expandedstorage.block.entity.OldChestBlockEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,7 +64,7 @@ public class CarriableOldChest implements Carriable<Block> {
     public final ActionResult tryPickup(@NotNull CarrierComponent component, @NotNull World world, @NotNull BlockPos pos, @Nullable Entity entity) {
         if (world.isClient()) return ActionResult.PASS;
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (blockEntity instanceof AbstractChestBlockEntity && !blockEntity.isRemoved()) {
+        if (blockEntity instanceof OldChestBlockEntity && !blockEntity.isRemoved()) {
             NbtCompound tag = new NbtCompound();
             tag.put("blockEntity", blockEntity.writeNbt(new NbtCompound()));
             CarryingData carrying = new CarryingData(id, tag);

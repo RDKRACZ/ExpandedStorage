@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "expandedstorage:snow_christmas_mini_chest"
+    }
+  ],
+  "result": {
+    "item": "expandedstorage:green_christmas_mini_chest"
+  }
+}

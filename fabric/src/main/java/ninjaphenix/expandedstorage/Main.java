@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2021 NinjaPhenix
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,10 @@ package ninjaphenix.expandedstorage;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.tag.TagFactory;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
@@ -36,41 +38,108 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import ninjaphenix.expandedstorage.block.AbstractChestBlock;
 import ninjaphenix.expandedstorage.block.BarrelBlock;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 import ninjaphenix.expandedstorage.block.MiniChestBlock;
-import ninjaphenix.expandedstorage.block.OldChestBlock;
-import ninjaphenix.expandedstorage.block.misc.AbstractChestBlockEntity;
-import ninjaphenix.expandedstorage.block.misc.AbstractOpenableStorageBlockEntity;
-import ninjaphenix.expandedstorage.block.misc.ChestBlockEntity;
-import ninjaphenix.expandedstorage.block.misc.strategies.ItemAccess;
-import ninjaphenix.expandedstorage.block.misc.strategies.Lockable;
-import ninjaphenix.expandedstorage.block.misc.strategies.temp_be.BarrelBlockEntity;
-import ninjaphenix.expandedstorage.block.misc.strategies.temp_be.MiniChestBlockEntity;
+import ninjaphenix.expandedstorage.block.OpenableBlock;
+import ninjaphenix.expandedstorage.block.entity.BarrelBlockEntity;
+import ninjaphenix.expandedstorage.block.entity.ChestBlockEntity;
+import ninjaphenix.expandedstorage.block.entity.MiniChestBlockEntity;
+import ninjaphenix.expandedstorage.block.entity.OldChestBlockEntity;
+import ninjaphenix.expandedstorage.block.entity.extendable.StrategyBlockEntity;
+import ninjaphenix.expandedstorage.block.strategies.ItemAccess;
+import ninjaphenix.expandedstorage.block.strategies.Lockable;
 import ninjaphenix.expandedstorage.client.ChestBlockEntityRenderer;
 import ninjaphenix.expandedstorage.compat.carrier.CarrierCompat;
-import ninjaphenix.expandedstorage.wrappers.PlatformUtils;
 import org.jetbrains.annotations.Nullable;
 
 public final class Main implements ModInitializer {
     @Override
     public void onInitialize() {
+        // Note: shared item access cannot be used for MiniChest
+        // Lockable needs replacing with Basic or HTM lock impl.
         Common.setSharedStrategies((entity) -> new ItemAccess() {
             private InventoryStorage storage = null;
             @Override
             public Object get() {
                 if (storage == null) {
-                    Inventory inventory = null;
-                    storage = InventoryStorage.of(inventory, null);
+                    DefaultedList<ItemStack> items = entity.getItems();
+                    Inventory wrapped = entity.getInventory();
+                    Inventory transferApiInventory = new Inventory() {
+                        @Override
+                        public int size() {
+                            return wrapped.size();
+                        }
+
+                        @Override
+                        public boolean isEmpty() {
+                            return wrapped.isEmpty();
+                        }
+
+                        @Override
+                        public ItemStack getStack(int slot) {
+                            return wrapped.getStack(slot);
+                        }
+
+                        @Override
+                        public ItemStack removeStack(int slot, int amount) {
+                            return Inventories.splitStack(items, slot, amount);
+                        }
+
+                        @Override
+                        public ItemStack removeStack(int slot) {
+                            return wrapped.removeStack(slot);
+                        }
+
+                        @Override
+                        public void setStack(int slot, ItemStack stack) {
+                            items.set(slot, stack);
+                            if (stack.getCount() > this.getMaxCountPerStack()) {
+                                stack.setCount(this.getMaxCountPerStack());
+                            }
+                        }
+
+                        @Override
+                        public void markDirty() {
+                            wrapped.markDirty();
+                        }
+
+                        @Override
+                        public boolean canPlayerUse(PlayerEntity player) {
+                            return wrapped.canPlayerUse(player);
+                        }
+
+                        @Override
+                        public void clear() {
+                            wrapped.clear();
+                        }
+
+                        @Override
+                        public void onOpen(PlayerEntity player) {
+                            wrapped.onOpen(player);
+                        }
+
+                        @Override
+                        public void onClose(PlayerEntity player) {
+                            wrapped.onClose(player);
+                        }
+                    };
+                    storage = InventoryStorage.of(transferApiInventory, null);
                 }
                 return storage;
             }
@@ -80,18 +149,18 @@ public final class Main implements ModInitializer {
                 storage = null;
             }
         }, (entity) -> Lockable.NOT_LOCKABLE);
-        Common.registerBaseContent(Main::baseRegistration);
-        Common.registerChestContent(Main::chestRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new);
+        FabricItemGroupBuilder.build(new Identifier("dummy"), null); // Fabric API is dumb.
+        Common.setGroup(new ItemGroup(ItemGroup.GROUPS.length - 1, Utils.MOD_ID) {
+            @Override
+            public ItemStack createIcon() {
+                return new ItemStack(Registry.ITEM.get(Utils.id("netherite_chest")));
+            }
+        });
+        Common.registerBaseContent(Main::baseRegistration, true);
+        Common.registerChestContent(Main::chestRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new, FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT);
         Common.registerOldChestContent(Main::oldChestRegistration);
         Common.registerBarrelContent(Main::barrelRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_barrels")));
         Common.registerMiniChestContent(Main::miniChestRegistration);
-
-        /* GOALS
-         *
-         * Provide a centralised api for kubejs and java to register new tiers and therefore blocks.
-         *  will probably make my own json loaded content at some point...
-         * Probably a bunch of other stuff I can't think of.
-         */
     }
 
     private static void miniChestRegistration(MiniChestBlock[] blocks, BlockItem[] items, BlockEntityType<MiniChestBlockEntity> blockEntityType) {
@@ -99,8 +168,10 @@ public final class Main implements ModInitializer {
             Registry.register(Registry.BLOCK, block.getBlockId(), block);
         }
         for (BlockItem item : items) {
-            Registry.register(Registry.ITEM, ((MiniChestBlock) item.getBlock()).getBlockId(), item);
+            Registry.register(Registry.ITEM, ((OpenableBlock) item.getBlock()).getBlockId(), item);
         }
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.MINI_CHEST_BLOCK_TYPE, blockEntityType);
+        ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, blocks);
     }
 
     private static void baseRegistration(Pair<Identifier, Item>[] items) {
@@ -116,12 +187,12 @@ public final class Main implements ModInitializer {
             Registry.register(Registry.BLOCK, block.getBlockId(), block);
         }
         for (BlockItem item : items) {
-            Registry.register(Registry.ITEM, ((ChestBlock) item.getBlock()).getBlockId(), item);
+            Registry.register(Registry.ITEM, ((OpenableBlock) item.getBlock()).getBlockId(), item);
         }
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.CHEST_BLOCK_TYPE, blockEntityType);
         // noinspection UnstableApiUsage,deprecation
-        ItemStorage.SIDED.registerForBlocks(Main::getChestItemAccess, blocks);
-        if (PlatformUtils.getInstance().isClient()) {
+        ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, blocks);
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
             Main.Client.registerChestTextures(blocks);
             Main.Client.registerItemRenderers(items);
         }
@@ -142,23 +213,26 @@ public final class Main implements ModInitializer {
     }
 
     @SuppressWarnings({"deprecation", "UnstableApiUsage"})
-    private static Storage<ItemVariant> getChestItemAccess(World world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction context) {
-        //noinspection unchecked,deprecation,UnstableApiUsage
-        return (Storage<ItemVariant>) AbstractOpenableStorageBlockEntity.getItemAccess(world, pos, state, blockEntity, context);
+    private static Storage<ItemVariant> getItemAccess(World world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction context) {
+        if (blockEntity instanceof StrategyBlockEntity entity) {
+            //noinspection unchecked
+            return (Storage<ItemVariant>) entity.getItemAccess().get();
+        }
+        return null;
     }
 
-    private static void oldChestRegistration(OldChestBlock[] blocks, BlockItem[] items, BlockEntityType<AbstractChestBlockEntity> blockEntityType) {
+    private static void oldChestRegistration(AbstractChestBlock[] blocks, BlockItem[] items, BlockEntityType<OldChestBlockEntity> blockEntityType) {
         final boolean addCarrierSupport = Main.shouldEnableCarrierCompat();
-        for (OldChestBlock block : blocks) {
+        for (AbstractChestBlock block : blocks) {
             if (addCarrierSupport) CarrierCompat.registerOldChestBlock(block);
             Registry.register(Registry.BLOCK, block.getBlockId(), block);
         }
         for (BlockItem item : items) {
-            Registry.register(Registry.ITEM, ((OldChestBlock) item.getBlock()).getBlockId(), item);
+            Registry.register(Registry.ITEM, ((OpenableBlock) item.getBlock()).getBlockId(), item);
         }
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.OLD_CHEST_BLOCK_TYPE, blockEntityType);
         //noinspection deprecation,UnstableApiUsage
-        ItemStorage.SIDED.registerForBlocks(Main::getChestItemAccess, blocks);
+        ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, blocks);
     }
 
     private static void barrelRegistration(BarrelBlock[] blocks, BlockItem[] items, BlockEntityType<BarrelBlockEntity> blockEntityType) {
@@ -170,11 +244,11 @@ public final class Main implements ModInitializer {
             }
         }
         for (BlockItem item : items) {
-            Registry.register(Registry.ITEM, ((BarrelBlock) item.getBlock()).getBlockId(), item);
+            Registry.register(Registry.ITEM, ((OpenableBlock) item.getBlock()).getBlockId(), item);
         }
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.BARREL_BLOCK_TYPE, blockEntityType);
         //noinspection deprecation,UnstableApiUsage
-        ItemStorage.SIDED.registerForBlocks(Main::getChestItemAccess, blocks);
+        ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, blocks);
     }
 
     private static class Client {
@@ -189,17 +263,17 @@ public final class Main implements ModInitializer {
 
         public static void registerItemRenderers(BlockItem[] items) {
             for (BlockItem item : items) {
-                ChestBlockEntity renderEntity = new ChestBlockEntity(Common.getChestBlockEntityType(), BlockPos.ORIGIN, item.getBlock().getDefaultState());
+                ChestBlockEntity renderEntity = Common.createChestBlockEntity(BlockPos.ORIGIN, item.getBlock().getDefaultState());
                 BuiltinItemRendererRegistry.INSTANCE.register(item, (itemStack, transform, stack, source, light, overlay) ->
                         MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(renderEntity, stack, source, light, overlay));
             }
-            EntityModelLayers.LAYERS.add(ChestBlockEntityRenderer.SINGLE_LAYER);
-            EntityModelLayers.LAYERS.add(ChestBlockEntityRenderer.LEFT_LAYER);
-            EntityModelLayers.LAYERS.add(ChestBlockEntityRenderer.RIGHT_LAYER);
-            EntityModelLayers.LAYERS.add(ChestBlockEntityRenderer.TOP_LAYER);
-            EntityModelLayers.LAYERS.add(ChestBlockEntityRenderer.BOTTOM_LAYER);
-            EntityModelLayers.LAYERS.add(ChestBlockEntityRenderer.FRONT_LAYER);
-            EntityModelLayers.LAYERS.add(ChestBlockEntityRenderer.BACK_LAYER);
+            EntityModelLayerRegistry.registerModelLayer(ChestBlockEntityRenderer.SINGLE_LAYER, ChestBlockEntityRenderer::createSingleBodyLayer);
+            EntityModelLayerRegistry.registerModelLayer(ChestBlockEntityRenderer.LEFT_LAYER, ChestBlockEntityRenderer::createLeftBodyLayer);
+            EntityModelLayerRegistry.registerModelLayer(ChestBlockEntityRenderer.RIGHT_LAYER, ChestBlockEntityRenderer::createRightBodyLayer);
+            EntityModelLayerRegistry.registerModelLayer(ChestBlockEntityRenderer.TOP_LAYER, ChestBlockEntityRenderer::createTopBodyLayer);
+            EntityModelLayerRegistry.registerModelLayer(ChestBlockEntityRenderer.BOTTOM_LAYER, ChestBlockEntityRenderer::createBottomBodyLayer);
+            EntityModelLayerRegistry.registerModelLayer(ChestBlockEntityRenderer.FRONT_LAYER, ChestBlockEntityRenderer::createFrontBodyLayer);
+            EntityModelLayerRegistry.registerModelLayer(ChestBlockEntityRenderer.BACK_LAYER, ChestBlockEntityRenderer::createBackBodyLayer);
         }
     }
 }

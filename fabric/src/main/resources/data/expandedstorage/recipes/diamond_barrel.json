@@ -1,12 +1,8 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "GGG",
-    "IBI",
-    "GGG"
-  ],
+  "pattern": ["GGG", "DBD", "GGG"],
   "key": {
-    "I": {
+    "D": {
       "item": "minecraft:diamond"
     },
     "B": {

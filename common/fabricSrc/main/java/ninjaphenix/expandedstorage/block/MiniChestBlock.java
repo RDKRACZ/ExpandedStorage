@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2021 NinjaPhenix
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,74 @@
 package ninjaphenix.expandedstorage.block;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.block.Waterloggable;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.WorldAccess;
+import ninjaphenix.expandedstorage.Common;
+import ninjaphenix.expandedstorage.Utils;
+import org.jetbrains.annotations.Nullable;
 
-public class MiniChestBlock extends Block {
-    private final Identifier blockId;
+public final class MiniChestBlock extends OpenableBlock implements Waterloggable {
+    private static final VoxelShape OUTLINE = Block.createCuboidShape(4.0D, 0.0D, 4.0D, 12.0D, 8.0D, 12.0D);
 
-    public MiniChestBlock(Settings settings, Identifier blockId) {
-        super(settings);
-        this.blockId = blockId;
+    public MiniChestBlock(Settings settings, Identifier blockId, Identifier openingStat) {
+        super(settings, blockId, Utils.WOOD_TIER_ID, openingStat, 1);
+        this.setDefaultState(this.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.NORTH).with(Properties.WATERLOGGED, false));
     }
 
-    public Identifier getBlockId() {
-        return blockId;
+    @Override
+    public Identifier getBlockType() {
+        return Common.MINI_CHEST_BLOCK_TYPE;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return OUTLINE;
+    }
+
+    @Nullable
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext context) {
+        boolean placingInWater = context.getWorld().getFluidState(context.getBlockPos()).getFluid() == Fluids.WATER;
+        return this.getDefaultState().with(Properties.HORIZONTAL_FACING, context.getPlayerFacing().getOpposite()).with(Properties.WATERLOGGED, placingInWater);
+    }
+
+    @SuppressWarnings("deprecation")
+    public FluidState getFluidState(BlockState state) {
+        return state.get(Properties.WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+        if (state.get(Properties.WATERLOGGED)) {
+            world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+        }
+
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
+        builder.add(Properties.HORIZONTAL_FACING, Properties.WATERLOGGED);
+    }
+
+    @Override
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return Common.createMiniChestBlockEntity(pos, state);
     }
 }

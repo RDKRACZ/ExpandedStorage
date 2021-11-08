@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2021 NinjaPhenix
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,6 @@
 package ninjaphenix.expandedstorage.block.misc;
 
 import net.minecraft.util.StringIdentifiable;
-import org.jetbrains.annotations.ApiStatus.Experimental;
-import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.util.Locale;
 
@@ -64,6 +62,6 @@ public enum CursedChestType implements StringIdentifiable {
         } else if (this == CursedChestType.RIGHT) {
             return CursedChestType.LEFT;
         }
-        throw new IllegalStateException("CursedChestType.SINGLE CursedChestType has no opposite");
+        throw new IllegalStateException("CursedChestType.SINGLE has no opposite type.");
     }
 }

@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "ninjaphenix.expandedstorage.mixin",
+  "plugin": "ninjaphenix.expandedstorage.MixinPlugin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": ["MiniChestHeadEquipment"],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

@@ -1,9 +1,7 @@
 {
   "parent": "minecraft:recipes/root",
   "rewards": {
-    "recipes": [
-      "expandedstorage:wood_to_old_wood_chest"
-    ]
+    "recipes": ["expandedstorage:wood_to_old_wood_chest"]
   },
   "criteria": {
     "has_chest": {
@@ -11,9 +9,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "expandedstorage:wood_chest"
-            ]
+            "items": ["expandedstorage:wood_chest"]
           }
         ]
       }
@@ -26,9 +22,6 @@
     }
   },
   "requirements": [
-    [
-      "has_chest",
-      "has_the_recipe"
-    ]
+    ["has_chest", "has_the_recipe"]
   ]
 }

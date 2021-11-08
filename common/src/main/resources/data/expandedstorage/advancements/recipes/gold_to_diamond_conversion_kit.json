@@ -1,9 +1,7 @@
 {
   "parent": "minecraft:recipes/root",
   "rewards": {
-    "recipes": [
-      "expandedstorage:gold_to_diamond_conversion_kit"
-    ]
+    "recipes": ["expandedstorage:gold_to_diamond_conversion_kit"]
   },
   "criteria": {
     "has_ingot": {
@@ -11,9 +9,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:gold_ingot"
-            ]
+            "items": ["minecraft:gold_ingot"]
           }
         ]
       }
@@ -26,9 +22,6 @@
     }
   },
   "requirements": [
-    [
-      "has_ingot",
-      "has_the_recipe"
-    ]
+    ["has_ingot", "has_the_recipe"]
   ]
 }

@@ -1,1 +1,5 @@
-- Fix crash with older loader versions, now requires 0.11.7 or newer.
+- Add mini chests which can hold 1 stack, can be crafted with 4 paper around a chest, note these do not have iron, gold, ect variants
+- Mostly clean rewrite of the mod
+- Fixed some issues with Piglin guarding tag and also revert to the old tag format.
+- Fixed the map color of Christmas chest variants
+- Remove some unnecessary data from models as well as some minor relocation for barrel and old chest base models.

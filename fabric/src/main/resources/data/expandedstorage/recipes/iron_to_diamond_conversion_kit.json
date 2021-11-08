@@ -1,10 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "GGG",
-    "DKD",
-    "GGG"
-  ],
+  "pattern": ["GGG", "DKD", "GGG"],
   "key": {
     "K": {
       "item": "expandedstorage:iron_to_gold_conversion_kit"

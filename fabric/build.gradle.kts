@@ -74,15 +74,15 @@ dependencies {
     modCompileOnly(group = "curse.maven", name = "towelette-309338", version = "3398761") {
         also(excludeFabric)
     }
-    modImplementation(group = "curse.maven", name = "carrier-409184", version = "3327390") {
+    modCompileOnly(group = "curse.maven", name = "carrier-409184", version = "3327390") {
         also(excludeFabric)
     }
-    modImplementation(group = "io.github.onyxstudios.Cardinal-Components-API", name = "cardinal-components-base", version = properties["cardinal_version"] as String)
-    modImplementation(group = "io.github.onyxstudios.Cardinal-Components-API", name = "cardinal-components-entity", version = properties["cardinal_version"] as String)
-    modRuntimeOnly(group = "net.devtech", name = "arrp", version = "0.4.2")
+    modCompileOnly(group = "io.github.onyxstudios.Cardinal-Components-API", name = "cardinal-components-base", version = properties["cardinal_version"] as String)
+    modCompileOnly(group = "io.github.onyxstudios.Cardinal-Components-API", name = "cardinal-components-entity", version = properties["cardinal_version"] as String)
+    //modRuntimeOnly(group = "net.devtech", name = "arrp", version = "0.4.2")
 
-    modRuntimeOnly("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
-    modImplementation(group = "local", name = "htm", version = "dda0f76870e3a424af53416603ff489b1c733b3d")
+    //modRuntimeOnly("me.lucko:fabric-permissions-api:0.1-SNAPSHOT")
+    modCompileOnly(group = "local", name = "htm", version = "dda0f76870e3a424af53416603ff489b1c733b3d")
 }
 
 tasks.withType<ProcessResources> {

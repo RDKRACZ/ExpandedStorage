@@ -48,11 +48,10 @@ public abstract class StrategyBlockEntity extends BlockEntity {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
+    public void writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
         lockable.writeLock(tag);
         nameable.writeName(tag);
-        return tag;
     }
 
     protected void initialise(Identifier blockId, Block block) {

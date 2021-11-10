@@ -21,6 +21,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -106,6 +107,18 @@ public abstract class InventoryBlockEntity extends OpenableBlockEntity {
         if (this.shouldStateUpdateInvalidateItemAccess(oldState, state)) {
             this.getItemAccess().invalidate();
         }
+    }
+
+    @Override
+    public void readNbt(NbtCompound tag) {
+        super.readNbt(tag);
+        Inventories.readNbt(tag, items);
+    }
+
+    @Override
+    public void writeNbt(NbtCompound tag) {
+        super.writeNbt(tag);
+        Inventories.writeNbt(tag, items);
     }
 }
 

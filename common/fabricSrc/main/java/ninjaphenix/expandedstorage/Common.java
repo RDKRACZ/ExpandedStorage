@@ -348,7 +348,7 @@ public final class Common {
         if (isExpandedStorageBarrel && ((BarrelBlock) block).getBlockTier() == from || !isExpandedStorageBarrel && from == Utils.WOOD_TIER_ID) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             //noinspection ConstantConditions
-            NbtCompound tag = blockEntity.writeNbt(new NbtCompound());
+            NbtCompound tag = blockEntity.createNbt();
             boolean verifiedSize = blockEntity instanceof Inventory container && container.size() == containerSize;
             if (!verifiedSize) { // Cannot verify container size, we'll let it upgrade if it has or has less than 27 items
                 if (tag.contains("Items", NbtElement.LIST_TYPE)) {
@@ -368,7 +368,7 @@ public final class Common {
                 if (world.setBlockState(pos, newState)) {
                     BlockEntity newEntity = world.getBlockEntity(pos);
                     //noinspection ConstantConditions
-                    NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
+                    NbtCompound newTag = newEntity.createNbt();
                     Inventories.writeNbt(newTag, inventory);
                     code.writeNbt(newTag);
                     newEntity.readNbt(newTag);
@@ -450,7 +450,7 @@ public final class Common {
         if (isExpandedStorageChest && ((ChestBlock) block).getBlockTier() == from || !isExpandedStorageChest && from == Utils.WOOD_TIER_ID) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             //noinspection ConstantConditions
-            NbtCompound tag = blockEntity.writeNbt(new NbtCompound());
+            NbtCompound tag = blockEntity.createNbt();
             boolean verifiedSize = blockEntity instanceof Inventory container && container.size() == containerSize;
             if (!verifiedSize) { // Cannot verify container size, we'll let it upgrade if it has or has less than 27 items
                 if (tag.contains("Items", NbtElement.LIST_TYPE)) {
@@ -479,7 +479,7 @@ public final class Common {
                 if (world.setBlockState(pos, newState)) {
                     BlockEntity newEntity = world.getBlockEntity(pos);
                     //noinspection ConstantConditions
-                    NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
+                    NbtCompound newTag = newEntity.createNbt();
                     Inventories.writeNbt(newTag, inventory);
                     code.writeNbt(newTag);
                     newEntity.readNbt(newTag);
@@ -514,7 +514,7 @@ public final class Common {
             AbstractChestBlock toBlock = (AbstractChestBlock) Common.getTieredBlock(OLD_CHEST_BLOCK_TYPE, to);
             DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
             //noinspection ConstantConditions
-            NbtCompound tag = world.getBlockEntity(pos).writeNbt(new NbtCompound());
+            NbtCompound tag = world.getBlockEntity(pos).createNbt();
             ContainerLock code = ContainerLock.fromNbt(tag);
             Inventories.readNbt(tag, inventory);
             world.removeBlockEntity(pos);
@@ -522,7 +522,7 @@ public final class Common {
             if (world.setBlockState(pos, newState)) {
                 BlockEntity newEntity = world.getBlockEntity(pos);
                 //noinspection ConstantConditions
-                NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
+                NbtCompound newTag = newEntity.createNbt();
                 Inventories.writeNbt(newTag, inventory);
                 code.writeNbt(newTag);
                 newEntity.readNbt(newTag);

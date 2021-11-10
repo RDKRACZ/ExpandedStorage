@@ -29,7 +29,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.SemanticVersion;
+import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -37,7 +37,6 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
@@ -73,6 +72,7 @@ public final class Main implements ModInitializer {
     public void onInitialize() {
         // Note: shared item access cannot be used for MiniChest
         // Lockable needs replacing with Basic or HTM lock impl.
+        //noinspection UnstableApiUsage
         Common.setSharedStrategies((entity) -> new ItemAccess() {
             private InventoryStorage storage = null;
             @Override
@@ -139,6 +139,7 @@ public final class Main implements ModInitializer {
                             wrapped.onClose(player);
                         }
                     };
+                    //noinspection UnstableApiUsage
                     storage = InventoryStorage.of(transferApiInventory, null);
                 }
                 return storage;
@@ -171,6 +172,7 @@ public final class Main implements ModInitializer {
             Registry.register(Registry.ITEM, ((OpenableBlock) item.getBlock()).getBlockId(), item);
         }
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.MINI_CHEST_BLOCK_TYPE, blockEntityType);
+        //noinspection UnstableApiUsage
         ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, blocks);
     }
 
@@ -190,7 +192,7 @@ public final class Main implements ModInitializer {
             Registry.register(Registry.ITEM, ((OpenableBlock) item.getBlock()).getBlockId(), item);
         }
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.CHEST_BLOCK_TYPE, blockEntityType);
-        // noinspection UnstableApiUsage,deprecation
+        // noinspection UnstableApiUsage
         ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, blocks);
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
             Main.Client.registerChestTextures(blocks);
@@ -200,19 +202,14 @@ public final class Main implements ModInitializer {
 
     private static boolean shouldEnableCarrierCompat() {
         try {
-            SemanticVersion version = SemanticVersion.parse("1.8.0");
-            return FabricLoader.getInstance().getModContainer("carrier").map(it -> {
-                if (it.getMetadata().getVersion() instanceof SemanticVersion carrierVersion) {
-                    return carrierVersion.compareTo(version) > 0;
-                }
-                return false;
-            }).orElse(false);
+            Version version = Version.parse("1.8.0");
+            return FabricLoader.getInstance().getModContainer("carrier").map(it -> it.getMetadata().getVersion().compareTo(version) > 0).orElse(false);
         } catch (VersionParsingException ignored) {
         }
         return false;
     }
 
-    @SuppressWarnings({"deprecation", "UnstableApiUsage"})
+    @SuppressWarnings({"UnstableApiUsage"})
     private static Storage<ItemVariant> getItemAccess(World world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction context) {
         if (blockEntity instanceof StrategyBlockEntity entity) {
             //noinspection unchecked
@@ -231,7 +228,7 @@ public final class Main implements ModInitializer {
             Registry.register(Registry.ITEM, ((OpenableBlock) item.getBlock()).getBlockId(), item);
         }
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.OLD_CHEST_BLOCK_TYPE, blockEntityType);
-        //noinspection deprecation,UnstableApiUsage
+        // noinspection UnstableApiUsage
         ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, blocks);
     }
 
@@ -247,7 +244,7 @@ public final class Main implements ModInitializer {
             Registry.register(Registry.ITEM, ((OpenableBlock) item.getBlock()).getBlockId(), item);
         }
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.BARREL_BLOCK_TYPE, blockEntityType);
-        //noinspection deprecation,UnstableApiUsage
+        // noinspection UnstableApiUsage
         ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, blocks);
     }
 

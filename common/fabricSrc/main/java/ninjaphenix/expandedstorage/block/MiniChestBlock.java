@@ -23,13 +23,17 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.Utils;
@@ -85,5 +89,29 @@ public final class MiniChestBlock extends OpenableBlock implements Waterloggable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return Common.createMiniChestBlockEntity(pos, state);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(Properties.HORIZONTAL_FACING)));
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return state.with(Properties.HORIZONTAL_FACING, rotation.rotate(state.get(Properties.HORIZONTAL_FACING)));
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public boolean hasComparatorOutput(BlockState state) {
+        return true;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
     }
 }

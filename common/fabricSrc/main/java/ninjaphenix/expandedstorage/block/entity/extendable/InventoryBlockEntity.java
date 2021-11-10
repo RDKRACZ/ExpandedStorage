@@ -19,15 +19,37 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.stream.IntStream;
 
 public abstract class InventoryBlockEntity extends OpenableBlockEntity {
+    private final int[] availableSlots;
     private final DefaultedList<ItemStack> items;
-    private final Inventory inventory = new Inventory() {
+    private final SidedInventory inventory = new SidedInventory() {
+        @Override
+        public int[] getAvailableSlots(Direction side) {
+            // todo: make this lazy
+            return availableSlots;
+        }
+
+        @Override
+        public boolean canInsert(int slot, ItemStack stack, @Nullable Direction dir) {
+            return true;
+        }
+
+        @Override
+        public boolean canExtract(int slot, ItemStack stack, Direction dir) {
+            return true;
+        }
+
         @Override
         public int size() {
             return items.size();
@@ -85,9 +107,10 @@ public abstract class InventoryBlockEntity extends OpenableBlockEntity {
     public InventoryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId, int inventorySize) {
         super(type, pos, state, blockId);
         items = DefaultedList.ofSize(inventorySize, ItemStack.EMPTY);
+        availableSlots = IntStream.range(0, inventorySize).toArray();
     }
 
-    public final Inventory getInventory() {
+    public final SidedInventory getInventory() {
         return inventory;
     }
 
@@ -106,6 +129,19 @@ public abstract class InventoryBlockEntity extends OpenableBlockEntity {
         if (this.shouldStateUpdateInvalidateItemAccess(oldState, state)) {
             this.getItemAccess().invalidate();
         }
+    }
+
+    @Override
+    public void readNbt(NbtCompound tag) {
+        super.readNbt(tag);
+        Inventories.readNbt(tag, items);
+    }
+
+    @Override
+    public NbtCompound writeNbt(NbtCompound tag) {
+        super.writeNbt(tag);
+        Inventories.writeNbt(tag, items);
+        return tag;
     }
 }
 

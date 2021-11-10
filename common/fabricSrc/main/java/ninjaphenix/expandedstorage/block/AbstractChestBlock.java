@@ -23,17 +23,22 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import ninjaphenix.container_library.api.helpers.VariableSidedInventory;
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.entity.OldChestBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
+import ninjaphenix.expandedstorage.block.misc.Property;
 import ninjaphenix.expandedstorage.block.misc.PropertyRetriever;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +61,7 @@ public class AbstractChestBlock extends OpenableBlock implements InventoryProvid
                                  .with(Properties.HORIZONTAL_FACING, Direction.NORTH));
     }
 
-    public static <T extends OldChestBlockEntity> PropertyRetriever<T> createPropertyRetriever(ChestBlock block, BlockState state, World world, BlockPos pos, boolean retrieveBlockedChests) {
+    public static <T extends OldChestBlockEntity> PropertyRetriever<T> createPropertyRetriever(AbstractChestBlock block, BlockState state, WorldAccess world, BlockPos pos, boolean retrieveBlockedChests) {
         BiPredicate<WorldAccess, BlockPos> isChestBlocked = retrieveBlockedChests ? (_level, _pos) -> false : block::isAccessBlocked;
         return PropertyRetriever.create(block.getBlockEntityType(), AbstractChestBlock::getBlockType, AbstractChestBlock::getDirectionToAttached,
                 (s) -> s.get(Properties.HORIZONTAL_FACING), state, world, pos, isChestBlocked);
@@ -200,6 +205,54 @@ public class AbstractChestBlock extends OpenableBlock implements InventoryProvid
 
     @Override
     public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
-        return null;
+        // todo: move to properties class / field
+        return AbstractChestBlock.createPropertyRetriever(this, state, world, pos, true).get(new Property<OldChestBlockEntity, SidedInventory>() {
+            @Override
+            public SidedInventory get(OldChestBlockEntity first, OldChestBlockEntity second) {
+                return VariableSidedInventory.of(first.getInventory(), second.getInventory());
+            }
+
+            @Override
+            public SidedInventory get(OldChestBlockEntity single) {
+                return single.getInventory();
+            }
+        }).orElse(null);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(Properties.HORIZONTAL_FACING)));
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return state.with(Properties.HORIZONTAL_FACING, rotation.rotate(state.get(Properties.HORIZONTAL_FACING)));
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public boolean hasComparatorOutput(BlockState state) {
+        return true;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        // todo: move to properties class / field
+        SidedInventory inventory = AbstractChestBlock.createPropertyRetriever(this, state, world, pos, true).get(new Property<OldChestBlockEntity, SidedInventory>() {
+            @Override
+            public SidedInventory get(OldChestBlockEntity first, OldChestBlockEntity second) {
+                return VariableSidedInventory.of(first.getInventory(), second.getInventory());
+            }
+
+            @Override
+            public SidedInventory get(OldChestBlockEntity single) {
+                return single.getInventory();
+            }
+        }).orElse(null);
+        if (inventory != null) return ScreenHandler.calculateComparatorOutput(inventory);
+        return super.getComparatorOutput(state, world, pos);
     }
 }

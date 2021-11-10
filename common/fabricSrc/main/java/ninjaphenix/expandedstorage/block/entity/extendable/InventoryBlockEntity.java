@@ -28,7 +28,7 @@ public abstract class InventoryBlockEntity extends OpenableBlockEntity {
 
     public abstract Inventory getInventory();
 
-    protected abstract boolean shouldStateUpdateInvalidateItemAccess(BlockState oldState, BlockState state);
+    protected abstract boolean shouldStateUpdateInvalidateItemAccess(BlockState oldState, BlockState newState);
 
     @Override // Could be a part of StrategyBlockEntity but is only used for implementors of InventoryBlockEntity
     @SuppressWarnings("deprecation")

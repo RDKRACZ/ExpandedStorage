@@ -68,6 +68,7 @@ import ninjaphenix.expandedstorage.item.StorageMutator;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -265,28 +266,33 @@ public final class Common {
         // Init and register opening stats
         Identifier woodOpenStat = Common.registerStat(Utils.id("open_wood_mini_chest"));
         Identifier pumpkinOpenStat = Common.registerStat(Utils.id("open_pumpkin_mini_chest"));
-        Identifier christmasOpenStat = Common.registerStat(Utils.id("open_christmas_mini_chest")); // split for different variants?
+        Identifier redPresentStat = Common.registerStat(Utils.id("open_red_mini_present"));
+        Identifier whitePresentStat = Common.registerStat(Utils.id("open_white_mini_present"));
+        Identifier candyCanePresentStat = Common.registerStat(Utils.id("open_candy_cane_mini_present"));
+        Identifier greenPresentStat = Common.registerStat(Utils.id("open_green_mini_present"));
+        Identifier lavenderPresentStat = Common.registerStat(Utils.id("open_lavender_mini_present"));
+        Identifier pinkAmethystPresentStat = Common.registerStat(Utils.id("open_pink_amethyst_mini_present"));
         // Init block settings
         Settings woodSettings = Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
         Settings pumpkinSettings = Settings.of(Material.GOURD, MapColor.ORANGE).strength(1).sounds(BlockSoundGroup.WOOD);
-        Settings christmasVar1Settings = Settings.of(Material.WOOD, MapColor.RED).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        Settings christmasVar2Settings = Settings.of(Material.WOOD, MapColor.WHITE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        Settings christmasVar3Settings = Settings.of(Material.WOOD, MapColor.WHITE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        Settings christmasVar4Settings = Settings.of(Material.WOOD, MapColor.DARK_GREEN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        Settings christmasVar5Settings = Settings.of(Material.WOOD, MapColor.PURPLE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        Settings christmasVar6Settings = Settings.of(Material.WOOD, MapColor.PURPLE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings redPresentSettings = Settings.of(Material.WOOD, MapColor.RED).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings whitePresentSettings = Settings.of(Material.WOOD, MapColor.WHITE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings candyCanePresentSettings = Settings.of(Material.WOOD, MapColor.WHITE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings greenPresentSettings = Settings.of(Material.WOOD, MapColor.DARK_GREEN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings lavenderPresentSettings = Settings.of(Material.WOOD, MapColor.PURPLE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings pinkAmethystPresentSettings = Settings.of(Material.WOOD, MapColor.PURPLE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
         // Init blocks
         MiniChestBlock vanillaWoodChestBlock = Common.miniChestBlock(Utils.id("vanilla_wood_mini_chest"), woodOpenStat, Common.WOOD_TIER, woodSettings);
         MiniChestBlock woodChestBlock = Common.miniChestBlock(Utils.id("wood_mini_chest"), woodOpenStat, Common.WOOD_TIER, woodSettings);
         MiniChestBlock pumpkinChestBlock = Common.miniChestBlock(Utils.id("pumpkin_mini_chest"), pumpkinOpenStat, Common.WOOD_TIER, pumpkinSettings);
-        MiniChestBlock christmasVar1Block = Common.miniChestBlock(Utils.id("red_christmas_mini_chest"), christmasOpenStat, Common.WOOD_TIER, christmasVar1Settings);
-        MiniChestBlock christmasVar2Block = Common.miniChestBlock(Utils.id("white_christmas_mini_chest"), christmasOpenStat, Common.WOOD_TIER, christmasVar2Settings);
-        MiniChestBlock christmasVar3Block = Common.miniChestBlock(Utils.id("snow_christmas_mini_chest"), christmasOpenStat, Common.WOOD_TIER, christmasVar3Settings);
-        MiniChestBlock christmasVar4Block = Common.miniChestBlock(Utils.id("green_christmas_mini_chest"), christmasOpenStat, Common.WOOD_TIER, christmasVar4Settings);
-        MiniChestBlock christmasVar5Block = Common.miniChestBlock(Utils.id("lavender_christmas_mini_chest"), christmasOpenStat, Common.WOOD_TIER, christmasVar5Settings);
-        MiniChestBlock christmasVar6Block = Common.miniChestBlock(Utils.id("pink_amethyst_christmas_mini_chest"), christmasOpenStat, Common.WOOD_TIER, christmasVar6Settings);
+        MiniChestBlock redPresentBlock = Common.miniChestBlock(Utils.id("red_mini_present"), redPresentStat, Common.WOOD_TIER, redPresentSettings);
+        MiniChestBlock whitePresentBlock = Common.miniChestBlock(Utils.id("white_mini_present"), whitePresentStat, Common.WOOD_TIER, whitePresentSettings);
+        MiniChestBlock candyCanePresentBlock = Common.miniChestBlock(Utils.id("candy_cane_mini_present"), candyCanePresentStat, Common.WOOD_TIER, candyCanePresentSettings);
+        MiniChestBlock greenPresentBlock = Common.miniChestBlock(Utils.id("green_mini_present"), greenPresentStat, Common.WOOD_TIER, greenPresentSettings);
+        MiniChestBlock lavenderPresentBlock = Common.miniChestBlock(Utils.id("lavender_mini_present"), lavenderPresentStat, Common.WOOD_TIER, lavenderPresentSettings);
+        MiniChestBlock pinkAmethystPresentBlock = Common.miniChestBlock(Utils.id("pink_amethyst_mini_present"), pinkAmethystPresentStat, Common.WOOD_TIER, pinkAmethystPresentSettings);
         MiniChestBlock[] blocks = new MiniChestBlock[]{vanillaWoodChestBlock, woodChestBlock, pumpkinChestBlock,
-                christmasVar1Block, christmasVar2Block, christmasVar3Block, christmasVar4Block, christmasVar5Block, christmasVar6Block};
+                redPresentBlock, whitePresentBlock, candyCanePresentBlock, greenPresentBlock, lavenderPresentBlock, pinkAmethystPresentBlock};
         // Init items
         BlockItem[] items = new BlockItem[blocks.length];
         for (int i = 0; i < blocks.length; i++) {
@@ -524,7 +530,8 @@ public final class Common {
         }
     }
 
-    static void registerBaseContent(Consumer<Pair<Identifier, Item>[]> itemRegistration, boolean wrapTooltipsManually) {
+    static void registerBaseContent(Consumer<Pair<Identifier, Item>[]> itemRegistration,
+                                    @SuppressWarnings("SameParameterValue") boolean wrapTooltipsManually) {
         //noinspection unchecked
         Pair<Identifier, Item>[] items = new Pair[16];
         items[0] = new Pair<>(Utils.id("chest_mutator"), new StorageMutator(new Item.Settings().maxCount(1).group(Common.group)));
@@ -591,9 +598,27 @@ public final class Common {
 
     }
 
-    // todo: remove this record, replace with old style class.
-    record BlockTierId(Identifier blockType, Identifier blockTier) {
+    @SuppressWarnings("ClassCanBeRecord")
+    private static class BlockTierId {
+        private final Identifier blockType;
+        private final Identifier blockTier;
 
+        private BlockTierId(Identifier blockType, Identifier blockTier) {
+            this.blockType = blockType;
+            this.blockTier = blockTier;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o instanceof BlockTierId other) return blockType.equals(other.blockType) && blockTier.equals(other.blockTier);
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(blockType, blockTier);
+        }
     }
 
     private static void registerTieredBlock(OpenableBlock block) {

@@ -1,7 +1,0 @@
-{
-  "parent": "expandedstorage:block/parent/present",
-  "textures": {
-    "atlas": "expandedstorage:block/lavender_christmas_mini_chest",
-    "particle": "expandedstorage:block/lavender_christmas_break"
-  }
-}

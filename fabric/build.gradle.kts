@@ -57,13 +57,13 @@ val excludeFabric: (ModuleDependency) -> Unit = {
 }
 
 dependencies {
-    minecraft(group = "com.mojang", name = "minecraft", version = "1.17.1")
-    mappings(group = "net.fabricmc", name = "yarn", version = "1.17.1+build.61", classifier = "v2")
+    minecraft(group = "com.mojang", name = "minecraft", version = properties["minecraft_version"] as String)
+    mappings(group = "net.fabricmc", name = "yarn", version = "${properties["minecraft_version"]}+build.${properties["yarn_version"]}", classifier = "v2")
 
     modImplementation(group = "net.fabricmc", name = "fabric-loader", version = properties["fabric_loader_version"] as String)
     implementation(group = "org.jetbrains", name = "annotations", version = properties["jetbrains_annotations_version"] as String)
     modImplementation(group = "net.fabricmc.fabric-api", name = "fabric-api", version = properties["fabric_api_version"] as String)
-    modImplementation(group = "ninjaphenix", name = "container_library", version = "1.2.4+1.17.1", classifier = "fabric") {
+    modImplementation(group = "ninjaphenix", name = "container_library", version = "${properties["container_library_version"]}+${properties["minecraft_version"]}", classifier = "fabric") {
         isTransitive = false
     }
 

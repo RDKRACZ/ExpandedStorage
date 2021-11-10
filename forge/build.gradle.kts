@@ -12,7 +12,7 @@ mixin {
 }
 
 minecraft {
-    mappings("official", "1.17.1")
+    mappings("official", properties["minecraft_version"] as String)
 
     accessTransformer(file("src/common/resources/META-INF/accesstransformer.cfg")) // Currently, this location cannot be changed from the default.
 
@@ -61,11 +61,10 @@ repositories {
 }
 
 dependencies {
-    minecraft("net.minecraftforge:forge:1.17.1-37.0.59")
+    minecraft("net.minecraftforge:forge:${properties["minecraft_version"]}-${properties["forge_version"]}")
     implementation(group = "org.spongepowered", name = "mixin", version = properties["mixin_version"] as String)
     annotationProcessor(group = "org.spongepowered", name = "mixin", version = properties["mixin_version"] as String, classifier = "processor")
-    implementation(fg.deobf("ninjaphenix:container_library:1.2.4+1.17.1:forge"))
-    //runtimeOnly(group = "com.github.NinjaPhenix", name = "container_library", version = "1.2.2", classifier = "forge")
+    implementation(fg.deobf("ninjaphenix:container_library:${properties["container_library_version"]}+${properties["minecraft_version"]}:forge"))
     implementation(group = "org.jetbrains", name = "annotations", version = properties["jetbrains_annotations_version"] as String)
 }
 

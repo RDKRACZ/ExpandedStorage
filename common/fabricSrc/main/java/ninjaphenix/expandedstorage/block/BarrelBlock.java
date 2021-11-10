@@ -18,14 +18,17 @@ package ninjaphenix.expandedstorage.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.Common;
 import ninjaphenix.expandedstorage.block.entity.BarrelBlockEntity;
 import org.jetbrains.annotations.Nullable;
@@ -66,5 +69,29 @@ public final class BarrelBlock extends OpenableBlock {
         if (world.getBlockEntity(pos) instanceof BarrelBlockEntity entity) {
             entity.updateViewerCount(world, pos, state);
         }
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public boolean hasComparatorOutput(BlockState state) {
+        return true;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+        return ScreenHandler.calculateComparatorOutput(world.getBlockEntity(pos));
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return state.with(Properties.FACING, rotation.rotate(state.get(Properties.FACING)));
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(Properties.FACING)));
     }
 }

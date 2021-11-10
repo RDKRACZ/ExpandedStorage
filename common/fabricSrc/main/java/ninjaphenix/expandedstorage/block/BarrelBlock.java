@@ -18,14 +18,19 @@ package ninjaphenix.expandedstorage.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import ninjaphenix.expandedstorage.Common;
+import ninjaphenix.expandedstorage.block.entity.BarrelBlockEntity;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Random;
 
 public final class BarrelBlock extends OpenableBlock {
     public BarrelBlock(Settings settings, Identifier blockId, Identifier tierId, Identifier openingStat, int slotCount) {
@@ -53,5 +58,13 @@ public final class BarrelBlock extends OpenableBlock {
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return Common.createBarrelBlockEntity(pos, state);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (world.getBlockEntity(pos) instanceof BarrelBlockEntity entity) {
+            entity.updateViewerCount(world, pos, state);
+        }
     }
 }

@@ -17,6 +17,8 @@ package ninjaphenix.expandedstorage.block.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -36,7 +38,7 @@ import java.util.function.Function;
 public class OldChestBlockEntity extends InventoryBlockEntity {
     public OldChestBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId,
                                Function<OpenableBlockEntity, ItemAccess> access, Function<OpenableBlockEntity, Lockable> lockable) {
-        super(type, pos, state, blockId);
+        super(type, pos, state, blockId, ((AbstractChestBlock) state.getBlock()).getSlotCount());
         this.setItemAccess(access.apply(this));
         this.setLock(lockable.apply(this));
         this.setName(new Nameable.Mutable(((OpenableBlock) state.getBlock()).getInventoryTitle()));
@@ -44,17 +46,7 @@ public class OldChestBlockEntity extends InventoryBlockEntity {
     }
 
     @Override
-    public Inventory getInventory() {
-        return null;
-    }
-
-    @Override
     protected boolean shouldStateUpdateInvalidateItemAccess(BlockState oldState, BlockState newState) {
         return oldState.get(AbstractChestBlock.CURSED_CHEST_TYPE) != newState.get(AbstractChestBlock.CURSED_CHEST_TYPE);
-    }
-
-    @Override
-    public DefaultedList<ItemStack> getItems() {
-        return null;
     }
 }

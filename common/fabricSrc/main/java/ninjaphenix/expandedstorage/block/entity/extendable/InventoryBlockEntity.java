@@ -17,16 +17,84 @@ package ninjaphenix.expandedstorage.block.entity.extendable;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 
 public abstract class InventoryBlockEntity extends OpenableBlockEntity {
-    public InventoryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId) {
+    private final DefaultedList<ItemStack> items;
+    private final Inventory inventory = new Inventory() {
+        @Override
+        public int size() {
+            return items.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            for (ItemStack stack : items) {
+                if (stack.isEmpty()) continue;
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public ItemStack getStack(int slot) {
+            return items.get(slot);
+        }
+
+        @Override
+        public ItemStack removeStack(int slot, int amount) {
+            ItemStack stack = Inventories.splitStack(items, slot, amount);
+            if (!stack.isEmpty()) this.markDirty();
+            return stack;
+        }
+
+        @Override
+        public ItemStack removeStack(int slot) {
+            return Inventories.removeStack(items, slot);
+        }
+
+        @Override
+        public void setStack(int slot, ItemStack stack) {
+            if (stack.getCount() > this.getMaxCountPerStack()) stack.setCount(this.getMaxCountPerStack());
+            items.set(slot, stack);
+            this.markDirty();
+        }
+
+        @Override
+        public void markDirty() {
+            InventoryBlockEntity.this.markDirty();
+        }
+
+        @Override
+        public boolean canPlayerUse(PlayerEntity player) {
+            return true;
+        }
+
+        @Override
+        public void clear() {
+            items.clear();
+        }
+    };
+
+    public InventoryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId, int inventorySize) {
         super(type, pos, state, blockId);
+        items = DefaultedList.ofSize(inventorySize, ItemStack.EMPTY);
     }
 
-    public abstract Inventory getInventory();
+    public final Inventory getInventory() {
+        return inventory;
+    }
+
+    @Override
+    public final DefaultedList<ItemStack> getItems() {
+        return items;
+    }
 
     protected abstract boolean shouldStateUpdateInvalidateItemAccess(BlockState oldState, BlockState newState);
 

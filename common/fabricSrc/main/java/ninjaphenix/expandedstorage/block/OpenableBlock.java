@@ -17,10 +17,15 @@ package ninjaphenix.expandedstorage.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
+import net.minecraft.block.BlockState;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import ninjaphenix.container_library.api.v2.OpenableBlockEntityProviderV2;
+import ninjaphenix.expandedstorage.block.entity.extendable.OpenableBlockEntity;
 
 public abstract class OpenableBlock extends Block implements OpenableBlockEntityProviderV2, BlockEntityProvider {
     private final Identifier blockId;
@@ -52,6 +57,18 @@ public abstract class OpenableBlock extends Block implements OpenableBlockEntity
 
     public final Identifier getBlockTier() {
         return blockTier;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean bl) {
+        if (!state.isOf(newState.getBlock())) {
+            if (world.getBlockEntity(pos) instanceof OpenableBlockEntity entity) {
+                ItemScatterer.spawn(world, pos, entity.getItems());
+                world.updateComparators(pos, this);
+            }
+            super.onStateReplaced(state, world, pos, newState, bl);
+        }
     }
 
     @Override

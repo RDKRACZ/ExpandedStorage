@@ -21,21 +21,16 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ViewerCountManager;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import ninjaphenix.container_library.api.inventory.AbstractHandler;
-import ninjaphenix.expandedstorage.block.BarrelBlock;
 import ninjaphenix.expandedstorage.block.OpenableBlock;
 import ninjaphenix.expandedstorage.block.entity.extendable.ExposedInventoryBlockEntity;
 import ninjaphenix.expandedstorage.block.entity.extendable.OpenableBlockEntity;
@@ -47,7 +42,6 @@ import ninjaphenix.expandedstorage.block.strategies.Observable;
 import java.util.function.Function;
 
 public final class BarrelBlockEntity extends ExposedInventoryBlockEntity {
-    private final DefaultedList<ItemStack> inventory;
     private final ViewerCountManager manager = new ViewerCountManager() {
         @Override
         protected void onContainerOpen(World world, BlockPos pos, BlockState state) {
@@ -74,7 +68,7 @@ public final class BarrelBlockEntity extends ExposedInventoryBlockEntity {
 
     public BarrelBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId,
                              Function<OpenableBlockEntity, ItemAccess> access, Function<OpenableBlockEntity, Lockable> lockable) {
-        super(type, pos, state, blockId);
+        super(type, pos, state, blockId, ((OpenableBlock) state.getBlock()).getSlotCount());
         this.setItemAccess(access.apply(this));
         this.setLock(lockable.apply(this));
         this.setName(new Nameable.Mutable(((OpenableBlock) state.getBlock()).getInventoryTitle()));
@@ -96,7 +90,6 @@ public final class BarrelBlockEntity extends ExposedInventoryBlockEntity {
                 return player.currentScreenHandler instanceof AbstractHandler handler && handler.getInventory() == BarrelBlockEntity.this;
             }
         });
-        inventory = DefaultedList.ofSize(((BarrelBlock) state.getBlock()).getSlotCount(), ItemStack.EMPTY);
     }
 
     private static void playSound(World world, BlockState state, BlockPos pos, SoundEvent sound) {
@@ -109,67 +102,6 @@ public final class BarrelBlockEntity extends ExposedInventoryBlockEntity {
 
     private static void updateBlockState(World world, BlockState state, BlockPos pos, boolean open) {
         world.setBlockState(pos, state.with(Properties.OPEN, open), Block.NOTIFY_ALL);
-    }
-
-    @Override
-    public int size() {
-        return inventory.size();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        for (ItemStack stack : inventory) {
-            if (stack.isEmpty()) continue;
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public ItemStack getStack(int slot) {
-        return inventory.get(slot);
-    }
-
-    @Override
-    public ItemStack removeStack(int slot, int amount) {
-        ItemStack stack = Inventories.splitStack(inventory, slot, amount);
-        if (!stack.isEmpty()) this.markDirty();
-        return stack;
-    }
-
-    @Override
-    public ItemStack removeStack(int slot) {
-        return Inventories.removeStack(inventory, slot);
-    }
-
-    @Override
-    public void setStack(int slot, ItemStack stack) {
-        if (stack.getCount() > this.getMaxCountPerStack()) stack.setCount(this.getMaxCountPerStack());
-        inventory.set(slot, stack);
-        this.markDirty();
-    }
-
-    @Override
-    public boolean canPlayerUse(PlayerEntity player) {
-        return true;
-    }
-
-    @Override
-    public void clear() {
-        inventory.clear();
-    }
-
-    @Override
-    public void readNbt(NbtCompound tag) {
-        super.readNbt(tag);
-        Inventories.readNbt(tag, inventory);
-    }
-
-    @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
-        super.writeNbt(tag);
-        Inventories.writeNbt(tag, inventory);
-        return tag;
     }
 
     @Override
@@ -186,10 +118,5 @@ public final class BarrelBlockEntity extends ExposedInventoryBlockEntity {
 
     public void updateViewerCount(ServerWorld world, BlockPos pos, BlockState state) {
         manager.updateViewerCount(world, pos, state);
-    }
-
-    @Override
-    public DefaultedList<ItemStack> getItems() {
-        return inventory;
     }
 }

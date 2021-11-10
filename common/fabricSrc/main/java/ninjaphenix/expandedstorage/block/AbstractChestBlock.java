@@ -18,8 +18,10 @@ package ninjaphenix.expandedstorage.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoubleBlockProperties;
+import net.minecraft.block.InventoryProvider;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
@@ -41,7 +43,7 @@ import java.util.function.BiPredicate;
 /**
  * Note to self, do not rename, used by chest tracker.
  */
-public class AbstractChestBlock extends OpenableBlock {
+public class AbstractChestBlock extends OpenableBlock implements InventoryProvider {
     /**
      * Note to self, do not rename, used by chest tracker.
      */
@@ -153,13 +155,13 @@ public class AbstractChestBlock extends OpenableBlock {
         if (context.shouldCancelInteraction()) {
             Direction offsetDir = clickedFace.getOpposite();
             BlockState offsetState = world.getBlockState(pos.offset(offsetDir));
-            if (offsetState.getBlock() == this && offsetState.get(Properties.HORIZONTAL_FACING) == chestForwardDir && offsetState.get(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
+            if (offsetState.isOf(this) && offsetState.get(Properties.HORIZONTAL_FACING) == chestForwardDir && offsetState.get(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
                 chestType = AbstractChestBlock.getChestType(chestForwardDir, offsetDir);
             }
         } else {
             for (Direction dir : Direction.values()) {
                 BlockState offsetState = world.getBlockState(pos.offset(dir));
-                if (offsetState.getBlock() == this && offsetState.get(Properties.HORIZONTAL_FACING) == chestForwardDir && offsetState.get(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
+                if (offsetState.isOf(this) && offsetState.get(Properties.HORIZONTAL_FACING) == chestForwardDir && offsetState.get(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
                     CursedChestType type = AbstractChestBlock.getChestType(chestForwardDir, dir);
                     if (type != CursedChestType.SINGLE) {
                         chestType = type;
@@ -178,7 +180,7 @@ public class AbstractChestBlock extends OpenableBlock {
         DoubleBlockProperties.Type mergeType = AbstractChestBlock.getBlockType(state);
         if (mergeType == DoubleBlockProperties.Type.SINGLE) {
             Direction facing = state.get(Properties.HORIZONTAL_FACING);
-            if (offsetState.getBlock() != this) {
+            if (!offsetState.isOf(this)) {
                 return state.with(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE);
             }
             CursedChestType newType = AbstractChestBlock.getChestType(facing, offset);
@@ -187,7 +189,7 @@ public class AbstractChestBlock extends OpenableBlock {
             }
         } else {
             BlockState otherState = world.getBlockState(pos.offset(AbstractChestBlock.getDirectionToAttached(state)));
-            if (otherState.getBlock() != this ||
+            if (!otherState.isOf(this) ||
                     otherState.get(CURSED_CHEST_TYPE) != state.get(CURSED_CHEST_TYPE).getOpposite() ||
                     state.get(Properties.HORIZONTAL_FACING) != state.get(Properties.HORIZONTAL_FACING)) {
                 return state.with(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE);
@@ -196,4 +198,8 @@ public class AbstractChestBlock extends OpenableBlock {
         return super.getStateForNeighborUpdate(state, offset, offsetState, world, pos, offsetPos);
     }
 
+    @Override
+    public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
+        return null;
+    }
 }

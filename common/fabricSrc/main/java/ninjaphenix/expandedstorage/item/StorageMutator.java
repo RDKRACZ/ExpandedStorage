@@ -276,9 +276,9 @@ public class StorageMutator extends Item {
                             BlockState otherState = world.getBlockState(otherPos);
                             world.setBlockState(otherPos, otherState.rotate(BlockRotation.CLOCKWISE_90));
                         } else if (value == CursedChestType.FRONT || value == CursedChestType.BACK || value == CursedChestType.LEFT || value == CursedChestType.RIGHT) {
-                            world.setBlockState(pos, state.rotate(BlockRotation.CLOCKWISE_180).with(AbstractChestBlock.CURSED_CHEST_TYPE, state.get(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
                             BlockPos otherPos = pos.offset(AbstractChestBlock.getDirectionToAttached(state));
                             BlockState otherState = world.getBlockState(otherPos);
+                            world.setBlockState(pos, state.rotate(BlockRotation.CLOCKWISE_180).with(AbstractChestBlock.CURSED_CHEST_TYPE, state.get(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
                             world.setBlockState(otherPos, otherState.rotate(BlockRotation.CLOCKWISE_180).with(AbstractChestBlock.CURSED_CHEST_TYPE, otherState.get(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
                         }
                     }

@@ -4,3 +4,4 @@
 - Fixed the map color of Christmas chest variants
 - Remove some unnecessary data from models as well as some minor relocation for barrel and old chest base models.
 - Major resource / data pack renames, generally moving from christmas chest -> present
+- Fix rotation of horizontal chests splitting the chest and only rotating one half.

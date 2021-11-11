@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ninjaphenix.expandedstorage;
+package ninjaphenix.expandedstorage.registration;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.item.Item;
+import net.minecraft.item.BlockItem;
 
-public interface RegistrationConsumer<B extends Block, I extends Item, E extends BlockEntity> {
-    void accept(B[] blocks, I[] items, BlockEntityType<E> blockEntityType);
+public interface RegistrationConsumer<B extends Block, I extends BlockItem, E extends BlockEntity> {
+    void accept(BlockItemCollection<B, I> content, BlockEntityType<E> blockEntityType);
 }

@@ -48,10 +48,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.block.AbstractChestBlock;
-import ninjaphenix.expandedstorage.block.AbstractChestBlock;
 import ninjaphenix.expandedstorage.block.BarrelBlock;
-import ninjaphenix.expandedstorage.block.BarrelBlock;
-import ninjaphenix.expandedstorage.block.ChestBlock;
 import ninjaphenix.expandedstorage.block.ChestBlock;
 import ninjaphenix.expandedstorage.block.MiniChestBlock;
 import ninjaphenix.expandedstorage.block.OpenableBlock;
@@ -159,7 +156,6 @@ public final class Common {
     }
 
     static void registerChestContent(RegistrationConsumer<ChestBlock, BlockItem, ChestBlockEntity> registrationConsumer, Tag<Block> woodenChestTag, BiFunction<Block, Item.Settings, BlockItem> blockItemMaker, boolean isClient) {
-        // Init and register opening stats
         // Init block settings
         Settings woodSettings = Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
         Settings pumpkinSettings = Settings.of(Material.GOURD, MapColor.ORANGE).strength(1).sounds(BlockSoundGroup.WOOD);
@@ -177,8 +173,8 @@ public final class Common {
         Settings diamondSettings = Settings.of(Material.METAL, MapColor.DIAMOND_BLUE).strength(5, 6).sounds(BlockSoundGroup.METAL);
         Settings obsidianSettings = Settings.of(Material.STONE, MapColor.BLACK).strength(50, 1200);
         Settings netheriteSettings = Settings.of(Material.METAL, MapColor.BLACK).strength(50, 1200).sounds(BlockSoundGroup.NETHERITE);
-        // Init blocks
-        var content = BlockItemCollection.of(ChestBlock[]::new, BlockItem[]::new,
+        // Init content
+        BlockItemCollection<ChestBlock, BlockItem> content = BlockItemCollection.of(ChestBlock[]::new, BlockItem[]::new,
                 Common.chestBlock(Utils.id("wood_chest"), Common.stat("open_wood_chest"), Common.WOOD_TIER, woodSettings, blockItemMaker),
                 Common.chestBlock(Utils.id("pumpkin_chest"), Common.stat("open_pumpkin_chest"), Common.WOOD_TIER, pumpkinSettings, blockItemMaker),
                 Common.chestBlock(Utils.id("christmas_chest"), Common.stat("open_christmas_chest"), Common.WOOD_TIER, christmasSettings, blockItemMaker),
@@ -200,7 +196,6 @@ public final class Common {
     }
 
     static void registerOldChestContent(RegistrationConsumer<AbstractChestBlock, BlockItem, OldChestBlockEntity> registrationConsumer) {
-        // Init and register opening stats
         // Init block settings
         Settings woodSettings = Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
         Settings ironSettings = Settings.of(Material.METAL, MapColor.IRON_GRAY).strength(5, 6).sounds(BlockSoundGroup.METAL);
@@ -208,7 +203,7 @@ public final class Common {
         Settings diamondSettings = Settings.of(Material.METAL, MapColor.DIAMOND_BLUE).strength(5, 6).sounds(BlockSoundGroup.METAL);
         Settings obsidianSettings = Settings.of(Material.STONE, MapColor.BLACK).strength(50, 1200);
         Settings netheriteSettings = Settings.of(Material.METAL, MapColor.BLACK).strength(50, 1200).sounds(BlockSoundGroup.NETHERITE);
-        // Init blocks
+        // Init content
         BlockItemCollection<AbstractChestBlock, BlockItem> content = BlockItemCollection.of(AbstractChestBlock[]::new, BlockItem[]::new,
                 Common.oldChestBlock(Utils.id("old_wood_chest"), Common.stat("open_old_wood_chest"), Common.WOOD_TIER, woodSettings),
                 Common.oldChestBlock(Utils.id("old_iron_chest"), Common.stat("open_old_iron_chest"), Common.IRON_TIER, ironSettings),
@@ -237,7 +232,7 @@ public final class Common {
         Settings greenPresentSettings = Settings.of(Material.WOOD, MapColor.DARK_GREEN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
         Settings lavenderPresentSettings = Settings.of(Material.WOOD, MapColor.PURPLE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
         Settings pinkAmethystPresentSettings = Settings.of(Material.WOOD, MapColor.PURPLE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        // Init blocks
+        // Init content
         BlockItemCollection<MiniChestBlock, BlockItem> content = BlockItemCollection.of(MiniChestBlock[]::new, BlockItem[]::new,
                 Common.miniChestBlock(Utils.id("vanilla_wood_mini_chest"), woodOpenStat, woodSettings),
                 Common.miniChestBlock(Utils.id("wood_mini_chest"), woodOpenStat, woodSettings),
@@ -533,7 +528,6 @@ public final class Common {
     }
 
     public static MiniChestBlockEntity createMiniChestBlockEntity(BlockPos pos, BlockState state) {
-        // todo: itemAccess impl cannot be used here, needs custom one.
         return new MiniChestBlockEntity(Common.getMiniChestBlockEntityType(), pos, state, ((MiniChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable);
 
     }

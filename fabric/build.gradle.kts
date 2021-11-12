@@ -10,8 +10,6 @@ loom {
     runs {
         named("client") {
             ideConfigGenerated(false)
-            // Todo: remove and release when carrier is updated.
-            property("fabric.debug.loadLate", "expandedstorage")
         }
         named("server") {
             ideConfigGenerated(false)
@@ -74,7 +72,7 @@ dependencies {
     modCompileOnly(group = "curse.maven", name = "towelette-309338", version = "3398761") {
         also(excludeFabric)
     }
-    modImplementation(group = "curse.maven", name = "carrier-409184", version = "3327390") {
+    modImplementation(group = "curse.maven", name = "carrier-409184", version = "3504375") {
         also(excludeFabric)
     }
     modImplementation(group = "io.github.onyxstudios.Cardinal-Components-API", name = "cardinal-components-base", version = properties["cardinal_version"] as String)
@@ -94,14 +92,14 @@ tasks.withType<ProcessResources> {
 }
 
 tasks.register<net.fabricmc.loom.task.MigrateMappingsTask>("updateForgeSources") {
-    setInputDir(rootDir.toPath().resolve("common/fabricSrc/main/java").toString())
-    setOutputDir(rootDir.toPath().resolve("common/forgeSrc/main/java").toString())
+    setInputDir(rootDir.toPath().resolve("fabric/commonSrc/main/java").toString())
+    setOutputDir(rootDir.toPath().resolve("forge/commonSrc/main/java").toString())
     setMappings("net.minecraft:mappings:${properties["minecraft_version"]}")
 }
 if (hasProperty("yv")) {
     val updateCommonSources = tasks.register<net.fabricmc.loom.task.MigrateMappingsTask>("updateCommonSources") {
-        setInputDir(rootDir.toPath().resolve("common/fabricSrc/main/java").toString())
-        setOutputDir(rootDir.toPath().resolve("common/fabricSrc/main/java").toString())
+        setInputDir(rootDir.toPath().resolve("fabric/commonSrc/main/java").toString())
+        setOutputDir(rootDir.toPath().resolve("fabric/commonSrc/main/java").toString())
         setMappings("net.fabricmc:yarn:" + findProperty("yv") as String)
     }
 

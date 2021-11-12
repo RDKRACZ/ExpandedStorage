@@ -55,7 +55,7 @@ subprojects {
             java {
                 setSrcDirs(listOf(
                         "src/main/java",
-                        rootDir.resolve("common/${project.name}Src/main/java"),
+                        "commonSrc/main/java"
                 ))
             }
             resources {

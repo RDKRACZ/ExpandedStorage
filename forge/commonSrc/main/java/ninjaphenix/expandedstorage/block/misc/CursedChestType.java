@@ -15,9 +15,6 @@
  */
 package ninjaphenix.expandedstorage.block.misc;
 
-import org.jetbrains.annotations.ApiStatus.Experimental;
-import org.jetbrains.annotations.ApiStatus.Internal;
-
 import java.util.Locale;
 import net.minecraft.util.StringRepresentable;
 

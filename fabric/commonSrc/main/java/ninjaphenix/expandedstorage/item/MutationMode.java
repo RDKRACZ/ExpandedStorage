@@ -20,7 +20,8 @@ import java.util.Locale;
 public enum MutationMode {
     MERGE,
     SPLIT,
-    ROTATE;
+    ROTATE,
+    SWAP_THEME;
 
     private static final MutationMode[] VALUES = MutationMode.values();
 

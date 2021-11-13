@@ -15,30 +15,36 @@
  */
 package ninjaphenix.expandedstorage;
 
-import net.minecraft.util.Identifier;
-
 import java.util.Objects;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class BlockTierId {
-    private final Identifier blockType;
-    private final Identifier blockTier;
+public class Pair<F, S> {
+    private final F first;
+    private final S second;
 
-    public BlockTierId(Identifier blockType, Identifier blockTier) {
-        this.blockType = blockType;
-        this.blockTier = blockTier;
+    public Pair(F first, S second) {
+        this.first = first;
+        this.second = second;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof BlockTierId other)
-            return blockType.equals(other.blockType) && blockTier.equals(other.blockTier);
+        if (o instanceof Pair other)
+            return first.equals(other.first) && second.equals(other.second);
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(blockType, blockTier);
+        return Objects.hash(first, second);
+    }
+
+    public F getFirst() {
+        return first;
+    }
+
+    public S getSecond() {
+        return second;
     }
 }

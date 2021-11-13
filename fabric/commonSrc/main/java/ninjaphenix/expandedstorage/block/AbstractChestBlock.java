@@ -58,6 +58,17 @@ public class AbstractChestBlock extends OpenableBlock implements InventoryProvid
      * Note to self, do not rename, used by chest tracker.
      */
     public static final EnumProperty<CursedChestType> CURSED_CHEST_TYPE = EnumProperty.of("type", CursedChestType.class);
+    private static final Property<OldChestBlockEntity, SidedInventory> INVENTORY_GETTER = new Property<>() {
+        @Override
+        public SidedInventory get(OldChestBlockEntity first, OldChestBlockEntity second) {
+            return VariableSidedInventory.of(first.getInventory(), second.getInventory());
+        }
+
+        @Override
+        public SidedInventory get(OldChestBlockEntity single) {
+            return single.getInventory();
+        }
+    };
 
     public AbstractChestBlock(Settings settings, Identifier blockId, Identifier blockTier, Identifier openingStat, int slotCount) {
         super(settings, blockId, blockTier, openingStat, slotCount);
@@ -211,18 +222,7 @@ public class AbstractChestBlock extends OpenableBlock implements InventoryProvid
 
     @Override
     public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
-        // todo: move to properties class / field
-        return AbstractChestBlock.createPropertyRetriever(this, state, world, pos, true).get(new Property<OldChestBlockEntity, SidedInventory>() {
-            @Override
-            public SidedInventory get(OldChestBlockEntity first, OldChestBlockEntity second) {
-                return VariableSidedInventory.of(first.getInventory(), second.getInventory());
-            }
-
-            @Override
-            public SidedInventory get(OldChestBlockEntity single) {
-                return single.getInventory();
-            }
-        }).orElse(null);
+        return AbstractChestBlock.createPropertyRetriever(this, state, world, pos, true).get(AbstractChestBlock.INVENTORY_GETTER).orElse(null);
     }
 
     @Override

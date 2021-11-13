@@ -30,43 +30,6 @@ import java.util.function.Function;
 public interface PropertyRetriever<A> {
     <B> Optional<B> get(Property<A, B> property);
 
-    @SuppressWarnings("ClassCanBeRecord")
-    class SingleRetriever<A> implements PropertyRetriever<A> {
-        private final A single;
-
-        public SingleRetriever(A single) {
-            this.single = single;
-        }
-
-        @Override
-        public <B> Optional<B> get(Property<A, B> property) {
-            return Optional.ofNullable(property.get(single));
-        }
-    }
-
-    @SuppressWarnings("ClassCanBeRecord")
-    class DoubleRetriever<A> implements PropertyRetriever<A> {
-        private final A first;
-        private final A second;
-
-        public DoubleRetriever(A first, A second) {
-            this.first = first;
-            this.second = second;
-        }
-
-        @Override
-        public <B> Optional<B> get(Property<A, B> property) {
-            return Optional.ofNullable(property.get(first, second));
-        }
-    }
-
-    class NullRetriever<A> implements PropertyRetriever<A> {
-        @Override
-        public <B> Optional<B> get(Property<A, B> property) {
-            return Optional.empty();
-        }
-    }
-
     static <A extends BlockEntity> PropertyRetriever<A> create(
             BlockEntityType<A> blockEntityType,
             Function<BlockState, DoubleBlockProperties.Type> typeGetter,
@@ -77,32 +40,29 @@ public interface PropertyRetriever<A> {
             BlockPos pos,
             BiPredicate<WorldAccess, BlockPos> blockInaccessible) {
         A entity = blockEntityType.get(world, pos);
-        if (entity == null || blockInaccessible.test(world, pos)) {
-            return new NullRetriever<>();
-        } else {
-            DoubleBlockProperties.Type type = typeGetter.apply(state);
-            if (type != DoubleBlockProperties.Type.SINGLE) {
-                BlockPos attachedPos = pos.offset(attachedDirectionGetter.apply(state));
-                BlockState attachedState = world.getBlockState(attachedPos);
-                if (attachedState.isOf(state.getBlock())) {
-                    if (PropertyRetriever.areTypesOpposite(type, typeGetter.apply(attachedState)) && directionGetter.apply(state) == directionGetter.apply(attachedState)) {
-                        if (blockInaccessible.test(world, attachedPos)) {
-                            return new NullRetriever<>();
-                        }
+        if (entity == null || blockInaccessible.test(world, pos))
+            return new EmptyPropertyRetriever<>();
 
-                        A attachedEntity = blockEntityType.get(world, attachedPos);
-                        if (attachedEntity != null) {
-                            if (type == DoubleBlockProperties.Type.FIRST) {
-                                return new DoubleRetriever<>(entity, attachedEntity);
-                            } else {
-                                return new DoubleRetriever<>(attachedEntity, entity);
-                            }
-                        }
+        DoubleBlockProperties.Type type = typeGetter.apply(state);
+        if (type != DoubleBlockProperties.Type.SINGLE) {
+            BlockPos attachedPos = pos.offset(attachedDirectionGetter.apply(state));
+            BlockState attachedState = world.getBlockState(attachedPos);
+            if (attachedState.isOf(state.getBlock())) {
+                if (PropertyRetriever.areTypesOpposite(type, typeGetter.apply(attachedState)) && directionGetter.apply(state) == directionGetter.apply(attachedState)) {
+                    if (blockInaccessible.test(world, attachedPos))
+                        return new EmptyPropertyRetriever<>();
+
+                    A attachedEntity = blockEntityType.get(world, attachedPos);
+                    if (attachedEntity != null) {
+                        if (type == DoubleBlockProperties.Type.FIRST)
+                            return new DoublePropertyRetriever<>(entity, attachedEntity);
+
+                        return new DoublePropertyRetriever<>(attachedEntity, entity);
                     }
                 }
             }
-            return new SingleRetriever<>(entity);
         }
+        return new SinglePropertyRetriever<>(entity);
     }
 
     static boolean areTypesOpposite(DoubleBlockProperties.Type type, DoubleBlockProperties.Type otherType) {
@@ -111,6 +71,6 @@ public interface PropertyRetriever<A> {
     }
 
     static <A> PropertyRetriever<A> createDirect(A single) {
-        return new PropertyRetriever.SingleRetriever<>(single);
+        return new SinglePropertyRetriever<>(single);
     }
 }

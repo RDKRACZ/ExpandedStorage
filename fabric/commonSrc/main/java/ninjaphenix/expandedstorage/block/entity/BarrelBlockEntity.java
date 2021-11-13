@@ -62,7 +62,7 @@ public final class BarrelBlockEntity extends ExposedInventoryBlockEntity {
 
         @Override
         protected boolean isPlayerViewing(PlayerEntity player) {
-            return BarrelBlockEntity.this.getObservable().isViewedBy(player);
+            return player.currentScreenHandler instanceof AbstractHandler handler && handler.getInventory() == BarrelBlockEntity.this;
         }
     };
 
@@ -72,24 +72,6 @@ public final class BarrelBlockEntity extends ExposedInventoryBlockEntity {
         this.setItemAccess(access.apply(this));
         this.setLock(lockable.apply(this));
         this.setName(new Nameable.Mutable(((OpenableBlock) state.getBlock()).getInventoryTitle()));
-        this.setObservable(new Observable() {
-            @Override
-            public void playerStartViewing(PlayerEntity player) {
-                BlockEntity self = BarrelBlockEntity.this;
-                manager.openContainer(player, self.getWorld(), self.getPos(), self.getCachedState());
-            }
-
-            @Override
-            public void playerStopViewing(PlayerEntity player) {
-                BlockEntity self = BarrelBlockEntity.this;
-                manager.closeContainer(player, self.getWorld(), self.getPos(), self.getCachedState());
-            }
-
-            @Override
-            public boolean isViewedBy(PlayerEntity player) { // no need for this?
-                return player.currentScreenHandler instanceof AbstractHandler handler && handler.getInventory() == BarrelBlockEntity.this;
-            }
-        });
     }
 
     private static void playSound(World world, BlockState state, BlockPos pos, SoundEvent sound) {
@@ -107,13 +89,13 @@ public final class BarrelBlockEntity extends ExposedInventoryBlockEntity {
     @Override
     public void onOpen(PlayerEntity player) {
         if (player.isSpectator()) return;
-        this.getObservable().playerStartViewing(player);
+        manager.openContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
     }
 
     @Override
     public void onClose(PlayerEntity player) {
         if (player.isSpectator()) return;
-        this.getObservable().playerStopViewing(player);
+        manager.closeContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
     }
 
     public void updateViewerCount(ServerWorld world, BlockPos pos, BlockState state) {

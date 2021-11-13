@@ -25,14 +25,12 @@ import net.minecraft.util.math.BlockPos;
 import ninjaphenix.expandedstorage.block.strategies.ItemAccess;
 import ninjaphenix.expandedstorage.block.strategies.Lockable;
 import ninjaphenix.expandedstorage.block.strategies.Nameable;
-import ninjaphenix.expandedstorage.block.strategies.Observable;
 
 public abstract class StrategyBlockEntity extends BlockEntity {
     private final Identifier blockId;
     private ItemAccess itemAccess;
     private Lockable lockable;
     private Nameable nameable;
-    private Observable observable;
 
     public StrategyBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId) {
         super(type, pos, state);
@@ -85,13 +83,5 @@ public abstract class StrategyBlockEntity extends BlockEntity {
 
     public Nameable getName() {
         return nameable;
-    }
-
-    protected void setObservable(Observable observable) {
-        if (this.observable == null) this.observable = observable;
-    }
-
-    public Observable getObservable() {
-        return observable;
     }
 }

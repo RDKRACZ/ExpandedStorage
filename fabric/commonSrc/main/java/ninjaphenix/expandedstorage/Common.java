@@ -510,7 +510,7 @@ public final class Common {
         Common.BLOCK_UPGRADE_BEHAVIOURS.put(target, behaviour);
     }
 
-    public static BarrelBlockEntity createBarrelBlockEntity(BlockPos pos, BlockState state) {
+    private static BarrelBlockEntity createBarrelBlockEntity(BlockPos pos, BlockState state) {
         return new BarrelBlockEntity(Common.getBarrelBlockEntityType(), pos, state, ((BarrelBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable);
     }
 
@@ -519,15 +519,15 @@ public final class Common {
         Common.lockable = lockable;
     }
 
-    public static OldChestBlockEntity createOldChestBlockEntity(BlockPos pos, BlockState state) {
+    private static OldChestBlockEntity createOldChestBlockEntity(BlockPos pos, BlockState state) {
         return new OldChestBlockEntity(Common.getOldChestBlockEntityType(), pos, state, ((AbstractChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable);
     }
 
-    public static ChestBlockEntity createChestBlockEntity(BlockPos pos, BlockState state) {
+    private static ChestBlockEntity createChestBlockEntity(BlockPos pos, BlockState state) {
         return new ChestBlockEntity(Common.getChestBlockEntityType(), pos, state, ((ChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable);
     }
 
-    public static MiniChestBlockEntity createMiniChestBlockEntity(BlockPos pos, BlockState state) {
+    private static MiniChestBlockEntity createMiniChestBlockEntity(BlockPos pos, BlockState state) {
         return new MiniChestBlockEntity(Common.getMiniChestBlockEntityType(), pos, state, ((MiniChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable);
 
     }

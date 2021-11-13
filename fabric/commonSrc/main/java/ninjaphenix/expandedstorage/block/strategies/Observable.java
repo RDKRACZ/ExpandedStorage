@@ -28,16 +28,9 @@ public interface Observable {
         public void playerStopViewing(PlayerEntity player) {
 
         }
-
-        @Override
-        public boolean isViewedBy(PlayerEntity player) {
-            return false;
-        }
     };
 
     void playerStartViewing(PlayerEntity player);
 
     void playerStopViewing(PlayerEntity player);
-
-    boolean isViewedBy(PlayerEntity player);
 }

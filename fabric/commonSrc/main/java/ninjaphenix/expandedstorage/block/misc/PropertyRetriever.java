@@ -85,7 +85,7 @@ public interface PropertyRetriever<A> {
                 BlockPos attachedPos = pos.offset(attachedDirectionGetter.apply(state));
                 BlockState attachedState = world.getBlockState(attachedPos);
                 if (attachedState.isOf(state.getBlock())) {
-                    if (areTypesOpposite(type, typeGetter.apply(attachedState)) && directionGetter.apply(state) == directionGetter.apply(attachedState)) {
+                    if (PropertyRetriever.areTypesOpposite(type, typeGetter.apply(attachedState)) && directionGetter.apply(state) == directionGetter.apply(attachedState)) {
                         if (blockInaccessible.test(world, attachedPos)) {
                             return new NullRetriever<>();
                         }

@@ -26,6 +26,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import ninjaphenix.expandedstorage.block.strategies.Observable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.IntStream;
@@ -102,7 +103,20 @@ public abstract class InventoryBlockEntity extends OpenableBlockEntity {
         public void clear() {
             items.clear();
         }
+
+        @Override
+        public void onOpen(PlayerEntity player) {
+            if (player.isSpectator()) return;
+            observable.playerStartViewing(player);
+        }
+
+        @Override
+        public void onClose(PlayerEntity player) {
+            if (player.isSpectator()) return;
+            observable.playerStopViewing(player);
+        }
     };
+    private Observable observable = Observable.NOT;
 
     public InventoryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId, int inventorySize) {
         super(type, pos, state, blockId);
@@ -142,6 +156,10 @@ public abstract class InventoryBlockEntity extends OpenableBlockEntity {
         super.writeNbt(tag);
         Inventories.writeNbt(tag, items);
         return tag;
+    }
+
+    protected void setObservable(Observable observable) {
+        if (this.observable == Observable.NOT) this.observable = observable;
     }
 }
 

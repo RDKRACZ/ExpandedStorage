@@ -18,10 +18,14 @@ package ninjaphenix.expandedstorage.block;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import ninjaphenix.container_library.api.v2.OpenableBlockEntityProviderV2;
@@ -74,5 +78,11 @@ public abstract class OpenableBlock extends Block implements OpenableBlockEntity
     @Override
     public void onInitialOpen(ServerPlayerEntity player) {
         player.incrementStat(openingStat);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        return this.ncl_onBlockUse(world, state, pos, player, hand, hit);
     }
 }

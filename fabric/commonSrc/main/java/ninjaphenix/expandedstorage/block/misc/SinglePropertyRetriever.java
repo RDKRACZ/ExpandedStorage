@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ninjaphenix.expandedstorage.block.strategies;
+package ninjaphenix.expandedstorage.block.misc;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.text.Text;
+import java.util.Optional;
 
-public interface Nameable {
-    Text get();
+@SuppressWarnings("ClassCanBeRecord")
+public final class SinglePropertyRetriever<A> implements PropertyRetriever<A> {
+    private final A single;
 
-    boolean isCustom();
+    public SinglePropertyRetriever(A single) {
+        this.single = single;
+    }
 
-    void writeName(NbtCompound tag);
-
-    void readName(NbtCompound tag);
+    @Override
+    public <B> Optional<B> get(Property<A, B> property) {
+        return Optional.ofNullable(property.get(single));
+    }
 }

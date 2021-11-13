@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ninjaphenix.expandedstorage.block.strategies;
+package ninjaphenix.expandedstorage.block.misc;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.text.Text;
+import java.util.Optional;
 
-public interface Nameable {
-    Text get();
-
-    boolean isCustom();
-
-    void writeName(NbtCompound tag);
-
-    void readName(NbtCompound tag);
+public final class EmptyPropertyRetriever<A> implements PropertyRetriever<A> {
+    @Override
+    public <B> Optional<B> get(Property<A, B> property) {
+        return Optional.empty();
+    }
 }

@@ -18,13 +18,9 @@ package ninjaphenix.expandedstorage.tier;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.ApiStatus.Experimental;
-import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.util.function.UnaryOperator;
 
-@Internal
-@Experimental
 @SuppressWarnings("ClassCanBeRecord")
 public class Tier {
     private final Identifier id;

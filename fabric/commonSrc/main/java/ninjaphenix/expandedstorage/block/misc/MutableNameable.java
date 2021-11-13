@@ -34,11 +34,6 @@ public class MutableNameable implements Nameable {
     }
 
     @Override
-    public Text getDefault() {
-        return defaultName;
-    }
-
-    @Override
     public boolean isCustom() {
         return name != null;
     }

@@ -39,8 +39,8 @@ public class OldChestBlockEntity extends InventoryBlockEntity {
                                Function<OpenableBlockEntity, ItemAccess> access, Function<OpenableBlockEntity, Lockable> lockable) {
         super(type, pos, state, blockId, ((AbstractChestBlock) state.getBlock()).getSlotCount());
         this.setItemAccess(access.apply(this));
-        this.setLock(lockable.apply(this));
-        this.setName(new Nameable.Mutable(((OpenableBlock) state.getBlock()).getInventoryTitle()));
+        this.setLockable(lockable.apply(this));
+        this.setNameable(new Nameable.Mutable(((OpenableBlock) state.getBlock()).getInventoryTitle()));
     }
 
     @Override

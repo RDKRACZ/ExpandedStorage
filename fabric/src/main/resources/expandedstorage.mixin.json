@@ -3,7 +3,12 @@
   "package": "ninjaphenix.expandedstorage.mixin",
   "plugin": "ninjaphenix.expandedstorage.MixinPlugin",
   "compatibilityLevel": "JAVA_16",
-  "mixins": ["MiniChestHeadEquipment"],
+  "mixins": [
+    "MiniChestHeadEquipment",
+    "HTMChestCompat",
+    "HTMLockableBlockEntityCompat",
+    "ToweletteCompat"
+  ],
   "client": [],
   "injectors": {
     "defaultRequire": 1

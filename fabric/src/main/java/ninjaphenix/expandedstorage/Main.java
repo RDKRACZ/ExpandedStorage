@@ -65,6 +65,7 @@ import ninjaphenix.expandedstorage.block.strategies.ItemAccess;
 import ninjaphenix.expandedstorage.block.strategies.Lockable;
 import ninjaphenix.expandedstorage.client.ChestBlockEntityRenderer;
 import ninjaphenix.expandedstorage.compat.carrier.CarrierCompat;
+import ninjaphenix.expandedstorage.compat.htm.HTMLockable;
 import ninjaphenix.expandedstorage.registration.BlockItemCollection;
 import org.jetbrains.annotations.Nullable;
 
@@ -150,7 +151,7 @@ public final class Main implements ModInitializer {
             public void invalidate() {
                 storage = null;
             }
-        }, (entity) -> Lockable.NOT_LOCKABLE);
+        }, (entity) -> FabricLoader.getInstance().isModLoaded("htm") ? new HTMLockable() : new Lockable.Basic());
         FabricItemGroupBuilder.build(new Identifier("dummy"), null); // Fabric API is dumb.
         Common.setGroup(new ItemGroup(ItemGroup.GROUPS.length - 1, Utils.MOD_ID) {
             @Override

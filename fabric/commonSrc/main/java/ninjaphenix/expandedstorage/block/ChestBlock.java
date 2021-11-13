@@ -141,4 +141,9 @@ public final class ChestBlock extends AbstractChestBlock implements Waterloggabl
             entity.updateViewerCount(world, pos, state);
         }
     }
+
+    @Override
+    protected boolean isAccessBlocked(WorldAccess world, BlockPos pos) {
+        return net.minecraft.block.ChestBlock.isChestBlocked(world, pos);
+    }
 }

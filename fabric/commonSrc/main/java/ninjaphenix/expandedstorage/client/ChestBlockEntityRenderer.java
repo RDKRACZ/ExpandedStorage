@@ -51,7 +51,6 @@ import ninjaphenix.expandedstorage.block.misc.Property;
 import ninjaphenix.expandedstorage.block.misc.PropertyRetriever;
 
 public final class ChestBlockEntityRenderer implements BlockEntityRenderer<ChestBlockEntity> {
-    // todo: hopefully we can remove this mess once *hopefully* this is all json, 1.18
     public static final EntityModelLayer SINGLE_LAYER = new EntityModelLayer(Utils.id("single_chest"), "main");
     public static final EntityModelLayer LEFT_LAYER = new EntityModelLayer(Utils.id("left_chest"), "main");
     public static final EntityModelLayer RIGHT_LAYER = new EntityModelLayer(Utils.id("right_chest"), "main");
@@ -192,7 +191,7 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
     }
 
     @Override
-    public void render(ChestBlockEntity entity, float delta, MatrixStack stack, VertexConsumerProvider source, int light, int overlay) {
+    public void render(ChestBlockEntity entity, float delta, MatrixStack stack, VertexConsumerProvider provider, int light, int overlay) {
         Identifier blockId = entity.getBlockId();
         BlockState state = entity.hasWorld() ? entity.getCachedState() : ChestBlockEntityRenderer.DEFAULT_STATE.with(Properties.HORIZONTAL_FACING, Direction.SOUTH);
         if (blockId == null || !(state.getBlock() instanceof ChestBlock block)) {
@@ -209,7 +208,7 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
         } else {
             retriever = PropertyRetriever.createDirect(entity);
         }
-        VertexConsumer consumer = new SpriteIdentifier(TexturedRenderLayers.CHEST_ATLAS_TEXTURE, Common.getChestTexture(blockId, chestType)).getVertexConsumer(source, RenderLayer::getEntityCutout);
+        VertexConsumer consumer = new SpriteIdentifier(TexturedRenderLayers.CHEST_ATLAS_TEXTURE, Common.getChestTexture(blockId, chestType)).getVertexConsumer(provider, RenderLayer::getEntityCutout);
         float lidOpenness = ChestBlockEntityRenderer.getLidOpenness(retriever.get(ChestBlockEntityRenderer.LID_OPENNESS_FUNCTION_GETTER).orElse(f -> 0).get(delta));
         int brightness = retriever.get(ChestBlockEntityRenderer.BRIGHTNESS_PROPERTY).orElse(i -> i).applyAsInt(light);
         if (chestType == CursedChestType.SINGLE) {
@@ -251,12 +250,12 @@ public final class ChestBlockEntityRenderer implements BlockEntityRenderer<Chest
         return -delta * MathHelper.HALF_PI;
     }
 
-    private static void renderBottom(MatrixStack stack, VertexConsumer consumer, ModelPart bottom, int brightness, int overlay) {
-        bottom.render(stack, consumer, brightness, overlay);
+    private static void renderBottom(MatrixStack stack, VertexConsumer consumer, ModelPart bottom, int light, int overlay) {
+        bottom.render(stack, consumer, light, overlay);
     }
 
-    private static void renderTop(MatrixStack stack, VertexConsumer consumer, ModelPart top, int brightness, int overlay, float openness) {
+    private static void renderTop(MatrixStack stack, VertexConsumer consumer, ModelPart top, int light, int overlay, float openness) {
         top.pitch = openness;
-        top.render(stack, consumer, brightness, overlay);
+        top.render(stack, consumer, light, overlay);
     }
 }

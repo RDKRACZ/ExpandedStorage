@@ -24,7 +24,7 @@ import ninjaphenix.expandedstorage.block.entity.extendable.ExposedInventoryBlock
 import ninjaphenix.expandedstorage.block.entity.extendable.OpenableBlockEntity;
 import ninjaphenix.expandedstorage.block.strategies.ItemAccess;
 import ninjaphenix.expandedstorage.block.strategies.Lockable;
-import ninjaphenix.expandedstorage.block.strategies.Nameable;
+import ninjaphenix.expandedstorage.block.misc.MutableNameable;
 
 import java.util.function.Function;
 
@@ -34,6 +34,6 @@ public final class MiniChestBlockEntity extends ExposedInventoryBlockEntity {
         super(type, pos, state, blockId, 1);
         this.setItemAccess(access.apply(this));
         this.setLockable(lockable.apply(this));
-        this.setNameable(new Nameable.Mutable(((OpenableBlock) state.getBlock()).getInventoryTitle()));
+        this.setNameable(new MutableNameable(((OpenableBlock) state.getBlock()).getInventoryTitle()));
     }
 }

@@ -32,7 +32,7 @@ public final class Utils {
     public static final int QUARTER_SECOND = 5;
 
     private Utils() {
-        throw new IllegalStateException("Should not instantiate this helper class.");
+        throw new IllegalStateException("Should not instantiate this class.");
     }
 
     public static Identifier id(String path) {

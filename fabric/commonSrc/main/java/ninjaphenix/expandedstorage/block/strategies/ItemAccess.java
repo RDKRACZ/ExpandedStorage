@@ -17,5 +17,6 @@ package ninjaphenix.expandedstorage.block.strategies;
 
 public interface ItemAccess {
     Object get();
+
     void invalidate();
 }

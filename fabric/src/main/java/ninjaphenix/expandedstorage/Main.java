@@ -61,6 +61,7 @@ import ninjaphenix.expandedstorage.block.entity.ChestBlockEntity;
 import ninjaphenix.expandedstorage.block.entity.MiniChestBlockEntity;
 import ninjaphenix.expandedstorage.block.entity.OldChestBlockEntity;
 import ninjaphenix.expandedstorage.block.entity.extendable.StrategyBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.BasicLockable;
 import ninjaphenix.expandedstorage.block.strategies.ItemAccess;
 import ninjaphenix.expandedstorage.block.strategies.Lockable;
 import ninjaphenix.expandedstorage.client.ChestBlockEntityRenderer;
@@ -151,7 +152,7 @@ public final class Main implements ModInitializer {
             public void invalidate() {
                 storage = null;
             }
-        }, (entity) -> FabricLoader.getInstance().isModLoaded("htm") ? new HTMLockable() : new Lockable.Basic());
+        }, (entity) -> FabricLoader.getInstance().isModLoaded("htm") ? new HTMLockable() : new BasicLockable());
         FabricItemGroupBuilder.build(new Identifier("dummy"), null); // Fabric API is dumb.
         Common.setGroup(new ItemGroup(ItemGroup.GROUPS.length - 1, Utils.MOD_ID) {
             @Override
@@ -166,16 +167,27 @@ public final class Main implements ModInitializer {
         Common.registerMiniChestContent(Main::miniChestRegistration);
     }
 
-    private static void miniChestRegistration(BlockItemCollection<MiniChestBlock, BlockItem> content, BlockEntityType<MiniChestBlockEntity> blockEntityType) {
-        for (MiniChestBlock block : content.getBlocks()) {
-            Registry.register(Registry.BLOCK, block.getBlockId(), block);
+    private static boolean shouldEnableCarrierCompat() {
+        try {
+            SemanticVersion version = SemanticVersion.parse("1.8.0");
+            return FabricLoader.getInstance().getModContainer("carrier").map(it -> {
+                if (it.getMetadata().getVersion() instanceof SemanticVersion carrierVersion) {
+                    return carrierVersion.compareTo(version) > 0;
+                }
+                return false;
+            }).orElse(false);
+        } catch (VersionParsingException ignored) {
         }
-        for (BlockItem item : content.getItems()) {
-            Registry.register(Registry.ITEM, ((OpenableBlock) item.getBlock()).getBlockId(), item);
+        return false;
+    }
+
+    @SuppressWarnings({"UnstableApiUsage"})
+    private static Storage<ItemVariant> getItemAccess(World world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction context) {
+        if (blockEntity instanceof StrategyBlockEntity entity) {
+            //noinspection unchecked
+            return (Storage<ItemVariant>) entity.getItemAccess().get();
         }
-        Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.MINI_CHEST_BLOCK_TYPE, blockEntityType);
-        //noinspection UnstableApiUsage
-        ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, content.getBlocks());
+        return null;
     }
 
     private static void baseRegistration(Pair<Identifier, Item>[] items) {
@@ -200,29 +212,6 @@ public final class Main implements ModInitializer {
             Main.Client.registerChestTextures(content.getBlocks());
             Main.Client.registerItemRenderers(content.getItems());
         }
-    }
-
-    private static boolean shouldEnableCarrierCompat() {
-        try {
-            SemanticVersion version = SemanticVersion.parse("1.8.0");
-            return FabricLoader.getInstance().getModContainer("carrier").map(it -> {
-                if (it.getMetadata().getVersion() instanceof SemanticVersion carrierVersion) {
-                    return carrierVersion.compareTo(version) > 0;
-                }
-                return false;
-            }).orElse(false);
-        } catch (VersionParsingException ignored) {
-        }
-        return false;
-    }
-
-    @SuppressWarnings({"UnstableApiUsage"})
-    private static Storage<ItemVariant> getItemAccess(World world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction context) {
-        if (blockEntity instanceof StrategyBlockEntity entity) {
-            //noinspection unchecked
-            return (Storage<ItemVariant>) entity.getItemAccess().get();
-        }
-        return null;
     }
 
     private static void oldChestRegistration(BlockItemCollection<AbstractChestBlock, BlockItem> content, BlockEntityType<OldChestBlockEntity> blockEntityType) {
@@ -252,6 +241,18 @@ public final class Main implements ModInitializer {
         }
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.BARREL_BLOCK_TYPE, blockEntityType);
         // noinspection UnstableApiUsage
+        ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, content.getBlocks());
+    }
+
+    private static void miniChestRegistration(BlockItemCollection<MiniChestBlock, BlockItem> content, BlockEntityType<MiniChestBlockEntity> blockEntityType) {
+        for (MiniChestBlock block : content.getBlocks()) {
+            Registry.register(Registry.BLOCK, block.getBlockId(), block);
+        }
+        for (BlockItem item : content.getItems()) {
+            Registry.register(Registry.ITEM, ((OpenableBlock) item.getBlock()).getBlockId(), item);
+        }
+        Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.MINI_CHEST_BLOCK_TYPE, blockEntityType);
+        //noinspection UnstableApiUsage
         ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, content.getBlocks());
     }
 

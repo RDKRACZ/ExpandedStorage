@@ -61,27 +61,27 @@ public abstract class StrategyBlockEntity extends BlockEntity {
         return blockId;
     }
 
-    protected void setItemAccess(ItemAccess itemAccess) {
-        if (this.itemAccess == null) this.itemAccess = itemAccess;
-    }
-
     public ItemAccess getItemAccess() {
         return itemAccess;
     }
 
-    protected void setLockable(Lockable lockable) {
-        if (this.lockable == null) this.lockable = lockable;
+    protected void setItemAccess(ItemAccess itemAccess) {
+        if (this.itemAccess == null) this.itemAccess = itemAccess;
     }
 
     public Lockable getLockable() {
         return lockable;
     }
 
-    protected void setNameable(Nameable nameable) {
-        if (this.nameable == null) this.nameable = nameable;
+    protected void setLockable(Lockable lockable) {
+        if (this.lockable == null) this.lockable = lockable;
     }
 
     public Nameable getNameable() {
         return nameable;
+    }
+
+    protected void setNameable(Nameable nameable) {
+        if (this.nameable == null) this.nameable = nameable;
     }
 }

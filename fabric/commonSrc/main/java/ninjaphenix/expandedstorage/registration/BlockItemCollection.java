@@ -29,7 +29,7 @@ public final class BlockItemCollection<B extends Block, I extends BlockItem> {
         blocks = blockArrayMaker.apply(pairs.length);
         items = itemArrayMaker.apply(pairs.length);
         for (int i = 0; i < pairs.length; i++) {
-            var pair = pairs[i];
+            BlockItemPair<B, I> pair = pairs[i];
             blocks[i] = pair.getBlock();
             items[i] = pair.getItem();
         }

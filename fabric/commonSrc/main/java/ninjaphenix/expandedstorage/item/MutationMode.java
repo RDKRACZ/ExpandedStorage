@@ -15,13 +15,8 @@
  */
 package ninjaphenix.expandedstorage.item;
 
-import org.jetbrains.annotations.ApiStatus.Experimental;
-import org.jetbrains.annotations.ApiStatus.Internal;
-
 import java.util.Locale;
 
-@Internal
-@Experimental
 public enum MutationMode {
     MERGE,
     SPLIT,
@@ -37,7 +32,7 @@ public enum MutationMode {
     }
 
     public byte toByte() {
-        return (byte) ordinal();
+        return (byte) this.ordinal();
     }
 
     @Override

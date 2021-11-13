@@ -13,15 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ninjaphenix.expandedstorage.block.strategies;
+package ninjaphenix.expandedstorage.block.misc;
 
+import net.minecraft.inventory.ContainerLock;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import ninjaphenix.expandedstorage.block.strategies.Lockable;
 
-public interface Lockable {
-    void writeLock(NbtCompound tag);
+public class BasicLockable implements Lockable {
+    ContainerLock lock = ContainerLock.EMPTY;
 
-    void readLock(NbtCompound tag);
+    @Override
+    public void writeLock(NbtCompound tag) {
+        lock.writeNbt(tag);
+    }
 
-    boolean canPlayerOpenLock(ServerPlayerEntity player);
+    @Override
+    public void readLock(NbtCompound tag) {
+        lock = ContainerLock.fromNbt(tag);
+    }
+
+    @Override
+    public boolean canPlayerOpenLock(ServerPlayerEntity player) {
+        return lock == ContainerLock.EMPTY || !player.isSpectator() && lock.canOpen(player.getMainHandStack());
+    }
 }

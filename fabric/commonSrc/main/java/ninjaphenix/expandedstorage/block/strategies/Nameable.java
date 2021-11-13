@@ -29,46 +29,4 @@ public interface Nameable {
     void writeName(NbtCompound tag);
 
     void readName(NbtCompound tag);
-
-    class Mutable implements Nameable {
-        private final Text defaultName;
-        private Text name;
-
-        public Mutable(Text defaultName) {
-            this.defaultName = defaultName;
-        }
-
-        @Override
-        public Text get() {
-            return this.isCustom() ? name : defaultName;
-        }
-
-        @Override
-        public Text getDefault() {
-            return defaultName;
-        }
-
-        @Override
-        public boolean isCustom() {
-            return name != null;
-        }
-
-        @Override
-        public void writeName(NbtCompound tag) {
-            if (name != null) {
-                tag.putString("CustomName", Text.Serializer.toJson(name));
-            }
-        }
-
-        @Override
-        public void readName(NbtCompound tag) {
-            if (tag.contains("CustomName", NbtElement.STRING_TYPE)) {
-                name = Text.Serializer.fromJson(tag.getString("CustomName"));
-            }
-        }
-
-        public void setName(Text name) {
-            this.name = name;
-        }
-    }
 }

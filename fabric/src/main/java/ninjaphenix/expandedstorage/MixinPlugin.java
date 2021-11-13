@@ -15,6 +15,7 @@
  */
 package ninjaphenix.expandedstorage;
 
+import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -25,6 +26,16 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public final class MixinPlugin implements IMixinConfigPlugin {
     @Override
+    public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        String className = mixinClassName.substring(34);
+        return switch (className) {
+            case "HTMChestCompat", "HTMLockableBlockEntityCompat" -> FabricLoader.getInstance().isModLoaded("htm");
+            case "ToweletteCompat" -> FabricLoader.getInstance().isModLoaded("towelette");
+            default -> true;
+        };
+    }
+
+    @Override
     public void onLoad(String mixinPackage) {
 
     }
@@ -32,11 +43,6 @@ public final class MixinPlugin implements IMixinConfigPlugin {
     @Override
     public String getRefMapperConfig() {
         return null;
-    }
-
-    @Override
-    public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        return true;
     }
 
     @Override

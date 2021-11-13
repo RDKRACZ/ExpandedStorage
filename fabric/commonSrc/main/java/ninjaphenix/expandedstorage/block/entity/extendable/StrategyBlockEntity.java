@@ -69,19 +69,19 @@ public abstract class StrategyBlockEntity extends BlockEntity {
         return itemAccess;
     }
 
-    protected void setLock(Lockable lockable) {
+    protected void setLockable(Lockable lockable) {
         if (this.lockable == null) this.lockable = lockable;
     }
 
-    public Lockable getLock() {
+    public Lockable getLockable() {
         return lockable;
     }
 
-    protected void setName(Nameable nameable) {
+    protected void setNameable(Nameable nameable) {
         if (this.nameable == null) this.nameable = nameable;
     }
 
-    public Nameable getName() {
+    public Nameable getNameable() {
         return nameable;
     }
 }

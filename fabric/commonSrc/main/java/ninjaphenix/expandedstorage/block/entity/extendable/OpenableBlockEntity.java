@@ -33,14 +33,15 @@ public abstract class OpenableBlockEntity extends StrategyBlockEntity implements
 
     @Override
     public boolean canBeUsedBy(ServerPlayerEntity player) {
+        //noinspection ConstantConditions
         return this.getWorld().getBlockEntity(this.getPos()) == this &&
                 player.squaredDistanceTo(Vec3d.ofCenter(this.getPos())) <= 64.0D &&
-                this.getLock().canPlayerOpenLock(player);
+                this.getLockable().canPlayerOpenLock(player);
     }
 
     @Override
     public Text getInventoryTitle() {
-        return this.getName().get();
+        return this.getNameable().get();
     }
 
     public abstract DefaultedList<ItemStack> getItems();

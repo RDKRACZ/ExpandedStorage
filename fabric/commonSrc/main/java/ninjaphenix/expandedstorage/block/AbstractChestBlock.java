@@ -256,8 +256,8 @@ public class AbstractChestBlock extends OpenableBlock implements InventoryProvid
         return AbstractChestBlock.createPropertyRetriever(this, state, world, pos, false).get(new Property<OldChestBlockEntity, OpenableBlockEntityV2>() {
             @Override
             public OpenableBlockEntityV2 get(OldChestBlockEntity first, OldChestBlockEntity second) {
-                Nameable firstName = first.getName();
-                Nameable secondName = second.getName();
+                Nameable firstName = first.getNameable();
+                Nameable secondName = second.getNameable();
                 Text name = firstName.isCustom() ? firstName.get() : secondName.isCustom() ? secondName.get() : Utils.translation("container.expandedstorage.generic_double", firstName.get());
                 return new OpenableBlockEntitiesV2(name, first, second);
             }

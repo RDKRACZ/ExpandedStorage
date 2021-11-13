@@ -71,7 +71,6 @@ import org.jetbrains.annotations.Nullable;
 public final class Main implements ModInitializer {
     @Override
     public void onInitialize() {
-        // Lockable needs replacing with Basic or HTM lock impl.
         //noinspection UnstableApiUsage
         Common.setSharedStrategies((entity) -> new ItemAccess() {
             private InventoryStorage storage = null;
@@ -152,17 +151,18 @@ public final class Main implements ModInitializer {
             }
         }, (entity) -> FabricLoader.getInstance().isModLoaded("htm") ? new HTMLockable() : new BasicLockable());
         FabricItemGroupBuilder.build(new Identifier("dummy"), null); // Fabric API is dumb.
-        Common.setGroup(new ItemGroup(ItemGroup.GROUPS.length - 1, Utils.MOD_ID) {
+        ItemGroup group = new ItemGroup(ItemGroup.GROUPS.length - 1, Utils.MOD_ID) {
             @Override
             public ItemStack createIcon() {
                 return new ItemStack(Registry.ITEM.get(Utils.id("netherite_chest")));
             }
-        });
-        Common.registerBaseContent(Main::baseRegistration, true);
-        Common.registerChestContent(Main::chestRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new, FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT);
-        Common.registerOldChestContent(Main::oldChestRegistration);
-        Common.registerBarrelContent(Main::barrelRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_barrels")));
-        Common.registerMiniChestContent(Main::miniChestRegistration);
+        };
+        Common.registerContent(group, FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT,
+                Main::baseRegistration, true,
+                Main::chestRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new,
+                Main::oldChestRegistration,
+                Main::barrelRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_barrels")),
+                Main::miniChestRegistration);
     }
 
     private static boolean shouldEnableCarrierCompat() {
@@ -184,9 +184,7 @@ public final class Main implements ModInitializer {
     }
 
     private static void baseRegistration(Pair<Identifier, Item>[] items) {
-        for (Pair<Identifier, Item> item : items) {
-            Registry.register(Registry.ITEM, item.getFirst(), item.getSecond());
-        }
+        for (Pair<Identifier, Item> item : items) Registry.register(Registry.ITEM, item.getFirst(), item.getSecond());
     }
 
     private static void chestRegistration(BlockItemCollection<ChestBlock, BlockItem> content, BlockEntityType<ChestBlockEntity> blockEntityType) {
@@ -195,9 +193,9 @@ public final class Main implements ModInitializer {
             if (addCarrierSupport) CarrierCompat.registerChestBlock(block);
             Registry.register(Registry.BLOCK, block.getBlockId(), block);
         }
-        for (BlockItem item : content.getItems()) {
+        for (BlockItem item : content.getItems())
             Registry.register(Registry.ITEM, ((OpenableBlock) item.getBlock()).getBlockId(), item);
-        }
+
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.CHEST_BLOCK_TYPE, blockEntityType);
         // noinspection UnstableApiUsage
         ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, content.getBlocks());
@@ -213,9 +211,9 @@ public final class Main implements ModInitializer {
             if (addCarrierSupport) CarrierCompat.registerOldChestBlock(block);
             Registry.register(Registry.BLOCK, block.getBlockId(), block);
         }
-        for (BlockItem item : content.getItems()) {
+        for (BlockItem item : content.getItems())
             Registry.register(Registry.ITEM, ((OpenableBlock) item.getBlock()).getBlockId(), item);
-        }
+
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.OLD_CHEST_BLOCK_TYPE, blockEntityType);
         // noinspection UnstableApiUsage
         ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, content.getBlocks());
@@ -225,25 +223,21 @@ public final class Main implements ModInitializer {
         boolean isClient = FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
         for (BarrelBlock block : content.getBlocks()) {
             Registry.register(Registry.BLOCK, block.getBlockId(), block);
-            if (isClient) {
-                BlockRenderLayerMap.INSTANCE.putBlock(block, RenderLayer.getCutoutMipped());
-            }
+            if (isClient) BlockRenderLayerMap.INSTANCE.putBlock(block, RenderLayer.getCutoutMipped());
         }
-        for (BlockItem item : content.getItems()) {
+        for (BlockItem item : content.getItems())
             Registry.register(Registry.ITEM, ((OpenableBlock) item.getBlock()).getBlockId(), item);
-        }
+
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.BARREL_BLOCK_TYPE, blockEntityType);
         // noinspection UnstableApiUsage
         ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, content.getBlocks());
     }
 
     private static void miniChestRegistration(BlockItemCollection<MiniChestBlock, BlockItem> content, BlockEntityType<MiniChestBlockEntity> blockEntityType) {
-        for (MiniChestBlock block : content.getBlocks()) {
-            Registry.register(Registry.BLOCK, block.getBlockId(), block);
-        }
-        for (BlockItem item : content.getItems()) {
+        for (MiniChestBlock block : content.getBlocks()) Registry.register(Registry.BLOCK, block.getBlockId(), block);
+        for (BlockItem item : content.getItems())
             Registry.register(Registry.ITEM, ((OpenableBlock) item.getBlock()).getBlockId(), item);
-        }
+
         Registry.register(Registry.BLOCK_ENTITY_TYPE, Common.MINI_CHEST_BLOCK_TYPE, blockEntityType);
         //noinspection UnstableApiUsage
         ItemStorage.SIDED.registerForBlocks(Main::getItemAccess, content.getBlocks());
@@ -252,9 +246,7 @@ public final class Main implements ModInitializer {
     private static class Client {
         public static void registerChestTextures(ChestBlock[] blocks) {
             ClientSpriteRegistryCallback.event(TexturedRenderLayers.CHEST_ATLAS_TEXTURE).register((atlasTexture, registry) -> {
-                for (Identifier texture : Common.getChestTextures(blocks)) {
-                    registry.register(texture);
-                }
+                for (Identifier texture : Common.getChestTextures(blocks)) registry.register(texture);
             });
             BlockEntityRendererRegistry.register(Common.getChestBlockEntityType(), ChestBlockEntityRenderer::new);
         }

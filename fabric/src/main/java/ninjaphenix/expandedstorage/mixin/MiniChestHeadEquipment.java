@@ -36,8 +36,7 @@ public abstract class MiniChestHeadEquipment {
             cancellable = true
     )
     private static void expandedstorage_makeMiniChestEquipable(ItemStack stack, CallbackInfoReturnable<EquipmentSlot> cir) {
-        if (stack.getItem() instanceof BlockItem item && item.getBlock() instanceof MiniChestBlock) {
+        if (stack.getItem() instanceof BlockItem item && item.getBlock() instanceof MiniChestBlock)
             cir.setReturnValue(EquipmentSlot.HEAD);
-        }
     }
 }

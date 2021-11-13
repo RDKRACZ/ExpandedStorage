@@ -79,7 +79,6 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
 public final class Common {
-    public static ItemGroup group;
     public static final Identifier BARREL_BLOCK_TYPE = Utils.id("barrel");
     public static final Identifier CHEST_BLOCK_TYPE = Utils.id("cursed_chest");
     public static final Identifier OLD_CHEST_BLOCK_TYPE = Utils.id("old_cursed_chest");
@@ -90,17 +89,6 @@ public final class Common {
     private static final Map<Pair<Identifier, Identifier>, OpenableBlock> BLOCKS = new HashMap<>();
     private static final Map<Identifier, TextureCollection> CHEST_TEXTURES = new HashMap<>();
 
-    private static final int IRON_STACK_COUNT = 54;
-    private static final int GOLD_STACK_COUNT = 81;
-    private static final int DIAMOND_STACK_COUNT = 108;
-    private static final int OBSIDIAN_STACK_COUNT = 108;
-    private static final int NETHERITE_STACK_COUNT = 135;
-    private static final Tier WOOD_TIER = new Tier(Utils.WOOD_TIER_ID, Utils.WOOD_STACK_COUNT, UnaryOperator.identity(), UnaryOperator.identity());
-    private static final Tier IRON_TIER = new Tier(Utils.id("iron"), Common.IRON_STACK_COUNT, Settings::requiresTool, UnaryOperator.identity());
-    private static final Tier GOLD_TIER = new Tier(Utils.id("gold"), Common.GOLD_STACK_COUNT, Settings::requiresTool, UnaryOperator.identity());
-    private static final Tier DIAMOND_TIER = new Tier(Utils.id("diamond"), Common.DIAMOND_STACK_COUNT, Settings::requiresTool, UnaryOperator.identity());
-    private static final Tier OBSIDIAN_TIER = new Tier(Utils.id("obsidian"), Common.OBSIDIAN_STACK_COUNT, Settings::requiresTool, UnaryOperator.identity());
-    private static final Tier NETHERITE_TIER = new Tier(Utils.id("netherite"), Common.NETHERITE_STACK_COUNT, Settings::requiresTool, Item.Settings::fireproof);
     private static BlockEntityType<ChestBlockEntity> chestBlockEntityType;
     private static BlockEntityType<OldChestBlockEntity> oldChestBlockEntityType;
     private static BlockEntityType<BarrelBlockEntity> barrelBlockEntityType;
@@ -125,35 +113,40 @@ public final class Common {
         return miniChestBlockEntityType;
     }
 
-    private static BlockItemPair<ChestBlock, BlockItem> chestBlock(Identifier blockId, Identifier stat, Tier tier, Settings settings, BiFunction<Block, Item.Settings, BlockItem> blockItemMaker) {
+    private static BlockItemPair<ChestBlock, BlockItem> chestBlock(
+            Identifier blockId, Identifier stat, Tier tier, Settings settings,
+            BiFunction<ChestBlock, Item.Settings, BlockItem> blockItemMaker, ItemGroup group
+    ) {
         ChestBlock block = new ChestBlock(tier.getBlockSettings().apply(settings), blockId, tier.getId(), stat, tier.getSlotCount());
         Common.registerTieredBlock(block);
-        return new BlockItemPair<>(block, blockItemMaker.apply(block, new Item.Settings().group(Common.group)));
+        return new BlockItemPair<>(block, blockItemMaker.apply(block, new Item.Settings().group(group)));
     }
 
-    private static BlockItemPair<MiniChestBlock, BlockItem> miniChestBlock(Identifier blockId, Identifier stat, Settings settings) {
-        MiniChestBlock block = new MiniChestBlock(Common.WOOD_TIER.getBlockSettings().apply(settings), blockId, stat);
-        Common.registerTieredBlock(block);
-        BlockItem item = new BlockItem(block, Common.WOOD_TIER.getItemSettings().apply(new Item.Settings().group(Common.group)));
-        return new BlockItemPair<>(block, item);
-    }
-
-    private static BlockItemPair<AbstractChestBlock, BlockItem> oldChestBlock(Identifier blockId, Identifier stat, Tier tier, Settings settings) {
+    private static BlockItemPair<AbstractChestBlock, BlockItem> oldChestBlock(
+            Identifier blockId, Identifier stat, Tier tier, Settings settings, ItemGroup group
+    ) {
         AbstractChestBlock block = new AbstractChestBlock(tier.getBlockSettings().apply(settings), blockId, tier.getId(), stat, tier.getSlotCount());
         Common.registerTieredBlock(block);
-        BlockItem item = new BlockItem(block, tier.getItemSettings().apply(new Item.Settings().group(Common.group)));
+        BlockItem item = new BlockItem(block, tier.getItemSettings().apply(new Item.Settings().group(group)));
         return new BlockItemPair<>(block, item);
     }
 
-    private static BlockItemPair<BarrelBlock, BlockItem> barrelBlock(Identifier blockId, Identifier stat, Tier tier, Settings settings) {
+    private static BlockItemPair<BarrelBlock, BlockItem> barrelBlock(
+            Identifier blockId, Identifier stat, Tier tier, Settings settings, ItemGroup group
+    ) {
         BarrelBlock block = new BarrelBlock(tier.getBlockSettings().apply(settings), blockId, tier.getId(), stat, tier.getSlotCount());
         Common.registerTieredBlock(block);
-        BlockItem item = new BlockItem(block, tier.getItemSettings().apply(new Item.Settings().group(Common.group)));
+        BlockItem item = new BlockItem(block, tier.getItemSettings().apply(new Item.Settings().group(group)));
         return new BlockItemPair<>(block, item);
     }
 
-    static void setGroup(ItemGroup group) {
-        Common.group = group;
+    private static BlockItemPair<MiniChestBlock, BlockItem> miniChestBlock(
+            Identifier blockId, Identifier stat, Tier tier, Settings settings, ItemGroup group
+    ) {
+        MiniChestBlock block = new MiniChestBlock(tier.getBlockSettings().apply(settings), blockId, stat);
+        Common.registerTieredBlock(block);
+        BlockItem item = new BlockItem(block, tier.getItemSettings().apply(new Item.Settings().group(group)));
+        return new BlockItemPair<>(block, item);
     }
 
     private static boolean tryUpgradeBlockToBarrel(ItemUsageContext context, Identifier from, Identifier to) {
@@ -355,7 +348,7 @@ public final class Common {
         return statId;
     }
 
-    private static void defineTierUpgradePath(Pair<Identifier, Item>[] items, boolean wrapTooltipManually, Tier... tiers) {
+    private static void defineTierUpgradePath(Pair<Identifier, Item>[] items, boolean wrapTooltipManually, ItemGroup group, Tier... tiers) {
         int numTiers = tiers.length;
         int index = 1;
         for (int fromIndex = 0; fromIndex < numTiers - 1; fromIndex++) {
@@ -364,8 +357,8 @@ public final class Common {
                 Tier toTier = tiers[toIndex];
                 Identifier itemId = Utils.id(fromTier.getId().getPath() + "_to_" + toTier.getId().getPath() + "_conversion_kit");
                 Item.Settings settings = fromTier.getItemSettings()
-                                                   .andThen(toTier.getItemSettings())
-                                                   .apply(new Item.Settings().group(Common.group).maxCount(16));
+                                                 .andThen(toTier.getItemSettings())
+                                                 .apply(new Item.Settings().group(group).maxCount(16));
                 Item kit = new StorageConversionKit(settings, fromTier.getId(), toTier.getId(), wrapTooltipManually);
                 items[index++] = new Pair<>(itemId, kit);
             }
@@ -374,9 +367,7 @@ public final class Common {
 
     public static BlockUpgradeBehaviour getBlockUpgradeBehaviour(Block block) {
         for (Map.Entry<Predicate<Block>, BlockUpgradeBehaviour> entry : Common.BLOCK_UPGRADE_BEHAVIOURS.entrySet()) {
-            if (entry.getKey().test(block)) {
-                return entry.getValue();
-            }
+            if (entry.getKey().test(block)) return entry.getValue();
         }
         return null;
     }
@@ -388,149 +379,6 @@ public final class Common {
     public static void setSharedStrategies(Function<OpenableBlockEntity, ItemAccess> itemAccess, Function<OpenableBlockEntity, Lockable> lockable) {
         Common.itemAccess = itemAccess;
         Common.lockable = lockable;
-    }
-
-    private static ChestBlockEntity createChestBlockEntity(BlockPos pos, BlockState state) {
-        return new ChestBlockEntity(Common.getChestBlockEntityType(), pos, state, ((ChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable);
-    }
-
-    private static OldChestBlockEntity createOldChestBlockEntity(BlockPos pos, BlockState state) {
-        return new OldChestBlockEntity(Common.getOldChestBlockEntityType(), pos, state, ((AbstractChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable);
-    }
-
-    private static BarrelBlockEntity createBarrelBlockEntity(BlockPos pos, BlockState state) {
-        return new BarrelBlockEntity(Common.getBarrelBlockEntityType(), pos, state, ((BarrelBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable);
-    }
-
-    private static MiniChestBlockEntity createMiniChestBlockEntity(BlockPos pos, BlockState state) {
-        return new MiniChestBlockEntity(Common.getMiniChestBlockEntityType(), pos, state, ((MiniChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable);
-
-    }
-
-    static void registerBaseContent(Consumer<Pair<Identifier, Item>[]> itemRegistration,
-                                    @SuppressWarnings("SameParameterValue") boolean wrapTooltipsManually) {
-        //noinspection unchecked
-        Pair<Identifier, Item>[] items = new Pair[16];
-        items[0] = new Pair<>(Utils.id("chest_mutator"), new StorageMutator(new Item.Settings().maxCount(1).group(Common.group)));
-        Common.defineTierUpgradePath(items, wrapTooltipsManually, Common.WOOD_TIER, Common.IRON_TIER, Common.GOLD_TIER, Common.DIAMOND_TIER, Common.OBSIDIAN_TIER, Common.NETHERITE_TIER);
-        itemRegistration.accept(items);
-    }
-
-    static void registerChestContent(RegistrationConsumer<ChestBlock, BlockItem, ChestBlockEntity> registrationConsumer, Tag<Block> woodenChestTag, BiFunction<Block, Item.Settings, BlockItem> blockItemMaker, boolean isClient) {
-        // Init block settings
-        Settings woodSettings = Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        Settings pumpkinSettings = Settings.of(Material.GOURD, MapColor.ORANGE).strength(1).sounds(BlockSoundGroup.WOOD);
-        Settings christmasSettings = Settings.of(Material.WOOD, state -> {
-            CursedChestType type = state.get(AbstractChestBlock.CURSED_CHEST_TYPE);
-            if (type == CursedChestType.SINGLE) {
-                return MapColor.RED;
-            } else if (type == CursedChestType.FRONT || type == CursedChestType.BACK) {
-                return MapColor.DARK_GREEN;
-            }
-            return MapColor.WHITE;
-        }).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        Settings ironSettings = Settings.of(Material.METAL, MapColor.IRON_GRAY).strength(5, 6).sounds(BlockSoundGroup.METAL);
-        Settings goldSettings = Settings.of(Material.METAL, MapColor.GOLD).strength(3, 6).sounds(BlockSoundGroup.METAL);
-        Settings diamondSettings = Settings.of(Material.METAL, MapColor.DIAMOND_BLUE).strength(5, 6).sounds(BlockSoundGroup.METAL);
-        Settings obsidianSettings = Settings.of(Material.STONE, MapColor.BLACK).strength(50, 1200);
-        Settings netheriteSettings = Settings.of(Material.METAL, MapColor.BLACK).strength(50, 1200).sounds(BlockSoundGroup.NETHERITE);
-        // Init content
-        BlockItemCollection<ChestBlock, BlockItem> content = BlockItemCollection.of(ChestBlock[]::new, BlockItem[]::new,
-                Common.chestBlock(Utils.id("wood_chest"), Common.stat("open_wood_chest"), Common.WOOD_TIER, woodSettings, blockItemMaker),
-                Common.chestBlock(Utils.id("pumpkin_chest"), Common.stat("open_pumpkin_chest"), Common.WOOD_TIER, pumpkinSettings, blockItemMaker),
-                Common.chestBlock(Utils.id("christmas_chest"), Common.stat("open_christmas_chest"), Common.WOOD_TIER, christmasSettings, blockItemMaker),
-                Common.chestBlock(Utils.id("iron_chest"), Common.stat("open_iron_chest"), Common.IRON_TIER, ironSettings, blockItemMaker),
-                Common.chestBlock(Utils.id("gold_chest"), Common.stat("open_gold_chest"), Common.GOLD_TIER, goldSettings, blockItemMaker),
-                Common.chestBlock(Utils.id("diamond_chest"), Common.stat("open_diamond_chest"), Common.DIAMOND_TIER, diamondSettings, blockItemMaker),
-                Common.chestBlock(Utils.id("obsidian_chest"), Common.stat("open_obsidian_chest"), Common.OBSIDIAN_TIER, obsidianSettings, blockItemMaker),
-                Common.chestBlock(Utils.id("netherite_chest"), Common.stat("open_netherite_chest"), Common.NETHERITE_TIER, netheriteSettings, blockItemMaker)
-        );
-        if (isClient) {
-            Common.registerChestTextures(content.getBlocks());
-        }
-        // Init block entity type
-        Common.chestBlockEntityType = BlockEntityType.Builder.create(Common::createChestBlockEntity, content.getBlocks()).build(null);
-        registrationConsumer.accept(content, Common.chestBlockEntityType);
-        // Register chest upgrade behaviours
-        Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof ChestBlock || block instanceof net.minecraft.block.ChestBlock || woodenChestTag.contains(block);
-        Common.defineBlockUpgradeBehaviour(isUpgradableChestBlock, Common::tryUpgradeBlockToChest);
-    }
-
-    static void registerOldChestContent(RegistrationConsumer<AbstractChestBlock, BlockItem, OldChestBlockEntity> registrationConsumer) {
-        // Init block settings
-        Settings woodSettings = Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        Settings ironSettings = Settings.of(Material.METAL, MapColor.IRON_GRAY).strength(5, 6).sounds(BlockSoundGroup.METAL);
-        Settings goldSettings = Settings.of(Material.METAL, MapColor.GOLD).strength(3, 6).sounds(BlockSoundGroup.METAL);
-        Settings diamondSettings = Settings.of(Material.METAL, MapColor.DIAMOND_BLUE).strength(5, 6).sounds(BlockSoundGroup.METAL);
-        Settings obsidianSettings = Settings.of(Material.STONE, MapColor.BLACK).strength(50, 1200);
-        Settings netheriteSettings = Settings.of(Material.METAL, MapColor.BLACK).strength(50, 1200).sounds(BlockSoundGroup.NETHERITE);
-        // Init content
-        BlockItemCollection<AbstractChestBlock, BlockItem> content = BlockItemCollection.of(AbstractChestBlock[]::new, BlockItem[]::new,
-                Common.oldChestBlock(Utils.id("old_wood_chest"), Common.stat("open_old_wood_chest"), Common.WOOD_TIER, woodSettings),
-                Common.oldChestBlock(Utils.id("old_iron_chest"), Common.stat("open_old_iron_chest"), Common.IRON_TIER, ironSettings),
-                Common.oldChestBlock(Utils.id("old_gold_chest"), Common.stat("open_old_gold_chest"), Common.GOLD_TIER, goldSettings),
-                Common.oldChestBlock(Utils.id("old_diamond_chest"), Common.stat("open_old_diamond_chest"), Common.DIAMOND_TIER, diamondSettings),
-                Common.oldChestBlock(Utils.id("old_obsidian_chest"), Common.stat("open_old_obsidian_chest"), Common.OBSIDIAN_TIER, obsidianSettings),
-                Common.oldChestBlock(Utils.id("old_netherite_chest"), Common.stat("open_old_netherite_chest"), Common.NETHERITE_TIER, netheriteSettings)
-        );
-        // Init block entity type
-        Common.oldChestBlockEntityType = BlockEntityType.Builder.create(Common::createOldChestBlockEntity, content.getBlocks()).build(null);
-        registrationConsumer.accept(content, Common.oldChestBlockEntityType);
-        // Register upgrade behaviours
-        Predicate<Block> isUpgradableChestBlock = (block) -> block.getClass() == AbstractChestBlock.class;
-        Common.defineBlockUpgradeBehaviour(isUpgradableChestBlock, Common::tryUpgradeBlockToOldChest);
-    }
-
-    static void registerBarrelContent(RegistrationConsumer<BarrelBlock, BlockItem, BarrelBlockEntity> registration, Tag<Block> woodenBarrelTag) {
-        // Init block settings
-        Settings ironSettings = Settings.of(Material.WOOD).strength(5, 6).sounds(BlockSoundGroup.WOOD);
-        Settings goldSettings = Settings.of(Material.WOOD).strength(3, 6).sounds(BlockSoundGroup.WOOD);
-        Settings diamondSettings = Settings.of(Material.WOOD).strength(5, 6).sounds(BlockSoundGroup.WOOD);
-        Settings obsidianSettings = Settings.of(Material.WOOD).strength(50, 1200).sounds(BlockSoundGroup.WOOD);
-        Settings netheriteSettings = Settings.of(Material.WOOD).strength(50, 1200).sounds(BlockSoundGroup.WOOD);
-        // Init content
-        BlockItemCollection<BarrelBlock, BlockItem> content = BlockItemCollection.of(BarrelBlock[]::new, BlockItem[]::new,
-                Common.barrelBlock(Utils.id("iron_barrel"), Common.stat("open_iron_barrel"), Common.IRON_TIER, ironSettings),
-                Common.barrelBlock(Utils.id("gold_barrel"), Common.stat("open_gold_barrel"), Common.GOLD_TIER, goldSettings),
-                Common.barrelBlock(Utils.id("diamond_barrel"), Common.stat("open_diamond_barrel"), Common.DIAMOND_TIER, diamondSettings),
-                Common.barrelBlock(Utils.id("obsidian_barrel"), Common.stat("open_obsidian_barrel"), Common.OBSIDIAN_TIER, obsidianSettings),
-                Common.barrelBlock(Utils.id("netherite_barrel"), Common.stat("open_netherite_barrel"), Common.NETHERITE_TIER, netheriteSettings)
-        );
-        // Init block entity type
-        Common.barrelBlockEntityType = BlockEntityType.Builder.create(Common::createBarrelBlockEntity, content.getBlocks()).build(null);
-        registration.accept(content, Common.barrelBlockEntityType);
-        // Register upgrade behaviours
-        Predicate<Block> isUpgradableBarrelBlock = (block) -> block instanceof BarrelBlock || block instanceof net.minecraft.block.BarrelBlock || woodenBarrelTag.contains(block);
-        Common.defineBlockUpgradeBehaviour(isUpgradableBarrelBlock, Common::tryUpgradeBlockToBarrel);
-    }
-
-    static void registerMiniChestContent(RegistrationConsumer<MiniChestBlock, BlockItem, MiniChestBlockEntity> registrationConsumer) {
-        // Init and register opening stats
-        Identifier woodOpenStat = Common.stat("open_wood_mini_chest");
-        // Init block settings
-        Settings woodSettings = Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        Settings pumpkinSettings = Settings.of(Material.GOURD, MapColor.ORANGE).strength(1).sounds(BlockSoundGroup.WOOD);
-        Settings redPresentSettings = Settings.of(Material.WOOD, MapColor.RED).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        Settings whitePresentSettings = Settings.of(Material.WOOD, MapColor.WHITE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        Settings candyCanePresentSettings = Settings.of(Material.WOOD, MapColor.WHITE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        Settings greenPresentSettings = Settings.of(Material.WOOD, MapColor.DARK_GREEN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        Settings lavenderPresentSettings = Settings.of(Material.WOOD, MapColor.PURPLE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        Settings pinkAmethystPresentSettings = Settings.of(Material.WOOD, MapColor.PURPLE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
-        // Init content
-        BlockItemCollection<MiniChestBlock, BlockItem> content = BlockItemCollection.of(MiniChestBlock[]::new, BlockItem[]::new,
-                Common.miniChestBlock(Utils.id("vanilla_wood_mini_chest"), woodOpenStat, woodSettings),
-                Common.miniChestBlock(Utils.id("wood_mini_chest"), woodOpenStat, woodSettings),
-                Common.miniChestBlock(Utils.id("pumpkin_mini_chest"), Common.stat("open_pumpkin_mini_chest"), pumpkinSettings),
-                Common.miniChestBlock(Utils.id("red_mini_present"), Common.stat("open_red_mini_present"), redPresentSettings),
-                Common.miniChestBlock(Utils.id("white_mini_present"), Common.stat("open_white_mini_present"), whitePresentSettings),
-                Common.miniChestBlock(Utils.id("candy_cane_mini_present"), Common.stat("open_candy_cane_mini_present"), candyCanePresentSettings),
-                Common.miniChestBlock(Utils.id("green_mini_present"), Common.stat("open_green_mini_present"), greenPresentSettings),
-                Common.miniChestBlock(Utils.id("lavender_mini_present"), Common.stat("open_lavender_mini_present"), lavenderPresentSettings),
-                Common.miniChestBlock(Utils.id("pink_amethyst_mini_present"), Common.stat("open_pink_amethyst_mini_present"), pinkAmethystPresentSettings)
-        );
-        // Init block entity type
-        Common.miniChestBlockEntityType = BlockEntityType.Builder.create(Common::createMiniChestBlockEntity, content.getBlocks()).build(null);
-        registrationConsumer.accept(content, Common.miniChestBlockEntityType);
     }
 
     private static void registerTieredBlock(OpenableBlock block) {
@@ -551,11 +399,8 @@ public final class Common {
     }
 
     public static Identifier getChestTexture(Identifier block, CursedChestType chestType) {
-        if (Common.CHEST_TEXTURES.containsKey(block)) {
-            return Common.CHEST_TEXTURES.get(block).getTexture(chestType);
-        } else {
-            return MissingSprite.getMissingSpriteId();
-        }
+        if (Common.CHEST_TEXTURES.containsKey(block)) return Common.CHEST_TEXTURES.get(block).getTexture(chestType);
+        return MissingSprite.getMissingSpriteId();
     }
 
     private static void registerMutationBehaviour(Predicate<Block> predicate, MutationMode mode, MutatorBehaviour behaviour) {
@@ -565,10 +410,129 @@ public final class Common {
     public static MutatorBehaviour getMutatorBehaviour(Block block, MutationMode mode) {
         for (Map.Entry<Pair<Predicate<Block>, MutationMode>, MutatorBehaviour> entry : Common.MUTATOR_BEHAVIOURS.entrySet()) {
             Pair<Predicate<Block>, MutationMode> pair = entry.getKey();
-            if (pair.getSecond() == mode && pair.getFirst().test(block)) {
-                return entry.getValue();
-            }
+            if (pair.getSecond() == mode && pair.getFirst().test(block)) return entry.getValue();
         }
         return null;
+    }
+
+    public static void registerContent(ItemGroup group, boolean isClient,
+                                       Consumer<Pair<Identifier, Item>[]> baseRegistration, boolean manuallyWrapTooltips,
+                                       RegistrationConsumer<ChestBlock, BlockItem, ChestBlockEntity> chestRegistration, Tag.Identified<Block> chestTag, BiFunction<ChestBlock, Item.Settings, BlockItem> chestItemMaker,
+                                       RegistrationConsumer<AbstractChestBlock, BlockItem, OldChestBlockEntity> oldChestRegistration,
+                                       RegistrationConsumer<BarrelBlock, BlockItem, BarrelBlockEntity> barrelRegistration, Tag.Identified<Block> barrelTag,
+                                       RegistrationConsumer<MiniChestBlock, BlockItem, MiniChestBlockEntity> miniChestRegistration) {
+        final Tier woodTier = new Tier(Utils.WOOD_TIER_ID, Utils.WOOD_STACK_COUNT, UnaryOperator.identity(), UnaryOperator.identity());
+        final Tier ironTier = new Tier(Utils.id("iron"), 54, Settings::requiresTool, UnaryOperator.identity());
+        final Tier goldTier = new Tier(Utils.id("gold"), 81, Settings::requiresTool, UnaryOperator.identity());
+        final Tier diamondTier = new Tier(Utils.id("diamond"), 108, Settings::requiresTool, UnaryOperator.identity());
+        final Tier obsidianTier = new Tier(Utils.id("obsidian"), 108, Settings::requiresTool, UnaryOperator.identity());
+        final Tier netheriteTier = new Tier(Utils.id("netherite"), 135, Settings::requiresTool, Item.Settings::fireproof);
+
+        //<editor-fold desc="-- Base Content">
+        //noinspection unchecked
+        Pair<Identifier, Item>[] items = new Pair[16];
+        items[0] = new Pair<>(Utils.id("chest_mutator"), new StorageMutator(new Item.Settings().maxCount(1).group(group)));
+        Common.defineTierUpgradePath(items, manuallyWrapTooltips, group, woodTier, ironTier, goldTier, diamondTier, obsidianTier, netheriteTier);
+        baseRegistration.accept(items);
+        //</editor-fold>
+        //<editor-fold desc="-- Chest Content">
+        // Init block settings
+        Settings woodSettings = Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings pumpkinSettings = Settings.of(Material.GOURD, MapColor.ORANGE).strength(1).sounds(BlockSoundGroup.WOOD);
+        Settings christmasSettings = Settings.of(Material.WOOD, state -> {
+            CursedChestType type = state.get(AbstractChestBlock.CURSED_CHEST_TYPE);
+            if (type == CursedChestType.SINGLE) return MapColor.RED;
+            else if (type == CursedChestType.FRONT || type == CursedChestType.BACK) return MapColor.DARK_GREEN;
+            return MapColor.WHITE;
+        }).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings ironSettings = Settings.of(Material.METAL, MapColor.IRON_GRAY).strength(5, 6).sounds(BlockSoundGroup.METAL);
+        Settings goldSettings = Settings.of(Material.METAL, MapColor.GOLD).strength(3, 6).sounds(BlockSoundGroup.METAL);
+        Settings diamondSettings = Settings.of(Material.METAL, MapColor.DIAMOND_BLUE).strength(5, 6).sounds(BlockSoundGroup.METAL);
+        Settings obsidianSettings = Settings.of(Material.STONE, MapColor.BLACK).strength(50, 1200);
+        Settings netheriteSettings = Settings.of(Material.METAL, MapColor.BLACK).strength(50, 1200).sounds(BlockSoundGroup.NETHERITE);
+        // Init content
+        BlockItemCollection<ChestBlock, BlockItem> chestContent = BlockItemCollection.of(ChestBlock[]::new, BlockItem[]::new,
+                Common.chestBlock(Utils.id("wood_chest"), Common.stat("open_wood_chest"), woodTier, woodSettings, chestItemMaker, group),
+                Common.chestBlock(Utils.id("pumpkin_chest"), Common.stat("open_pumpkin_chest"), woodTier, pumpkinSettings, chestItemMaker, group),
+                Common.chestBlock(Utils.id("christmas_chest"), Common.stat("open_christmas_chest"), woodTier, christmasSettings, chestItemMaker, group),
+                Common.chestBlock(Utils.id("iron_chest"), Common.stat("open_iron_chest"), ironTier, ironSettings, chestItemMaker, group),
+                Common.chestBlock(Utils.id("gold_chest"), Common.stat("open_gold_chest"), goldTier, goldSettings, chestItemMaker, group),
+                Common.chestBlock(Utils.id("diamond_chest"), Common.stat("open_diamond_chest"), diamondTier, diamondSettings, chestItemMaker, group),
+                Common.chestBlock(Utils.id("obsidian_chest"), Common.stat("open_obsidian_chest"), obsidianTier, obsidianSettings, chestItemMaker, group),
+                Common.chestBlock(Utils.id("netherite_chest"), Common.stat("open_netherite_chest"), netheriteTier, netheriteSettings, chestItemMaker, group)
+        );
+        if (isClient) Common.registerChestTextures(chestContent.getBlocks());
+        // Init block entity type
+        Common.chestBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new ChestBlockEntity(Common.getChestBlockEntityType(), pos, state, ((ChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable), chestContent.getBlocks()).build(null);
+        chestRegistration.accept(chestContent, Common.chestBlockEntityType);
+        // Register chest upgrade behaviours
+        Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof ChestBlock || block instanceof net.minecraft.block.ChestBlock || chestTag.contains(block);
+        Common.defineBlockUpgradeBehaviour(isUpgradableChestBlock, Common::tryUpgradeBlockToChest);
+        //</editor-fold>
+        //<editor-fold desc="-- Old Chest Content">
+        // Init content
+        BlockItemCollection<AbstractChestBlock, BlockItem> oldChestContent = BlockItemCollection.of(AbstractChestBlock[]::new, BlockItem[]::new,
+                Common.oldChestBlock(Utils.id("old_wood_chest"), Common.stat("open_old_wood_chest"), woodTier, woodSettings, group),
+                Common.oldChestBlock(Utils.id("old_iron_chest"), Common.stat("open_old_iron_chest"), ironTier, ironSettings, group),
+                Common.oldChestBlock(Utils.id("old_gold_chest"), Common.stat("open_old_gold_chest"), goldTier, goldSettings, group),
+                Common.oldChestBlock(Utils.id("old_diamond_chest"), Common.stat("open_old_diamond_chest"), diamondTier, diamondSettings, group),
+                Common.oldChestBlock(Utils.id("old_obsidian_chest"), Common.stat("open_old_obsidian_chest"), obsidianTier, obsidianSettings, group),
+                Common.oldChestBlock(Utils.id("old_netherite_chest"), Common.stat("open_old_netherite_chest"), netheriteTier, netheriteSettings, group)
+        );
+        // Init block entity type
+        Common.oldChestBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new OldChestBlockEntity(Common.getOldChestBlockEntityType(), pos, state, ((AbstractChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable), oldChestContent.getBlocks()).build(null);
+        oldChestRegistration.accept(oldChestContent, Common.oldChestBlockEntityType);
+        // Register upgrade behaviours
+        Predicate<Block> isUpgradableOldChestBlock = (block) -> block.getClass() == AbstractChestBlock.class;
+        Common.defineBlockUpgradeBehaviour(isUpgradableOldChestBlock, Common::tryUpgradeBlockToOldChest);
+        //</editor-fold>
+        //<editor-fold desc="-- Barrel Content">
+        // Init block settings
+        Settings ironBarrelSettings = Settings.of(Material.WOOD).strength(5, 6).sounds(BlockSoundGroup.WOOD);
+        Settings goldBarrelSettings = Settings.of(Material.WOOD).strength(3, 6).sounds(BlockSoundGroup.WOOD);
+        Settings diamondBarrelSettings = Settings.of(Material.WOOD).strength(5, 6).sounds(BlockSoundGroup.WOOD);
+        Settings obsidianBarrelSettings = Settings.of(Material.WOOD).strength(50, 1200).sounds(BlockSoundGroup.WOOD);
+        Settings netheriteBarrelSettings = Settings.of(Material.WOOD).strength(50, 1200).sounds(BlockSoundGroup.WOOD);
+        // Init content
+        BlockItemCollection<BarrelBlock, BlockItem> barrelContent = BlockItemCollection.of(BarrelBlock[]::new, BlockItem[]::new,
+                Common.barrelBlock(Utils.id("iron_barrel"), Common.stat("open_iron_barrel"), ironTier, ironBarrelSettings, group),
+                Common.barrelBlock(Utils.id("gold_barrel"), Common.stat("open_gold_barrel"), goldTier, goldBarrelSettings, group),
+                Common.barrelBlock(Utils.id("diamond_barrel"), Common.stat("open_diamond_barrel"), diamondTier, diamondBarrelSettings, group),
+                Common.barrelBlock(Utils.id("obsidian_barrel"), Common.stat("open_obsidian_barrel"), obsidianTier, obsidianBarrelSettings, group),
+                Common.barrelBlock(Utils.id("netherite_barrel"), Common.stat("open_netherite_barrel"), netheriteTier, netheriteBarrelSettings, group)
+        );
+        // Init block entity type
+        Common.barrelBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new BarrelBlockEntity(Common.getBarrelBlockEntityType(), pos, state, ((BarrelBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable), barrelContent.getBlocks()).build(null);
+        barrelRegistration.accept(barrelContent, Common.barrelBlockEntityType);
+        // Register upgrade behaviours
+        Predicate<Block> isUpgradableBarrelBlock = (block) -> block instanceof BarrelBlock || block instanceof net.minecraft.block.BarrelBlock || barrelTag.contains(block);
+        Common.defineBlockUpgradeBehaviour(isUpgradableBarrelBlock, Common::tryUpgradeBlockToBarrel);
+        //</editor-fold>
+        //<editor-fold desc="-- Mini Chest Content">
+        // Init and register opening stats
+        Identifier woodOpenStat = Common.stat("open_wood_mini_chest");
+        // Init block settings
+        Settings redPresentSettings = Settings.of(Material.WOOD, MapColor.RED).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings whitePresentSettings = Settings.of(Material.WOOD, MapColor.WHITE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings candyCanePresentSettings = Settings.of(Material.WOOD, MapColor.WHITE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings greenPresentSettings = Settings.of(Material.WOOD, MapColor.DARK_GREEN).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings lavenderPresentSettings = Settings.of(Material.WOOD, MapColor.PURPLE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        Settings pinkAmethystPresentSettings = Settings.of(Material.WOOD, MapColor.PURPLE).strength(2.5f).sounds(BlockSoundGroup.WOOD);
+        // Init content
+        BlockItemCollection<MiniChestBlock, BlockItem> miniChestContent = BlockItemCollection.of(MiniChestBlock[]::new, BlockItem[]::new,
+                Common.miniChestBlock(Utils.id("vanilla_wood_mini_chest"), woodOpenStat, woodTier, woodSettings, group),
+                Common.miniChestBlock(Utils.id("wood_mini_chest"), woodOpenStat, woodTier, woodSettings, group),
+                Common.miniChestBlock(Utils.id("pumpkin_mini_chest"), Common.stat("open_pumpkin_mini_chest"), woodTier, pumpkinSettings, group),
+                Common.miniChestBlock(Utils.id("red_mini_present"), Common.stat("open_red_mini_present"), woodTier, redPresentSettings, group),
+                Common.miniChestBlock(Utils.id("white_mini_present"), Common.stat("open_white_mini_present"), woodTier, whitePresentSettings, group),
+                Common.miniChestBlock(Utils.id("candy_cane_mini_present"), Common.stat("open_candy_cane_mini_present"), woodTier, candyCanePresentSettings, group),
+                Common.miniChestBlock(Utils.id("green_mini_present"), Common.stat("open_green_mini_present"), woodTier, greenPresentSettings, group),
+                Common.miniChestBlock(Utils.id("lavender_mini_present"), Common.stat("open_lavender_mini_present"), woodTier, lavenderPresentSettings, group),
+                Common.miniChestBlock(Utils.id("pink_amethyst_mini_present"), Common.stat("open_pink_amethyst_mini_present"), woodTier, pinkAmethystPresentSettings, group)
+        );
+        // Init block entity type
+        Common.miniChestBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new MiniChestBlockEntity(Common.getMiniChestBlockEntityType(), pos, state, ((MiniChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable), miniChestContent.getBlocks()).build(null);
+        miniChestRegistration.accept(miniChestContent, Common.miniChestBlockEntityType);
+        //</editor-fold>
     }
 }

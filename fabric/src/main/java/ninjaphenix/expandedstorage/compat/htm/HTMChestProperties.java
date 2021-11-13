@@ -27,9 +27,9 @@ public final class HTMChestProperties {
         public HTMContainerLock get(OldChestBlockEntity first, OldChestBlockEntity second) {
             LockableObject firstLockable = (LockableObject) first;
             LockableObject secondLockable = (LockableObject) second;
-            if (firstLockable.getLock().isLocked() || !secondLockable.getLock().isLocked()) {
+            if (firstLockable.getLock().isLocked() || !secondLockable.getLock().isLocked())
                 return firstLockable.getLock();
-            }
+
             return secondLockable.getLock();
         }
 
@@ -42,13 +42,9 @@ public final class HTMChestProperties {
         @Override
         public BlockEntity get(OldChestBlockEntity first, OldChestBlockEntity second) {
             LockableObject firstLockable = (LockableObject) first;
-            if (!firstLockable.getLock().isLocked()) {
-                return first;
-            }
+            if (!firstLockable.getLock().isLocked()) return first;
             LockableObject secondLockable = (LockableObject) second;
-            if (!secondLockable.getLock().isLocked()) {
-                return second;
-            }
+            if (!secondLockable.getLock().isLocked()) return second;
             return null;
         }
 

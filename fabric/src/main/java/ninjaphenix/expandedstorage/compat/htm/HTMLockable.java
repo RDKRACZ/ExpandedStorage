@@ -36,9 +36,8 @@ public final class HTMLockable extends BasicLockable {
     @Override
     public void readLock(NbtCompound tag) {
         super.readLock(tag);
-        if (tag.contains(HTMLockable.LOCK_TAG_KEY, NbtElement.COMPOUND_TYPE)) {
+        if (tag.contains(HTMLockable.LOCK_TAG_KEY, NbtElement.COMPOUND_TYPE))
             lock.fromTag(tag.getCompound(HTMLockable.LOCK_TAG_KEY));
-        }
     }
 
     @Override

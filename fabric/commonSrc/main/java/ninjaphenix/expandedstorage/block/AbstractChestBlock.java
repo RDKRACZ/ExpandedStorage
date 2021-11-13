@@ -67,7 +67,7 @@ public class AbstractChestBlock extends OpenableBlock implements InventoryProvid
     }
 
     public static <T extends OldChestBlockEntity> PropertyRetriever<T> createPropertyRetriever(AbstractChestBlock block, BlockState state, WorldAccess world, BlockPos pos, boolean retrieveBlockedChests) {
-        BiPredicate<WorldAccess, BlockPos> isChestBlocked = retrieveBlockedChests ? (_level, _pos) -> false : block::isAccessBlocked;
+        BiPredicate<WorldAccess, BlockPos> isChestBlocked = retrieveBlockedChests ? (_world, _pos) -> false : block::isAccessBlocked;
         return PropertyRetriever.create(block.getBlockEntityType(), AbstractChestBlock::getBlockType, AbstractChestBlock::getDirectionToAttached,
                 (s) -> s.get(Properties.HORIZONTAL_FACING), state, world, pos, isChestBlocked);
     }

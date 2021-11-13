@@ -32,12 +32,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.stream.IntStream;
 
 public abstract class InventoryBlockEntity extends OpenableBlockEntity {
-    private final int[] availableSlots;
     private final DefaultedList<ItemStack> items;
     private final SidedInventory inventory = new SidedInventory() {
+        private int[] availableSlots;
         @Override
         public int[] getAvailableSlots(Direction side) {
-            // todo: make this lazy
+            if (availableSlots == null) {
+                availableSlots = IntStream.range(0, this.size()).toArray();
+            }
             return availableSlots;
         }
 
@@ -121,7 +123,6 @@ public abstract class InventoryBlockEntity extends OpenableBlockEntity {
     public InventoryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId, int inventorySize) {
         super(type, pos, state, blockId);
         items = DefaultedList.ofSize(inventorySize, ItemStack.EMPTY);
-        availableSlots = IntStream.range(0, inventorySize).toArray();
     }
 
     public final SidedInventory getInventory() {

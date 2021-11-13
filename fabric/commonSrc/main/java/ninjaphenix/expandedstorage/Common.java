@@ -361,10 +361,10 @@ public final class Common {
             for (int toIndex = fromIndex + 1; toIndex < numTiers; toIndex++) {
                 Tier toTier = tiers[toIndex];
                 Identifier itemId = Utils.id(fromTier.getId().getPath() + "_to_" + toTier.getId().getPath() + "_conversion_kit");
-                Item.Settings properties = fromTier.getItemSettings()
+                Item.Settings settings = fromTier.getItemSettings()
                                                    .andThen(toTier.getItemSettings())
                                                    .apply(new Item.Settings().group(Common.group).maxCount(16));
-                Item kit = new StorageConversionKit(properties, fromTier.getId(), toTier.getId(), wrapTooltipManually);
+                Item kit = new StorageConversionKit(settings, fromTier.getId(), toTier.getId(), wrapTooltipManually);
                 items[index++] = new Pair<>(itemId, kit);
             }
         }

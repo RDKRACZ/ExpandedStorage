@@ -45,7 +45,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -63,7 +62,6 @@ import ninjaphenix.expandedstorage.block.entity.OldChestBlockEntity;
 import ninjaphenix.expandedstorage.block.entity.extendable.StrategyBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.BasicLockable;
 import ninjaphenix.expandedstorage.block.strategies.ItemAccess;
-import ninjaphenix.expandedstorage.block.strategies.Lockable;
 import ninjaphenix.expandedstorage.client.ChestBlockEntityRenderer;
 import ninjaphenix.expandedstorage.compat.carrier.CarrierCompat;
 import ninjaphenix.expandedstorage.compat.htm.HTMLockable;
@@ -192,7 +190,7 @@ public final class Main implements ModInitializer {
 
     private static void baseRegistration(Pair<Identifier, Item>[] items) {
         for (Pair<Identifier, Item> item : items) {
-            Registry.register(Registry.ITEM, item.getLeft(), item.getRight());
+            Registry.register(Registry.ITEM, item.getFirst(), item.getSecond());
         }
     }
 

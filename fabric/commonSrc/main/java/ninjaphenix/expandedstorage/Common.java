@@ -95,7 +95,7 @@ public final class Common {
     private static final int DIAMOND_STACK_COUNT = 108;
     private static final int OBSIDIAN_STACK_COUNT = 108;
     private static final int NETHERITE_STACK_COUNT = 135;
-    public static final Tier WOOD_TIER = new Tier(Utils.WOOD_TIER_ID, Utils.WOOD_STACK_COUNT, UnaryOperator.identity(), UnaryOperator.identity());
+    private static final Tier WOOD_TIER = new Tier(Utils.WOOD_TIER_ID, Utils.WOOD_STACK_COUNT, UnaryOperator.identity(), UnaryOperator.identity());
     private static final Tier IRON_TIER = new Tier(Utils.id("iron"), Common.IRON_STACK_COUNT, Settings::requiresTool, UnaryOperator.identity());
     private static final Tier GOLD_TIER = new Tier(Utils.id("gold"), Common.GOLD_STACK_COUNT, Settings::requiresTool, UnaryOperator.identity());
     private static final Tier DIAMOND_TIER = new Tier(Utils.id("diamond"), Common.DIAMOND_STACK_COUNT, Settings::requiresTool, UnaryOperator.identity());
@@ -162,7 +162,7 @@ public final class Common {
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
         boolean isExpandedStorageBarrel = block instanceof BarrelBlock;
-        int inventorySize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : Common.getTieredBlock(BARREL_BLOCK_TYPE, ((BarrelBlock) block).getBlockTier()).getSlotCount();
+        int inventorySize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : Common.getTieredBlock(Common.BARREL_BLOCK_TYPE, ((BarrelBlock) block).getBlockTier()).getSlotCount();
         if (isExpandedStorageBarrel && ((BarrelBlock) block).getBlockTier() == from || !isExpandedStorageBarrel && from == Utils.WOOD_TIER_ID) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             //noinspection ConstantConditions
@@ -177,7 +177,7 @@ public final class Common {
                 }
             }
             if (verifiedSize) {
-                OpenableBlock toBlock = Common.getTieredBlock(BARREL_BLOCK_TYPE, to);
+                OpenableBlock toBlock = Common.getTieredBlock(Common.BARREL_BLOCK_TYPE, to);
                 DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
                 ContainerLock code = ContainerLock.fromNbt(tag);
                 Inventories.readNbt(tag, inventory);
@@ -264,7 +264,7 @@ public final class Common {
     private static void upgradeSingleBlockToChest(World world, BlockState state, BlockPos pos, Identifier from, Identifier to) {
         Block block = state.getBlock();
         boolean isExpandedStorageChest = block instanceof ChestBlock;
-        int inventorySize = !isExpandedStorageChest ? Utils.WOOD_STACK_COUNT : Common.getTieredBlock(CHEST_BLOCK_TYPE, ((ChestBlock) block).getBlockTier()).getSlotCount();
+        int inventorySize = !isExpandedStorageChest ? Utils.WOOD_STACK_COUNT : Common.getTieredBlock(Common.CHEST_BLOCK_TYPE, ((ChestBlock) block).getBlockTier()).getSlotCount();
         if (isExpandedStorageChest && ((ChestBlock) block).getBlockTier() == from || !isExpandedStorageChest && from == Utils.WOOD_TIER_ID) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             //noinspection ConstantConditions
@@ -279,7 +279,7 @@ public final class Common {
                 }
             }
             if (verifiedSize) {
-                ChestBlock toBlock = (ChestBlock) Common.getTieredBlock(CHEST_BLOCK_TYPE, to);
+                ChestBlock toBlock = (ChestBlock) Common.getTieredBlock(Common.CHEST_BLOCK_TYPE, to);
                 DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
                 ContainerLock code = ContainerLock.fromNbt(tag);
                 Inventories.readNbt(tag, inventory);
@@ -329,7 +329,7 @@ public final class Common {
 
     private static void upgradeSingleBlockToOldChest(World world, BlockState state, BlockPos pos, Identifier from, Identifier to) {
         if (((AbstractChestBlock) state.getBlock()).getBlockTier() == from) {
-            AbstractChestBlock toBlock = (AbstractChestBlock) Common.getTieredBlock(OLD_CHEST_BLOCK_TYPE, to);
+            AbstractChestBlock toBlock = (AbstractChestBlock) Common.getTieredBlock(Common.OLD_CHEST_BLOCK_TYPE, to);
             DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
             //noinspection ConstantConditions
             NbtCompound tag = world.getBlockEntity(pos).writeNbt(new NbtCompound());
@@ -449,8 +449,8 @@ public final class Common {
             Common.registerChestTextures(content.getBlocks());
         }
         // Init block entity type
-        chestBlockEntityType = BlockEntityType.Builder.create(Common::createChestBlockEntity, content.getBlocks()).build(null);
-        registrationConsumer.accept(content, chestBlockEntityType);
+        Common.chestBlockEntityType = BlockEntityType.Builder.create(Common::createChestBlockEntity, content.getBlocks()).build(null);
+        registrationConsumer.accept(content, Common.chestBlockEntityType);
         // Register chest upgrade behaviours
         Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof ChestBlock || block instanceof net.minecraft.block.ChestBlock || woodenChestTag.contains(block);
         Common.defineBlockUpgradeBehaviour(isUpgradableChestBlock, Common::tryUpgradeBlockToChest);
@@ -474,8 +474,8 @@ public final class Common {
                 Common.oldChestBlock(Utils.id("old_netherite_chest"), Common.stat("open_old_netherite_chest"), Common.NETHERITE_TIER, netheriteSettings)
         );
         // Init block entity type
-        oldChestBlockEntityType = BlockEntityType.Builder.create(Common::createOldChestBlockEntity, content.getBlocks()).build(null);
-        registrationConsumer.accept(content, oldChestBlockEntityType);
+        Common.oldChestBlockEntityType = BlockEntityType.Builder.create(Common::createOldChestBlockEntity, content.getBlocks()).build(null);
+        registrationConsumer.accept(content, Common.oldChestBlockEntityType);
         // Register upgrade behaviours
         Predicate<Block> isUpgradableChestBlock = (block) -> block.getClass() == AbstractChestBlock.class;
         Common.defineBlockUpgradeBehaviour(isUpgradableChestBlock, Common::tryUpgradeBlockToOldChest);
@@ -497,8 +497,8 @@ public final class Common {
                 Common.barrelBlock(Utils.id("netherite_barrel"), Common.stat("open_netherite_barrel"), Common.NETHERITE_TIER, netheriteSettings)
         );
         // Init block entity type
-        barrelBlockEntityType = BlockEntityType.Builder.create(Common::createBarrelBlockEntity, content.getBlocks()).build(null);
-        registration.accept(content, barrelBlockEntityType);
+        Common.barrelBlockEntityType = BlockEntityType.Builder.create(Common::createBarrelBlockEntity, content.getBlocks()).build(null);
+        registration.accept(content, Common.barrelBlockEntityType);
         // Register upgrade behaviours
         Predicate<Block> isUpgradableBarrelBlock = (block) -> block instanceof BarrelBlock || block instanceof net.minecraft.block.BarrelBlock || woodenBarrelTag.contains(block);
         Common.defineBlockUpgradeBehaviour(isUpgradableBarrelBlock, Common::tryUpgradeBlockToBarrel);
@@ -529,8 +529,8 @@ public final class Common {
                 Common.miniChestBlock(Utils.id("pink_amethyst_mini_present"), Common.stat("open_pink_amethyst_mini_present"), pinkAmethystPresentSettings)
         );
         // Init block entity type
-        miniChestBlockEntityType = BlockEntityType.Builder.create(Common::createMiniChestBlockEntity, content.getBlocks()).build(null);
-        registrationConsumer.accept(content, miniChestBlockEntityType);
+        Common.miniChestBlockEntityType = BlockEntityType.Builder.create(Common::createMiniChestBlockEntity, content.getBlocks()).build(null);
+        registrationConsumer.accept(content, Common.miniChestBlockEntityType);
     }
 
     private static void registerTieredBlock(OpenableBlock block) {
@@ -559,11 +559,11 @@ public final class Common {
     }
 
     private static void registerMutationBehaviour(Predicate<Block> predicate, MutationMode mode, MutatorBehaviour behaviour) {
-        MUTATOR_BEHAVIOURS.put(new Pair<>(predicate, mode), behaviour);
+        Common.MUTATOR_BEHAVIOURS.put(new Pair<>(predicate, mode), behaviour);
     }
 
     public static MutatorBehaviour getMutatorBehaviour(Block block, MutationMode mode) {
-        for (Map.Entry<Pair<Predicate<Block>, MutationMode>, MutatorBehaviour> entry : MUTATOR_BEHAVIOURS.entrySet()) {
+        for (Map.Entry<Pair<Predicate<Block>, MutationMode>, MutatorBehaviour> entry : Common.MUTATOR_BEHAVIOURS.entrySet()) {
             Pair<Predicate<Block>, MutationMode> pair = entry.getKey();
             if (pair.getSecond() == mode && pair.getFirst().test(block)) {
                 return entry.getValue();

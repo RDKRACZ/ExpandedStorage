@@ -88,7 +88,7 @@ public final class MiniChestBlock extends OpenableBlock implements Waterloggable
 
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return Common.createMiniChestBlockEntity(pos, state);
+        return Common.getMiniChestBlockEntityType().instantiate(pos, state);
     }
 
     @Override

@@ -27,6 +27,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -35,11 +36,15 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import ninjaphenix.container_library.api.helpers.VariableSidedInventory;
+import ninjaphenix.container_library.api.v2.OpenableBlockEntityV2;
+import ninjaphenix.container_library.api.v2.helpers.OpenableBlockEntitiesV2;
 import ninjaphenix.expandedstorage.Common;
+import ninjaphenix.expandedstorage.Utils;
 import ninjaphenix.expandedstorage.block.entity.OldChestBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.block.misc.Property;
 import ninjaphenix.expandedstorage.block.misc.PropertyRetriever;
+import ninjaphenix.expandedstorage.block.strategies.Nameable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,6 +77,7 @@ public class AbstractChestBlock extends OpenableBlock implements InventoryProvid
     }
 
     protected <T extends OldChestBlockEntity> BlockEntityType<T> getBlockEntityType() {
+        //noinspection unchecked
         return (BlockEntityType<T>) Common.getOldChestBlockEntityType();
     }
 
@@ -146,7 +152,7 @@ public class AbstractChestBlock extends OpenableBlock implements InventoryProvid
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return Common.createOldChestBlockEntity(pos, state);
+        return this.getBlockEntityType().instantiate(pos, state);
     }
 
     @NotNull
@@ -240,19 +246,26 @@ public class AbstractChestBlock extends OpenableBlock implements InventoryProvid
     @Override
     @SuppressWarnings("deprecation")
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-        // todo: move to properties class / field
-        SidedInventory inventory = AbstractChestBlock.createPropertyRetriever(this, state, world, pos, true).get(new Property<OldChestBlockEntity, SidedInventory>() {
+        SidedInventory inventory = this.getInventory(state, world, pos);
+        if (inventory != null) return ScreenHandler.calculateComparatorOutput(inventory);
+        return super.getComparatorOutput(state, world, pos);
+    }
+
+    @Override
+    public OpenableBlockEntityV2 getOpenableBlockEntity(World world, BlockState state, BlockPos pos) {
+        return AbstractChestBlock.createPropertyRetriever(this, state, world, pos, false).get(new Property<OldChestBlockEntity, OpenableBlockEntityV2>() {
             @Override
-            public SidedInventory get(OldChestBlockEntity first, OldChestBlockEntity second) {
-                return VariableSidedInventory.of(first.getInventory(), second.getInventory());
+            public OpenableBlockEntityV2 get(OldChestBlockEntity first, OldChestBlockEntity second) {
+                Nameable firstName = first.getName();
+                Nameable secondName = second.getName();
+                Text name = firstName.isCustom() ? firstName.get() : secondName.isCustom() ? secondName.get() : Utils.translation("container.expandedstorage.generic_double", firstName.get());
+                return new OpenableBlockEntitiesV2(name, first, second);
             }
 
             @Override
-            public SidedInventory get(OldChestBlockEntity single) {
-                return single.getInventory();
+            public OpenableBlockEntityV2 get(OldChestBlockEntity single) {
+                return single;
             }
         }).orElse(null);
-        if (inventory != null) return ScreenHandler.calculateComparatorOutput(inventory);
-        return super.getComparatorOutput(state, world, pos);
     }
 }

@@ -21,9 +21,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
@@ -31,11 +34,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import ninjaphenix.expandedstorage.Common;
+import ninjaphenix.expandedstorage.block.entity.ChestBlockEntity;
+import ninjaphenix.expandedstorage.block.entity.OldChestBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
+import org.jetbrains.annotations.Nullable;
 
-public class ChestBlock extends AbstractChestBlock implements Waterloggable {
+import java.util.Random;
+
+public final class ChestBlock extends AbstractChestBlock implements Waterloggable {
+    public static final int SET_OBSERVER_COUNT_EVENT = 1;
     private static final VoxelShape[] SHAPES = {
             Block.createCuboidShape(1, 0, 0, 15, 14, 15), // Horizontal shapes, depends on orientation and chest type.
             Block.createCuboidShape(1, 0, 1, 16, 14, 15),
@@ -100,7 +110,35 @@ public class ChestBlock extends AbstractChestBlock implements Waterloggable {
     }
 
     @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return Common.createChestBlockEntity(pos, state);
+    protected <T extends OldChestBlockEntity> BlockEntityType<T> getBlockEntityType() {
+        //noinspection unchecked
+        return (BlockEntityType<T>) Common.getChestBlockEntityType();
+    }
+
+    @Override
+    public Identifier getBlockType() {
+        return Common.CHEST_BLOCK_TYPE;
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> blockEntityType) {
+        return world.isClient() && blockEntityType == Common.getChestBlockEntityType() ? ChestBlockEntity::progressLidAnimation : null;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int event, int value) {
+        super.onSyncedBlockEvent(state, world, pos, event, value);
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        return blockEntity != null && blockEntity.onSyncedBlockEvent(event, value);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (world.getBlockEntity(pos) instanceof ChestBlockEntity entity) {
+            entity.updateViewerCount(world, pos, state);
+        }
     }
 }

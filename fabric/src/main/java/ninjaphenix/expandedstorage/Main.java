@@ -261,7 +261,7 @@ public final class Main implements ModInitializer {
 
         public static void registerItemRenderers(BlockItem[] items) {
             for (BlockItem item : items) {
-                ChestBlockEntity renderEntity = Common.createChestBlockEntity(BlockPos.ORIGIN, item.getBlock().getDefaultState());
+                ChestBlockEntity renderEntity = Common.getChestBlockEntityType().instantiate(BlockPos.ORIGIN, item.getBlock().getDefaultState());
                 BuiltinItemRendererRegistry.INSTANCE.register(item, (itemStack, transform, stack, source, light, overlay) ->
                         MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(renderEntity, stack, source, light, overlay));
             }

@@ -60,7 +60,7 @@ public final class BarrelBlock extends OpenableBlock {
 
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return Common.createBarrelBlockEntity(pos, state);
+        return Common.getBarrelBlockEntityType().instantiate(pos, state);
     }
 
     @Override

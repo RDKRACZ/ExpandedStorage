@@ -39,8 +39,8 @@ public final class StorageConversionKit extends Item {
     private final Text instructionsFirst;
     private final Text instructionsSecond;
 
-    public StorageConversionKit(Settings properties, Identifier from, Identifier to, boolean manuallyWrapTooltips) {
-        super(properties);
+    public StorageConversionKit(Settings settings, Identifier from, Identifier to, boolean manuallyWrapTooltips) {
+        super(settings);
         this.from = from;
         this.to = to;
         if (manuallyWrapTooltips) {
@@ -74,7 +74,7 @@ public final class StorageConversionKit extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World level, List<Text> list, TooltipContext flag) {
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext context) {
         list.add(instructionsFirst);
         if (!instructionsSecond.getString().equals("")) {
             list.add(instructionsSecond);

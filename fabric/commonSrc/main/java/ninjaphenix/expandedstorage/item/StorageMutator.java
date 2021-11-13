@@ -56,8 +56,8 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class StorageMutator extends Item {
-    public StorageMutator(Item.Settings properties) {
-        super(properties);
+    public StorageMutator(Item.Settings settings) {
+        super(settings);
     }
 
     private static MutationMode getMode(ItemStack stack) {
@@ -331,8 +331,8 @@ public class StorageMutator extends Item {
     }
 
     @Override
-    public void appendStacks(ItemGroup tab, DefaultedList<ItemStack> stacks) {
-        if (this.isIn(tab)) {
+    public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
+        if (this.isIn(group)) {
             stacks.add(this.getDefaultStack());
         }
     }
@@ -348,7 +348,7 @@ public class StorageMutator extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext flag) {
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext context) {
         MutationMode mode = StorageMutator.getMode(stack);
         list.add(this.getToolModeText(mode).formatted(Formatting.GRAY));
         list.add(Utils.translation("tooltip.expandedstorage.storage_mutator.description_" + mode, Utils.ALT_USE).formatted(Formatting.GRAY));

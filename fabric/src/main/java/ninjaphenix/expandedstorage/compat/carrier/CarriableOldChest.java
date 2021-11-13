@@ -100,7 +100,7 @@ public class CarriableOldChest implements Carriable<Block> {
         stack.push();
         stack.scale(0.6F, 0.6F, 0.6F);
         float yaw = MathHelper.lerpAngleDegrees(delta, player.prevBodyYaw, player.bodyYaw);
-        stack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180-yaw));
+        stack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180 - yaw));
         stack.translate(-0.5D, 0.8D, -1.3D);
         this.preRenderBlock(player, component, stack, consumer, delta, light);
         MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(this.getParent().getDefaultState(), stack, consumer, light, OverlayTexture.DEFAULT_UV);

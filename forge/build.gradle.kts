@@ -64,7 +64,7 @@ dependencies {
     minecraft("net.minecraftforge:forge:${properties["minecraft_version"]}-${properties["forge_version"]}")
     implementation(group = "org.spongepowered", name = "mixin", version = properties["mixin_version"] as String)
     annotationProcessor(group = "org.spongepowered", name = "mixin", version = properties["mixin_version"] as String, classifier = "processor")
-    implementation(fg.deobf("ninjaphenix:container_library:${properties["container_library_version"]}+${properties["minecraft_version"]}:forge"))
+    implementation(fg.deobf("ninjaphenix:container_library:${properties["container_library_version"]}+${properties["container_library_minecraft_version"]}:forge"))
     implementation(group = "org.jetbrains", name = "annotations", version = properties["jetbrains_annotations_version"] as String)
 }
 

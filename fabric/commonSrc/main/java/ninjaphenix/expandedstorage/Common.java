@@ -42,7 +42,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -62,6 +61,8 @@ import ninjaphenix.expandedstorage.block.strategies.ItemAccess;
 import ninjaphenix.expandedstorage.block.strategies.Lockable;
 import ninjaphenix.expandedstorage.client.TextureCollection;
 import ninjaphenix.expandedstorage.item.BlockUpgradeBehaviour;
+import ninjaphenix.expandedstorage.item.MutationMode;
+import ninjaphenix.expandedstorage.item.MutatorBehaviour;
 import ninjaphenix.expandedstorage.item.StorageConversionKit;
 import ninjaphenix.expandedstorage.item.StorageMutator;
 import ninjaphenix.expandedstorage.registration.BlockItemCollection;
@@ -85,7 +86,8 @@ public final class Common {
     public static final Identifier MINI_CHEST_BLOCK_TYPE = Utils.id("mini_chest");
 
     private static final Map<Predicate<Block>, BlockUpgradeBehaviour> BLOCK_UPGRADE_BEHAVIOURS = new HashMap<>();
-    private static final Map<BlockTierId, OpenableBlock> BLOCKS = new HashMap<>();
+    private static final Map<Pair<Predicate<Block>, MutationMode>, MutatorBehaviour> MUTATOR_BEHAVIOURS = new HashMap<>();
+    private static final Map<Pair<Identifier, Identifier>, OpenableBlock> BLOCKS = new HashMap<>();
     private static final Map<Identifier, TextureCollection> CHEST_TEXTURES = new HashMap<>();
 
     private static final int IRON_STACK_COUNT = 54;
@@ -532,11 +534,11 @@ public final class Common {
     }
 
     private static void registerTieredBlock(OpenableBlock block) {
-        Common.BLOCKS.putIfAbsent(new BlockTierId(block.getBlockType(), block.getBlockTier()), block);
+        Common.BLOCKS.putIfAbsent(new Pair<>(block.getBlockType(), block.getBlockTier()), block);
     }
 
     public static OpenableBlock getTieredBlock(Identifier blockType, Identifier tier) {
-        return Common.BLOCKS.get(new BlockTierId(blockType, tier));
+        return Common.BLOCKS.get(new Pair<>(blockType, tier));
     }
 
     public static void declareChestTextures(Identifier block, Identifier singleTexture, Identifier leftTexture, Identifier rightTexture, Identifier topTexture, Identifier bottomTexture, Identifier frontTexture, Identifier backTexture) {
@@ -554,5 +556,19 @@ public final class Common {
         } else {
             return MissingSprite.getMissingSpriteId();
         }
+    }
+
+    private static void registerMutationBehaviour(Predicate<Block> predicate, MutationMode mode, MutatorBehaviour behaviour) {
+        MUTATOR_BEHAVIOURS.put(new Pair<>(predicate, mode), behaviour);
+    }
+
+    public static MutatorBehaviour getMutatorBehaviour(Block block, MutationMode mode) {
+        for (Map.Entry<Pair<Predicate<Block>, MutationMode>, MutatorBehaviour> entry : MUTATOR_BEHAVIOURS.entrySet()) {
+            Pair<Predicate<Block>, MutationMode> pair = entry.getKey();
+            if (pair.getSecond() == mode && pair.getFirst().test(block)) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 }

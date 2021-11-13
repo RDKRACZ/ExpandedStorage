@@ -3,5 +3,6 @@
 - Fixed some issues with Piglin guarding tag and also revert to the old tag format.
 - Fixed the map color of Christmas chest variants
 - Remove some unnecessary data from models as well as some minor relocation for barrel and old chest base models.
-- Major resource / data pack renames, generally moving from christmas chest -> present
+- Major resource / data pack renames, generally moving from Christmas chest -> present
 - Fixed rotation of horizontal chests splitting the chest and only rotating one half.
+- New storage mutator mode: "swap theme" which lets you swap between themes for the same block tier, this lets you get pumpkin and Christmas chests from wood chests and swap between the various mini chest styles.

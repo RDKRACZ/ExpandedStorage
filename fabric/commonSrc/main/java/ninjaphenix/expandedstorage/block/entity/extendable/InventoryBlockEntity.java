@@ -134,18 +134,6 @@ public abstract class InventoryBlockEntity extends OpenableBlockEntity {
         return items;
     }
 
-    protected abstract boolean shouldStateUpdateInvalidateItemAccess(BlockState oldState, BlockState newState);
-
-    @Override // Could be a part of StrategyBlockEntity but is only used for implementors of InventoryBlockEntity
-    @SuppressWarnings("deprecation")
-    public void setCachedState(BlockState state) {
-        BlockState oldState = this.getCachedState();
-        super.setCachedState(state);
-        if (this.shouldStateUpdateInvalidateItemAccess(oldState, state)) {
-            this.getItemAccess().invalidate();
-        }
-    }
-
     @Override
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);

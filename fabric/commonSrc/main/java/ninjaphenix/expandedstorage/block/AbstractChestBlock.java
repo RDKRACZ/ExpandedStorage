@@ -35,7 +35,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import ninjaphenix.container_library.api.helpers.VariableSidedInventory;
 import ninjaphenix.container_library.api.v2.OpenableBlockEntityV2;
 import ninjaphenix.container_library.api.v2.helpers.OpenableBlockEntitiesV2;
 import ninjaphenix.expandedstorage.Common;
@@ -61,7 +60,12 @@ public class AbstractChestBlock extends OpenableBlock implements InventoryProvid
     private static final Property<OldChestBlockEntity, SidedInventory> INVENTORY_GETTER = new Property<>() {
         @Override
         public SidedInventory get(OldChestBlockEntity first, OldChestBlockEntity second) {
-            return VariableSidedInventory.of(first.getInventory(), second.getInventory());
+            SidedInventory cachedInventory = first.getCachedDoubleInventory();
+            if (cachedInventory == null) {
+                first.setCachedDoubleInventory(second);
+                return first.getCachedDoubleInventory();
+            }
+            return cachedInventory;
         }
 
         @Override
@@ -267,5 +271,25 @@ public class AbstractChestBlock extends OpenableBlock implements InventoryProvid
                 return single;
             }
         }).orElse(null);
+    }
+
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean bl) {
+        if (state.contains(AbstractChestBlock.CURSED_CHEST_TYPE) && newState.contains(AbstractChestBlock.CURSED_CHEST_TYPE)) {
+            CursedChestType oldChestType = state.get(AbstractChestBlock.CURSED_CHEST_TYPE);
+            CursedChestType newChestType = newState.get(AbstractChestBlock.CURSED_CHEST_TYPE);
+            if (oldChestType != CursedChestType.SINGLE && newChestType == CursedChestType.SINGLE) {
+                if (AbstractChestBlock.getBlockType(state) == DoubleBlockProperties.Type.FIRST) {
+                    if (world.getBlockEntity(pos) instanceof OldChestBlockEntity entity) {
+                        entity.invalidateDoubleBlockCache();
+                    }
+                }
+                world.updateComparators(pos, newState.getBlock());
+            } else if(oldChestType == CursedChestType.SINGLE && newChestType != CursedChestType.SINGLE) {
+                BlockPos otherPos = pos.offset(AbstractChestBlock.getDirectionToAttached(newState));
+                world.updateComparators(otherPos, world.getBlockState(otherPos).getBlock());
+            }
+        }
+        super.onStateReplaced(state, world, pos, newState, bl);
     }
 }

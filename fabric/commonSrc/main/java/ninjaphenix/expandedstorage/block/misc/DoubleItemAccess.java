@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ninjaphenix.expandedstorage.block.strategies;
+package ninjaphenix.expandedstorage.block.misc;
 
-public interface ItemAccess {
-    Object get();
+import ninjaphenix.expandedstorage.block.strategies.ItemAccess;
+
+public interface DoubleItemAccess extends ItemAccess {
+    Object getSingle();
+
+    void setOther(DoubleItemAccess other);
+
+    boolean hasCachedAccess();
 }

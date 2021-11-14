@@ -17,12 +17,15 @@ package ninjaphenix.expandedstorage.block.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import ninjaphenix.container_library.api.helpers.VariableSidedInventory;
 import ninjaphenix.expandedstorage.block.AbstractChestBlock;
 import ninjaphenix.expandedstorage.block.OpenableBlock;
 import ninjaphenix.expandedstorage.block.entity.extendable.InventoryBlockEntity;
 import ninjaphenix.expandedstorage.block.entity.extendable.OpenableBlockEntity;
+import ninjaphenix.expandedstorage.block.misc.DoubleItemAccess;
 import ninjaphenix.expandedstorage.block.strategies.ItemAccess;
 import ninjaphenix.expandedstorage.block.strategies.Lockable;
 import ninjaphenix.expandedstorage.block.misc.MutableNameable;
@@ -30,6 +33,7 @@ import ninjaphenix.expandedstorage.block.misc.MutableNameable;
 import java.util.function.Function;
 
 public class OldChestBlockEntity extends InventoryBlockEntity {
+    SidedInventory cachedDoubleInventory = null;
     public OldChestBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId,
                                Function<OpenableBlockEntity, ItemAccess> access, Function<OpenableBlockEntity, Lockable> lockable) {
         super(type, pos, state, blockId, ((AbstractChestBlock) state.getBlock()).getSlotCount());
@@ -38,8 +42,22 @@ public class OldChestBlockEntity extends InventoryBlockEntity {
         this.setNameable(new MutableNameable(((OpenableBlock) state.getBlock()).getInventoryTitle()));
     }
 
-    @Override
-    protected boolean shouldStateUpdateInvalidateItemAccess(BlockState oldState, BlockState newState) {
-        return oldState.get(AbstractChestBlock.CURSED_CHEST_TYPE) != newState.get(AbstractChestBlock.CURSED_CHEST_TYPE);
+    public void invalidateDoubleBlockCache() {
+        cachedDoubleInventory = null;
+        this.getItemAccess().setOther(null);
     }
+
+    public void setCachedDoubleInventory(OldChestBlockEntity other) {
+        this.cachedDoubleInventory = VariableSidedInventory.of(this.getInventory(), other.getInventory());
+    }
+
+    public SidedInventory getCachedDoubleInventory() {
+        return cachedDoubleInventory;
+    }
+
+    @Override
+    public DoubleItemAccess getItemAccess() {
+        return (DoubleItemAccess) super.getItemAccess();
+    }
+
 }

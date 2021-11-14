@@ -24,7 +24,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.fabricmc.fabric.api.tag.TagFactory;
-import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
@@ -32,20 +31,17 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.SemanticVersion;
 import net.fabricmc.loader.api.VersionParsingException;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
@@ -61,7 +57,8 @@ import ninjaphenix.expandedstorage.block.entity.MiniChestBlockEntity;
 import ninjaphenix.expandedstorage.block.entity.OldChestBlockEntity;
 import ninjaphenix.expandedstorage.block.entity.extendable.StrategyBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.BasicLockable;
-import ninjaphenix.expandedstorage.block.strategies.ItemAccess;
+import ninjaphenix.expandedstorage.block.misc.CursedChestType;
+import ninjaphenix.expandedstorage.block.misc.DoubleItemAccess;
 import ninjaphenix.expandedstorage.client.ChestBlockEntityRenderer;
 import ninjaphenix.expandedstorage.compat.carrier.CarrierCompat;
 import ninjaphenix.expandedstorage.compat.htm.HTMLockable;
@@ -71,85 +68,7 @@ import org.jetbrains.annotations.Nullable;
 public final class Main implements ModInitializer {
     @Override
     public void onInitialize() {
-        //noinspection UnstableApiUsage
-        Common.setSharedStrategies((entity) -> new ItemAccess() {
-            private InventoryStorage storage = null;
-
-            @Override
-            public Object get() {
-                if (storage == null) {
-                    DefaultedList<ItemStack> items = entity.getItems();
-                    Inventory wrapped = entity.getInventory();
-                    Inventory transferApiInventory = new Inventory() {
-                        @Override
-                        public int size() {
-                            return wrapped.size();
-                        }
-
-                        @Override
-                        public boolean isEmpty() {
-                            return wrapped.isEmpty();
-                        }
-
-                        @Override
-                        public ItemStack getStack(int slot) {
-                            return wrapped.getStack(slot);
-                        }
-
-                        @Override
-                        public ItemStack removeStack(int slot, int amount) {
-                            return Inventories.splitStack(items, slot, amount);
-                        }
-
-                        @Override
-                        public ItemStack removeStack(int slot) {
-                            return wrapped.removeStack(slot);
-                        }
-
-                        @Override
-                        public void setStack(int slot, ItemStack stack) {
-                            items.set(slot, stack);
-                            if (stack.getCount() > this.getMaxCountPerStack()) {
-                                stack.setCount(this.getMaxCountPerStack());
-                            }
-                        }
-
-                        @Override
-                        public void markDirty() {
-                            wrapped.markDirty();
-                        }
-
-                        @Override
-                        public boolean canPlayerUse(PlayerEntity player) {
-                            return wrapped.canPlayerUse(player);
-                        }
-
-                        @Override
-                        public void clear() {
-                            wrapped.clear();
-                        }
-
-                        @Override
-                        public void onOpen(PlayerEntity player) {
-                            wrapped.onOpen(player);
-                        }
-
-                        @Override
-                        public void onClose(PlayerEntity player) {
-                            wrapped.onClose(player);
-                        }
-                    };
-                    //noinspection UnstableApiUsage
-                    storage = InventoryStorage.of(transferApiInventory, null);
-                }
-                return storage;
-            }
-
-            @Override
-            public void invalidate() {
-                storage = null;
-            }
-        }, (entity) -> FabricLoader.getInstance().isModLoaded("htm") ? new HTMLockable() : new BasicLockable());
+        Common.setSharedStrategies(GenericItemAccess::new, (entity) -> FabricLoader.getInstance().isModLoaded("htm") ? new HTMLockable() : new BasicLockable());
         FabricItemGroupBuilder.build(new Identifier("dummy"), null); // Fabric API is dumb.
         ItemGroup group = new ItemGroup(ItemGroup.GROUPS.length - 1, Utils.MOD_ID) {
             @Override
@@ -159,7 +78,7 @@ public final class Main implements ModInitializer {
         };
         Common.registerContent(group, FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT,
                 Main::baseRegistration, true,
-                Main::chestRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new,
+                Main::chestRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new, ChestItemAccess::new,
                 Main::oldChestRegistration,
                 Main::barrelRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_barrels")),
                 Main::miniChestRegistration);
@@ -181,7 +100,28 @@ public final class Main implements ModInitializer {
 
     @SuppressWarnings({"UnstableApiUsage"})
     private static Storage<ItemVariant> getItemAccess(World world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Direction context) {
-        if (blockEntity instanceof StrategyBlockEntity entity) {
+        if (blockEntity instanceof OldChestBlockEntity entity) {
+            DoubleItemAccess access = entity.getItemAccess();
+            if (access.hasCachedAccess() || state.get(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
+                //noinspection unchecked
+                return (Storage<ItemVariant>) access.get();
+            }
+            if (world.getBlockEntity(pos.offset(AbstractChestBlock.getDirectionToAttached(state))) instanceof OldChestBlockEntity otherEntity) {
+                DoubleItemAccess first, second;
+                if (AbstractChestBlock.getBlockType(state) == DoubleBlockProperties.Type.FIRST) {
+                    first = entity.getItemAccess();
+                    second = otherEntity.getItemAccess();
+                } else {
+                    first = otherEntity.getItemAccess();
+                    second = entity.getItemAccess();
+                }
+                first.setOther(second);
+                //noinspection unchecked
+                return (Storage<ItemVariant>) first.get();
+            }
+
+        }
+        else if (blockEntity instanceof StrategyBlockEntity entity) {
             //noinspection unchecked
             return (Storage<ItemVariant>) entity.getItemAccess().get();
         }

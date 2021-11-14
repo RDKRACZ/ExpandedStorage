@@ -417,7 +417,7 @@ public final class Common {
 
     public static void registerContent(ItemGroup group, boolean isClient,
                                        Consumer<Pair<Identifier, Item>[]> baseRegistration, boolean manuallyWrapTooltips,
-                                       RegistrationConsumer<ChestBlock, BlockItem, ChestBlockEntity> chestRegistration, Tag.Identified<Block> chestTag, BiFunction<ChestBlock, Item.Settings, BlockItem> chestItemMaker,
+                                       RegistrationConsumer<ChestBlock, BlockItem, ChestBlockEntity> chestRegistration, Tag.Identified<Block> chestTag, BiFunction<ChestBlock, Item.Settings, BlockItem> chestItemMaker, Function<OpenableBlockEntity, ItemAccess> chestAccessMaker,
                                        RegistrationConsumer<AbstractChestBlock, BlockItem, OldChestBlockEntity> oldChestRegistration,
                                        RegistrationConsumer<BarrelBlock, BlockItem, BarrelBlockEntity> barrelRegistration, Tag.Identified<Block> barrelTag,
                                        RegistrationConsumer<MiniChestBlock, BlockItem, MiniChestBlockEntity> miniChestRegistration) {
@@ -463,7 +463,7 @@ public final class Common {
         );
         if (isClient) Common.registerChestTextures(chestContent.getBlocks());
         // Init block entity type
-        Common.chestBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new ChestBlockEntity(Common.getChestBlockEntityType(), pos, state, ((ChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable), chestContent.getBlocks()).build(null);
+        Common.chestBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new ChestBlockEntity(Common.getChestBlockEntityType(), pos, state, ((ChestBlock) state.getBlock()).getBlockId(), chestAccessMaker, Common.lockable), chestContent.getBlocks()).build(null);
         chestRegistration.accept(chestContent, Common.chestBlockEntityType);
         // Register chest upgrade behaviours
         Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof ChestBlock || block instanceof net.minecraft.block.ChestBlock || chestTag.contains(block);
@@ -480,7 +480,7 @@ public final class Common {
                 Common.oldChestBlock(Utils.id("old_netherite_chest"), Common.stat("open_old_netherite_chest"), netheriteTier, netheriteSettings, group)
         );
         // Init block entity type
-        Common.oldChestBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new OldChestBlockEntity(Common.getOldChestBlockEntityType(), pos, state, ((AbstractChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable), oldChestContent.getBlocks()).build(null);
+        Common.oldChestBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new OldChestBlockEntity(Common.getOldChestBlockEntityType(), pos, state, ((AbstractChestBlock) state.getBlock()).getBlockId(), chestAccessMaker, Common.lockable), oldChestContent.getBlocks()).build(null);
         oldChestRegistration.accept(oldChestContent, Common.oldChestBlockEntityType);
         // Register upgrade behaviours
         Predicate<Block> isUpgradableOldChestBlock = (block) -> block.getClass() == AbstractChestBlock.class;

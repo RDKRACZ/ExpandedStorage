@@ -43,7 +43,6 @@ import ninjaphenix.expandedstorage.block.entity.OldChestBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.block.misc.Property;
 import ninjaphenix.expandedstorage.block.misc.PropertyRetriever;
-import ninjaphenix.expandedstorage.block.strategies.Nameable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -260,9 +259,7 @@ public class AbstractChestBlock extends OpenableBlock implements InventoryProvid
         return AbstractChestBlock.createPropertyRetriever(this, state, world, pos, false).get(new Property<OldChestBlockEntity, OpenableBlockEntityV2>() {
             @Override
             public OpenableBlockEntityV2 get(OldChestBlockEntity first, OldChestBlockEntity second) {
-                Nameable firstName = first.getNameable();
-                Nameable secondName = second.getNameable();
-                Text name = firstName.isCustom() ? firstName.get() : secondName.isCustom() ? secondName.get() : Utils.translation("container.expandedstorage.generic_double", firstName.get());
+                Text name = first.hasCustomName() ? first.getName() : second.hasCustomName() ? second.getName() : Utils.translation("container.expandedstorage.generic_double", first.getName());
                 return new OpenableBlockEntitiesV2(name, first, second);
             }
 
@@ -285,7 +282,7 @@ public class AbstractChestBlock extends OpenableBlock implements InventoryProvid
                     }
                 }
                 world.updateComparators(pos, newState.getBlock());
-            } else if(oldChestType == CursedChestType.SINGLE && newChestType != CursedChestType.SINGLE) {
+            } else if (oldChestType == CursedChestType.SINGLE && newChestType != CursedChestType.SINGLE) {
                 BlockPos otherPos = pos.offset(AbstractChestBlock.getDirectionToAttached(newState));
                 world.updateComparators(otherPos, world.getBlockState(otherPos).getBlock());
             }

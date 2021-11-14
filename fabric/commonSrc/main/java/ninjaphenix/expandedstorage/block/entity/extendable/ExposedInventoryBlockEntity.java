@@ -22,6 +22,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -29,8 +30,8 @@ import net.minecraft.util.math.BlockPos;
 public abstract class ExposedInventoryBlockEntity extends OpenableBlockEntity implements Inventory {
     private final DefaultedList<ItemStack> items;
 
-    public ExposedInventoryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId, int inventorySize) {
-        super(type, pos, state, blockId);
+    public ExposedInventoryBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId, Text defaultName, int inventorySize) {
+        super(type, pos, state, blockId, defaultName);
         items = DefaultedList.ofSize(inventorySize, ItemStack.EMPTY);
     }
 

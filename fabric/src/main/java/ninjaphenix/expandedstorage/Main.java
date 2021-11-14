@@ -55,7 +55,7 @@ import ninjaphenix.expandedstorage.block.entity.BarrelBlockEntity;
 import ninjaphenix.expandedstorage.block.entity.ChestBlockEntity;
 import ninjaphenix.expandedstorage.block.entity.MiniChestBlockEntity;
 import ninjaphenix.expandedstorage.block.entity.OldChestBlockEntity;
-import ninjaphenix.expandedstorage.block.entity.extendable.StrategyBlockEntity;
+import ninjaphenix.expandedstorage.block.entity.extendable.OpenableBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.BasicLockable;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.block.misc.DoubleItemAccess;
@@ -116,7 +116,7 @@ public final class Main implements ModInitializer {
             }
 
         }
-        else if (blockEntity instanceof StrategyBlockEntity entity) {
+        else if (blockEntity instanceof OpenableBlockEntity entity) {
             //noinspection unchecked
             return (Storage<ItemVariant>) entity.getItemAccess().get();
         }

@@ -2,12 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "GGG",
-    "IBI",
+    "DBD",
     "GGG"
   ],
   "key": {
-    "I": {
-      "item": "minecraft:diamond"
+    "D": {
+      "tag": "forge:gems/diamond"
     },
     "B": {
       "item": "expandedstorage:gold_barrel"

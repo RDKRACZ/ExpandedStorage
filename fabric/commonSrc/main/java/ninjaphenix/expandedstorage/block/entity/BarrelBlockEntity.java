@@ -35,7 +35,6 @@ import ninjaphenix.expandedstorage.block.entity.extendable.ExposedInventoryBlock
 import ninjaphenix.expandedstorage.block.entity.extendable.OpenableBlockEntity;
 import ninjaphenix.expandedstorage.block.strategies.ItemAccess;
 import ninjaphenix.expandedstorage.block.strategies.Lockable;
-import ninjaphenix.expandedstorage.block.misc.MutableNameable;
 
 import java.util.function.Function;
 
@@ -66,10 +65,9 @@ public final class BarrelBlockEntity extends ExposedInventoryBlockEntity {
 
     public BarrelBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId,
                              Function<OpenableBlockEntity, ItemAccess> access, Function<OpenableBlockEntity, Lockable> lockable) {
-        super(type, pos, state, blockId, ((OpenableBlock) state.getBlock()).getSlotCount());
+        super(type, pos, state, blockId, ((OpenableBlock) state.getBlock()).getInventoryTitle(), ((OpenableBlock) state.getBlock()).getSlotCount());
         this.setItemAccess(access.apply(this));
         this.setLockable(lockable.apply(this));
-        this.setNameable(new MutableNameable(((OpenableBlock) state.getBlock()).getInventoryTitle()));
     }
 
     private static void playSound(World world, BlockState state, BlockPos pos, SoundEvent sound) {

@@ -10,10 +10,10 @@
       "item": "minecraft:spruce_sapling"
     },
     "R": {
-      "item": "minecraft:red_dye"
+      "tag": "forge:dyes/red"
     },
     "W": {
-      "item": "minecraft:white_dye"
+      "tag": "forge:dyes/white"
     },
     "B": {
       "item": "minecraft:sweet_berries"

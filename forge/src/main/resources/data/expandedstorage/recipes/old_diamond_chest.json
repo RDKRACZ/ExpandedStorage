@@ -2,12 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "GGG",
-    "ICI",
+    "DCD",
     "GGG"
   ],
   "key": {
-    "I": {
-      "item": "minecraft:diamond"
+    "D": {
+      "tag": "forge:gems/diamond"
     },
     "C": {
       "item": "expandedstorage:old_gold_chest"

@@ -22,7 +22,7 @@ import net.minecraft.util.Identifier;
 import java.util.function.UnaryOperator;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class Tier {
+public final class Tier {
     private final Identifier id;
     private final UnaryOperator<Item.Settings> itemSettings;
     private final UnaryOperator<AbstractBlock.Settings> blockSettings;
@@ -35,11 +35,11 @@ public class Tier {
         this.itemSettings = itemSettings;
     }
 
-    public final Identifier getId() {
+    public Identifier getId() {
         return id;
     }
 
-    public final UnaryOperator<Item.Settings> getItemSettings() {
+    public UnaryOperator<Item.Settings> getItemSettings() {
         return itemSettings;
     }
 
@@ -47,7 +47,7 @@ public class Tier {
         return blockSettings;
     }
 
-    public final int getSlotCount() {
+    public int getSlotCount() {
         return slots;
     }
 }

@@ -10,7 +10,7 @@
       "item": "expandedstorage:iron_to_gold_conversion_kit"
     },
     "D": {
-      "item": "minecraft:diamond"
+      "tag": "forge:gems/diamond"
     },
     "G": {
       "tag": "forge:glass"

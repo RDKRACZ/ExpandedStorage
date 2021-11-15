@@ -3,7 +3,7 @@
   "pattern": ["GGG", "DCD", "GGG"],
   "key": {
     "D": {
-      "item": "minecraft:diamond"
+      "tag": "c:diamonds"
     },
     "C": {
       "item": "expandedstorage:old_gold_chest"

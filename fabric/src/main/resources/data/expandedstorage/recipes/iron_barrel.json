@@ -3,7 +3,7 @@
   "pattern": ["III", "IBI", "III"],
   "key": {
     "I": {
-      "item": "minecraft:iron_ingot"
+      "tag": "c:iron_ingots"
     },
     "B": {
       "tag": "c:wooden_barrels"

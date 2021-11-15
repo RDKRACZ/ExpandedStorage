@@ -15,9 +15,12 @@
  */
 package ninjaphenix.expandedstorage.block.entity.extendable;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -25,10 +28,21 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import ninjaphenix.container_library.api.v2.OpenableBlockEntityV2;
+import ninjaphenix.expandedstorage.block.strategies.ItemAccess;
+import ninjaphenix.expandedstorage.block.strategies.Lockable;
 
-public abstract class OpenableBlockEntity extends StrategyBlockEntity implements OpenableBlockEntityV2 {
-    public OpenableBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId) {
-        super(type, pos, state, blockId);
+public abstract class OpenableBlockEntity extends BlockEntity implements OpenableBlockEntityV2 {
+    private final Identifier blockId;
+    private final Text defaultName;
+    private ItemAccess itemAccess;
+    private Lockable lockable;
+    private Text customName;
+
+    public OpenableBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId, Text defaultName) {
+        super(type, pos, state);
+        this.blockId = blockId;
+        this.defaultName = defaultName;
+        this.initialise(blockId, state.getBlock());
     }
 
     @Override
@@ -41,8 +55,57 @@ public abstract class OpenableBlockEntity extends StrategyBlockEntity implements
 
     @Override
     public Text getInventoryTitle() {
-        return this.getNameable().get();
+        return this.getName();
     }
 
     public abstract DefaultedList<ItemStack> getItems();
+
+    @Override
+    public void readNbt(NbtCompound tag) {
+        super.readNbt(tag);
+        lockable.readLock(tag);
+    }
+
+    @Override
+    public NbtCompound writeNbt(NbtCompound tag) {
+        super.writeNbt(tag);
+        lockable.writeLock(tag);
+        return tag;
+    }
+
+    protected void initialise(Identifier blockId, Block block) {
+
+    }
+
+    public final Identifier getBlockId() {
+        return blockId;
+    }
+
+    public ItemAccess getItemAccess() {
+        return itemAccess;
+    }
+
+    protected void setItemAccess(ItemAccess itemAccess) {
+        if (this.itemAccess == null) this.itemAccess = itemAccess;
+    }
+
+    public Lockable getLockable() {
+        return lockable;
+    }
+
+    protected void setLockable(Lockable lockable) {
+        if (this.lockable == null) this.lockable = lockable;
+    }
+
+    public final boolean hasCustomName() {
+        return customName != null;
+    }
+
+    public final void setCustomName(Text name) {
+        customName = name;
+    }
+
+    public final Text getName() {
+        return hasCustomName() ? customName : defaultName;
+    }
 }

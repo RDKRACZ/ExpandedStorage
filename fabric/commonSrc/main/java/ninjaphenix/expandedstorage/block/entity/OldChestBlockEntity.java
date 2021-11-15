@@ -28,7 +28,6 @@ import ninjaphenix.expandedstorage.block.entity.extendable.OpenableBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.DoubleItemAccess;
 import ninjaphenix.expandedstorage.block.strategies.ItemAccess;
 import ninjaphenix.expandedstorage.block.strategies.Lockable;
-import ninjaphenix.expandedstorage.block.misc.MutableNameable;
 
 import java.util.function.Function;
 
@@ -36,10 +35,9 @@ public class OldChestBlockEntity extends InventoryBlockEntity {
     SidedInventory cachedDoubleInventory = null;
     public OldChestBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, Identifier blockId,
                                Function<OpenableBlockEntity, ItemAccess> access, Function<OpenableBlockEntity, Lockable> lockable) {
-        super(type, pos, state, blockId, ((AbstractChestBlock) state.getBlock()).getSlotCount());
+        super(type, pos, state, blockId, ((OpenableBlock) state.getBlock()).getInventoryTitle(), ((AbstractChestBlock) state.getBlock()).getSlotCount());
         this.setItemAccess(access.apply(this));
         this.setLockable(lockable.apply(this));
-        this.setNameable(new MutableNameable(((OpenableBlock) state.getBlock()).getInventoryTitle()));
     }
 
     public void invalidateDoubleBlockCache() {

@@ -3,10 +3,10 @@
   "pattern": ["GGG", "DID", "GGG"],
   "key": {
     "I": {
-      "item": "minecraft:gold_ingot"
+      "tag": "c:gold_ingots"
     },
     "D": {
-      "item": "minecraft:diamond"
+      "tag": "c:diamonds"
     },
     "G": {
       "tag": "c:glass_blocks"

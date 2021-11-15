@@ -15,7 +15,6 @@
  */
 package ninjaphenix.expandedstorage.block.entity.extendable;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -42,7 +41,6 @@ public abstract class OpenableBlockEntity extends BlockEntity implements Openabl
         super(type, pos, state);
         this.blockId = blockId;
         this.defaultName = defaultName;
-        this.initialise(blockId, state.getBlock());
     }
 
     @Override
@@ -71,10 +69,6 @@ public abstract class OpenableBlockEntity extends BlockEntity implements Openabl
         super.writeNbt(tag);
         lockable.writeLock(tag);
         return tag;
-    }
-
-    protected void initialise(Identifier blockId, Block block) {
-
     }
 
     public final Identifier getBlockId() {

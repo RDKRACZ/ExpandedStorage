@@ -24,7 +24,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -40,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class StorageMutator extends Item {
+public final class StorageMutator extends Item {
     public StorageMutator(Item.Settings settings) {
         super(settings);
     }
@@ -60,9 +59,14 @@ public class StorageMutator extends Item {
         BlockPos pos = context.getBlockPos();
         BlockState state = world.getBlockState(pos);
         MutatorBehaviour behaviour = Common.getMutatorBehaviour(state.getBlock(), StorageMutator.getMode(stack));
-        if (behaviour != null)
-            return behaviour.attempt(context, world, state, pos, stack);
-
+        if (behaviour != null) {
+            ActionResult returnValue = behaviour.attempt(context, world, state, pos, stack);
+            if (returnValue.shouldSwingHand()) {
+                //noinspection ConstantConditions
+                context.getPlayer().getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
+            }
+            return returnValue;
+        }
         return ActionResult.FAIL;
     }
 
@@ -105,11 +109,6 @@ public class StorageMutator extends Item {
         }
     }
 
-    private MutableText getToolModeText(MutationMode mode) {
-        return new TranslatableText("tooltip.expandedstorage.storage_mutator.tool_mode",
-                new TranslatableText("tooltip.expandedstorage.storage_mutator." + mode));
-    }
-
     @Override
     protected String getOrCreateTranslationKey() {
         return "item.expandedstorage.storage_mutator";
@@ -118,7 +117,7 @@ public class StorageMutator extends Item {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext context) {
         MutationMode mode = StorageMutator.getMode(stack);
-        list.add(this.getToolModeText(mode).formatted(Formatting.GRAY));
+        list.add(new TranslatableText("tooltip.expandedstorage.storage_mutator.tool_mode", new TranslatableText("tooltip.expandedstorage.storage_mutator." + mode)).formatted(Formatting.GRAY));
         list.add(Utils.translation("tooltip.expandedstorage.storage_mutator.description_" + mode, Utils.ALT_USE).formatted(Formatting.GRAY));
     }
 }

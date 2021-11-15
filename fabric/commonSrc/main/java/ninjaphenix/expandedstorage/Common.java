@@ -36,14 +36,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.Tag;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import ninjaphenix.expandedstorage.block.AbstractChestBlock;
@@ -533,6 +538,90 @@ public final class Common {
         // Init block entity type
         Common.miniChestBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new MiniChestBlockEntity(Common.getMiniChestBlockEntityType(), pos, state, ((MiniChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable), miniChestContent.getBlocks()).build(null);
         miniChestRegistration.accept(miniChestContent, Common.miniChestBlockEntityType);
+        //</editor-fold>
+        //<editor-fold desc="-- Storage mutator logic">
+        Predicate<Block> isChestBlock = b -> b instanceof AbstractChestBlock;
+        Common.registerMutationBehaviour(isChestBlock, MutationMode.MERGE, (context, world, state, pos, stack) -> {
+            PlayerEntity player = context.getPlayer();
+            if (state.get(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
+                NbtCompound tag = stack.getOrCreateNbt();
+                if (tag.contains("pos")) {
+                    BlockPos otherPos = NbtHelper.toBlockPos(tag.getCompound("pos"));
+                    BlockState otherState = world.getBlockState(otherPos);
+                    Direction direction = Direction.fromVector(otherPos.subtract(pos));
+                    if (direction != null) {
+                        if (state.getBlock() == otherState.getBlock()) {
+                            if (otherState.get(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
+                                if (state.get(Properties.HORIZONTAL_FACING) == otherState.get(Properties.HORIZONTAL_FACING)) {
+                                    if (!world.isClient()) {
+                                        CursedChestType chestType = AbstractChestBlock.getChestType(state.get(Properties.HORIZONTAL_FACING), direction);
+                                        world.setBlockState(pos, state.with(AbstractChestBlock.CURSED_CHEST_TYPE, chestType));
+                                        // note: other state is updated via neighbour update
+                                        tag.remove("pos");
+                                        //noinspection ConstantConditions
+                                        player.sendMessage(new TranslatableText("tooltip.expandedstorage.storage_mutator.merge_end"), true);
+                                    }
+                                    return ActionResult.SUCCESS;
+                                } else {
+                                    //noinspection ConstantConditions
+                                    player.sendMessage(new TranslatableText("tooltip.expandedstorage.storage_mutator.merge_wrong_facing"), true);
+                                }
+                            } else {
+                                //noinspection ConstantConditions
+                                player.sendMessage(new TranslatableText("tooltip.expandedstorage.storage_mutator.merge_already_double_chest"), true);
+                            }
+                        } else {
+                            //noinspection ConstantConditions
+                            player.sendMessage(new TranslatableText("tooltip.expandedstorage.storage_mutator.merge_wrong_block", state.getBlock().getName()), true);
+                        }
+                    } else {
+                        //noinspection ConstantConditions
+                        player.sendMessage(new TranslatableText("tooltip.expandedstorage.storage_mutator.merge_not_adjacent"), true);
+                    }
+                } else {
+                    if (!world.isClient()) {
+                        tag.put("pos", NbtHelper.fromBlockPos(pos));
+                        //noinspection ConstantConditions
+                        player.sendMessage(new TranslatableText("tooltip.expandedstorage.storage_mutator.merge_start", Utils.ALT_USE), true);
+                    }
+                    return ActionResult.SUCCESS;
+                }
+            }
+            return ActionResult.FAIL;
+        });
+        Common.registerMutationBehaviour(isChestBlock, MutationMode.SPLIT, (context, world, state, pos, stack) -> {
+            if (state.get(AbstractChestBlock.CURSED_CHEST_TYPE) != CursedChestType.SINGLE) {
+                if (!world.isClient()) {
+                    world.setBlockState(pos, state.with(AbstractChestBlock.CURSED_CHEST_TYPE, CursedChestType.SINGLE));
+                    // note: other state is updated to single via neighbour update
+                }
+                return ActionResult.SUCCESS;
+            }
+            return ActionResult.FAIL;
+        });
+        Common.registerMutationBehaviour(isChestBlock, MutationMode.ROTATE, (context, world, state, pos, stack) -> {
+            if (!world.isClient()) {
+                CursedChestType chestType = state.get(AbstractChestBlock.CURSED_CHEST_TYPE);
+                if (chestType == CursedChestType.SINGLE) {
+                    world.setBlockState(pos, state.rotate(BlockRotation.CLOCKWISE_90));
+                } else {
+                    BlockPos otherPos = pos.offset(AbstractChestBlock.getDirectionToAttached(state));
+                    BlockState otherState = world.getBlockState(otherPos);
+                    if (chestType == CursedChestType.TOP || chestType == CursedChestType.BOTTOM) {
+                        world.setBlockState(pos, state.rotate(BlockRotation.CLOCKWISE_90));
+                        world.setBlockState(otherPos, otherState.rotate(BlockRotation.CLOCKWISE_90));
+                    } else {
+                        world.setBlockState(pos, state.rotate(BlockRotation.CLOCKWISE_180).with(AbstractChestBlock.CURSED_CHEST_TYPE, state.get(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
+                        world.setBlockState(otherPos, otherState.rotate(BlockRotation.CLOCKWISE_180).with(AbstractChestBlock.CURSED_CHEST_TYPE, otherState.get(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
+                    }
+                }
+            }
+            return ActionResult.SUCCESS;
+        });
+        Common.registerMutationBehaviour(b -> b instanceof ChestBlock, MutationMode.SWAP_THEME, (context, world, state, pos, stack) -> {
+            // todo: cycle between wood, pumpkin and christmas variants
+            return ActionResult.FAIL;
+        });
         //</editor-fold>
     }
 }

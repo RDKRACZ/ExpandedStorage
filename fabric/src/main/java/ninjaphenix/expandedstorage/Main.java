@@ -81,7 +81,8 @@ public final class Main implements ModInitializer {
                 Main::chestRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_chests")), BlockItem::new, ChestItemAccess::new,
                 Main::oldChestRegistration,
                 Main::barrelRegistration, TagFactory.BLOCK.create(new Identifier("c", "wooden_barrels")),
-                Main::miniChestRegistration);
+                Main::miniChestRegistration,
+                TagFactory.BLOCK.create(Utils.id("chest_cycle")), TagFactory.BLOCK.create(Utils.id("mini_chest_cycle")), TagFactory.BLOCK.create(Utils.id("mini_chest_secret_cycle")), TagFactory.BLOCK.create(Utils.id("mini_chest_secret_cycle_2")));
     }
 
     private static boolean shouldEnableCarrierCompat() {

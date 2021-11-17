@@ -74,8 +74,10 @@ import ninjaphenix.expandedstorage.registration.BlockItemCollection;
 import ninjaphenix.expandedstorage.registration.BlockItemPair;
 import ninjaphenix.expandedstorage.registration.RegistrationConsumer;
 import ninjaphenix.expandedstorage.tier.Tier;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -425,7 +427,8 @@ public final class Common {
                                        RegistrationConsumer<ChestBlock, BlockItem, ChestBlockEntity> chestRegistration, Tag.Identified<Block> chestTag, BiFunction<ChestBlock, Item.Settings, BlockItem> chestItemMaker, Function<OpenableBlockEntity, ItemAccess> chestAccessMaker,
                                        RegistrationConsumer<AbstractChestBlock, BlockItem, OldChestBlockEntity> oldChestRegistration,
                                        RegistrationConsumer<BarrelBlock, BlockItem, BarrelBlockEntity> barrelRegistration, Tag.Identified<Block> barrelTag,
-                                       RegistrationConsumer<MiniChestBlock, BlockItem, MiniChestBlockEntity> miniChestRegistration) {
+                                       RegistrationConsumer<MiniChestBlock, BlockItem, MiniChestBlockEntity> miniChestRegistration,
+                                       Tag.Identified<Block> chestCycle, Tag.Identified<Block> miniChestCycle, Tag.Identified<Block> miniChestSecretCycle, Tag.Identified<Block> miniChestSecretCycle2) {
         final Tier woodTier = new Tier(Utils.WOOD_TIER_ID, Utils.WOOD_STACK_COUNT, UnaryOperator.identity(), UnaryOperator.identity());
         final Tier ironTier = new Tier(Utils.id("iron"), 54, Settings::requiresTool, UnaryOperator.identity());
         final Tier goldTier = new Tier(Utils.id("gold"), 81, Settings::requiresTool, UnaryOperator.identity());
@@ -619,7 +622,60 @@ public final class Common {
             return ActionResult.SUCCESS;
         });
         Common.registerMutationBehaviour(b -> b instanceof ChestBlock, MutationMode.SWAP_THEME, (context, world, state, pos, stack) -> {
-            // todo: cycle between wood, pumpkin and christmas variants
+            List<Block> blocks = chestCycle.values();
+            int index = blocks.indexOf(state.getBlock());
+            if (index != -1) { // Cannot change style e.g. iron chest, ect.
+                Block next = blocks.get((index + 1) % blocks.size());
+                CursedChestType chestType = state.get(AbstractChestBlock.CURSED_CHEST_TYPE);
+                if (chestType != CursedChestType.SINGLE) {
+                    BlockPos otherPos = pos.offset(AbstractChestBlock.getDirectionToAttached(state));
+                    BlockState otherState = world.getBlockState(otherPos);
+                    world.setBlockState(otherPos, next.getDefaultState()
+                                                      .with(Properties.HORIZONTAL_FACING, otherState.get(Properties.HORIZONTAL_FACING))
+                                                      .with(Properties.WATERLOGGED, otherState.get(Properties.WATERLOGGED))
+                            .with(AbstractChestBlock.CURSED_CHEST_TYPE, chestType.getOpposite()), Block.SKIP_LIGHTING_UPDATES | Block.NOTIFY_LISTENERS);
+                }
+                world.setBlockState(pos, next.getDefaultState()
+                                             .with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING))
+                                             .with(Properties.WATERLOGGED, state.get(Properties.WATERLOGGED))
+                                             .with(AbstractChestBlock.CURSED_CHEST_TYPE, chestType), Block.SKIP_LIGHTING_UPDATES | Block.NOTIFY_LISTENERS);
+                return ActionResult.SUCCESS;
+            }
+            return ActionResult.FAIL;
+        });
+        Predicate<Block> isBarrelBlock = b -> b instanceof BarrelBlock || b instanceof net.minecraft.block.BarrelBlock || barrelTag.contains(b);
+        Common.registerMutationBehaviour(isBarrelBlock, MutationMode.ROTATE, (context, world, state, pos, stack) -> {
+            if (state.contains(Properties.FACING)) {
+                if (!world.isClient()) {
+                    world.setBlockState(pos, state.cycle(Properties.FACING));
+                }
+                return ActionResult.SUCCESS;
+            }
+            return ActionResult.FAIL;
+        });
+        Predicate<Block> isMiniChest = b -> b instanceof MiniChestBlock;
+        Common.registerMutationBehaviour(isMiniChest, MutationMode.ROTATE, (context, world, state, pos, stack) -> {
+            if (!world.isClient()) {
+                world.setBlockState(pos, state.rotate(BlockRotation.CLOCKWISE_90));
+            }
+            return ActionResult.SUCCESS;
+        });
+        Common.registerMutationBehaviour(isMiniChest, MutationMode.SWAP_THEME, (context, world, state, pos, stack) -> {
+            String nameHash = DigestUtils.md5Hex(stack.getName().asString());
+            List<Block> blocks;
+            if (nameHash.equals("4c88924788f419b562d50acfddc3a781")) {
+                blocks = miniChestSecretCycle.values();
+            } else if (nameHash.equals("")) {
+                blocks = miniChestSecretCycle2.values();
+            } else {
+                blocks = miniChestCycle.values();
+            }
+            int index = blocks.indexOf(state.getBlock());
+            if (index != -1) { // Illegal state / misconfigured tag
+                Block next = blocks.get((index + 1) % blocks.size());
+                world.setBlockState(pos, next.getDefaultState().with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING)).with(Properties.WATERLOGGED, state.get(Properties.WATERLOGGED)));
+                return ActionResult.SUCCESS;
+            }
             return ActionResult.FAIL;
         });
         //</editor-fold>

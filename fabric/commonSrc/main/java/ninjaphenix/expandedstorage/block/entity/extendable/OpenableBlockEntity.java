@@ -20,6 +20,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -62,12 +63,18 @@ public abstract class OpenableBlockEntity extends BlockEntity implements Openabl
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
         lockable.readLock(tag);
+        if (tag.contains("CustomName", NbtElement.STRING_TYPE)) {
+            customName = Text.Serializer.fromJson(tag.getString("CustomName"));
+        }
     }
 
     @Override
     public void writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
         lockable.writeLock(tag);
+        if (this.hasCustomName()) {
+            tag.putString("CustomName", Text.Serializer.toJson(customName));
+        }
     }
 
     public final Identifier getBlockId() {
@@ -99,6 +106,6 @@ public abstract class OpenableBlockEntity extends BlockEntity implements Openabl
     }
 
     public final Text getName() {
-        return hasCustomName() ? customName : defaultName;
+        return this.hasCustomName() ? customName : defaultName;
     }
 }

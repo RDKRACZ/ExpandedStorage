@@ -21,6 +21,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -69,12 +70,20 @@ public abstract class OpenableBlock extends Block implements OpenableBlockEntity
     @Override
     @SuppressWarnings("deprecation")
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean bl) {
-        if (!state.isOf(newState.getBlock())) {
+        if (state.getBlock().getClass() != newState.getBlock().getClass()) {
             if (world.getBlockEntity(pos) instanceof OpenableBlockEntity entity) {
                 ItemScatterer.spawn(world, pos, entity.getItems());
                 world.updateComparators(pos, this);
             }
             super.onStateReplaced(state, world, pos, newState, bl);
+        } else {
+            if (world.getBlockEntity(pos) instanceof OpenableBlockEntity entity) {
+                NbtCompound tag = entity.writeNbt(new NbtCompound());
+                world.removeBlockEntity(pos);
+                if (world.getBlockEntity(pos) instanceof OpenableBlockEntity newEntity) {
+                    newEntity.readNbt(tag);
+                }
+            }
         }
     }
 

@@ -91,11 +91,6 @@ tasks.withType<ProcessResources> {
     }
 }
 
-tasks.register<net.fabricmc.loom.task.MigrateMappingsTask>("updateForgeSources") {
-    setInputDir(rootDir.toPath().resolve("fabric/commonSrc/main/java").toString())
-    setOutputDir(rootDir.toPath().resolve("forge/commonSrc/main/java").toString())
-    setMappings("net.minecraft:mappings:${properties["minecraft_version"]}")
-}
 if (hasProperty("yv")) {
     val updateCommonSources = tasks.register<net.fabricmc.loom.task.MigrateMappingsTask>("updateCommonSources") {
         setInputDir(rootDir.toPath().resolve("fabric/commonSrc/main/java").toString())

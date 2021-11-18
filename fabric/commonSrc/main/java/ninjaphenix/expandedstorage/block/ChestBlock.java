@@ -123,7 +123,7 @@ public final class ChestBlock extends AbstractChestBlock implements Waterloggabl
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> blockEntityType) {
-        return world.isClient() && blockEntityType == Common.getChestBlockEntityType() ? ChestBlockEntity::progressLidAnimation : null;
+        return world.isClient() && blockEntityType == this.getBlockEntityType() ? ChestBlockEntity::progressLidAnimation : null;
     }
 
     @Override

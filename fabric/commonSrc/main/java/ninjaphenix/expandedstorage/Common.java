@@ -374,7 +374,7 @@ public final class Common {
         chestRegistration.accept(chestContent, Common.chestBlockEntityType);
         // Register chest upgrade behaviours
         Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof ChestBlock || block instanceof net.minecraft.block.ChestBlock || chestTag.contains(block);
-        Common.defineBlockUpgradeBehaviour(isUpgradableChestBlock, (context, from1, to1) -> {
+        Common.defineBlockUpgradeBehaviour(isUpgradableChestBlock, (context, from, to) -> {
             World world = context.getWorld();
             BlockPos pos = context.getBlockPos();
             BlockState state = world.getBlockState(pos);
@@ -382,27 +382,27 @@ public final class Common {
             ItemStack handStack = context.getStack();
             if (state.getBlock() instanceof ChestBlock) {
                 if (ChestBlock.getBlockType(state) == DoubleBlockProperties.Type.SINGLE) {
-                    Common.upgradeSingleBlockToChest(world, state, pos, from1, to1);
+                    Common.upgradeSingleBlockToChest(world, state, pos, from, to);
                     handStack.decrement(1);
                     return true;
                 } else if (handStack.getCount() > 1 || (player != null && player.isCreative())) {
                     BlockPos otherPos = pos.offset(ChestBlock.getDirectionToAttached(state));
                     BlockState otherState = world.getBlockState(otherPos);
-                    Common.upgradeSingleBlockToChest(world, state, pos, from1, to1);
-                    Common.upgradeSingleBlockToChest(world, otherState, otherPos, from1, to1);
+                    Common.upgradeSingleBlockToChest(world, state, pos, from, to);
+                    Common.upgradeSingleBlockToChest(world, otherState, otherPos, from, to);
                     handStack.decrement(2);
                     return true;
                 }
             } else {
                 if (net.minecraft.block.ChestBlock.getDoubleBlockType(state) == DoubleBlockProperties.Type.SINGLE) {
-                    Common.upgradeSingleBlockToChest(world, state, pos, from1, to1);
+                    Common.upgradeSingleBlockToChest(world, state, pos, from, to);
                     handStack.decrement(1);
                     return true;
                 } else if (handStack.getCount() > 1 || (player != null && player.isCreative())) {
                     BlockPos otherPos = pos.offset(net.minecraft.block.ChestBlock.getFacing(state));
                     BlockState otherState = world.getBlockState(otherPos);
-                    Common.upgradeSingleBlockToChest(world, state, pos, from1, to1);
-                    Common.upgradeSingleBlockToChest(world, otherState, otherPos, from1, to1);
+                    Common.upgradeSingleBlockToChest(world, state, pos, from, to);
+                    Common.upgradeSingleBlockToChest(world, otherState, otherPos, from, to);
                     handStack.decrement(2);
                     return true;
                 }

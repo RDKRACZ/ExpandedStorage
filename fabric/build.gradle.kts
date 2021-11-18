@@ -61,7 +61,7 @@ dependencies {
     modImplementation(group = "net.fabricmc", name = "fabric-loader", version = properties["fabric_loader_version"] as String)
     implementation(group = "org.jetbrains", name = "annotations", version = properties["jetbrains_annotations_version"] as String)
     modImplementation(group = "net.fabricmc.fabric-api", name = "fabric-api", version = properties["fabric_api_version"] as String)
-    modImplementation(group = "ninjaphenix", name = "container_library", version = "${properties["container_library_version"]}+${properties["minecraft_version"]}", classifier = "fabric") {
+    modImplementation(group = "ninjaphenix", name = "container_library", version = "${properties["container_library_version"]}+${properties["container_library_minecraft_version"]}", classifier = "fabric") {
         isTransitive = false
     }
 

@@ -10,4 +10,4 @@
 - Each half of a double chest now return the same inventory and transfer api storage object.
 - Recipes now use even more common tags, specifically iron, gold, diamond, and netherite
 
-Now for the corny bit, big thanks to the AOF maintainers and community (mainly official eu server) for being so kind and genuinely making me happy.
+Big thanks to the AOF maintainers and community (mainly official eu server) for being so kind and genuinely making me happy.

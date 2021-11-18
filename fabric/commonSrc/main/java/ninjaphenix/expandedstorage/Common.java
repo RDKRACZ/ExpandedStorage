@@ -33,7 +33,6 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
@@ -156,48 +155,6 @@ public final class Common {
         return new BlockItemPair<>(block, item);
     }
 
-    private static boolean tryUpgradeBlockToBarrel(ItemUsageContext context, Identifier from, Identifier to) {
-        World world = context.getWorld();
-        BlockPos pos = context.getBlockPos();
-        BlockState state = world.getBlockState(pos);
-        Block block = state.getBlock();
-        boolean isExpandedStorageBarrel = block instanceof BarrelBlock;
-        int inventorySize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : Common.getTieredBlock(Common.BARREL_BLOCK_TYPE, ((BarrelBlock) block).getBlockTier()).getSlotCount();
-        if (isExpandedStorageBarrel && ((BarrelBlock) block).getBlockTier() == from || !isExpandedStorageBarrel && from == Utils.WOOD_TIER_ID) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            //noinspection ConstantConditions
-            NbtCompound tag = blockEntity.writeNbt(new NbtCompound());
-            boolean verifiedSize = blockEntity instanceof Inventory inventory && inventory.size() == inventorySize;
-            if (!verifiedSize) { // Cannot verify inventory size, we'll let it upgrade if it has or has less than 27 items
-                if (tag.contains("Items", NbtElement.LIST_TYPE)) {
-                    NbtList items = tag.getList("Items", NbtElement.COMPOUND_TYPE);
-                    if (items.size() <= inventorySize) {
-                        verifiedSize = true;
-                    }
-                }
-            }
-            if (verifiedSize) {
-                OpenableBlock toBlock = Common.getTieredBlock(Common.BARREL_BLOCK_TYPE, to);
-                DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
-                ContainerLock code = ContainerLock.fromNbt(tag);
-                Inventories.readNbt(tag, inventory);
-                world.removeBlockEntity(pos);
-                BlockState newState = toBlock.getDefaultState().with(Properties.FACING, state.get(Properties.FACING));
-                if (world.setBlockState(pos, newState)) {
-                    BlockEntity newEntity = world.getBlockEntity(pos);
-                    //noinspection ConstantConditions
-                    NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
-                    Inventories.writeNbt(newTag, inventory);
-                    code.writeNbt(newTag);
-                    newEntity.readNbt(newTag);
-                    context.getStack().decrement(1);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     static Identifier[] getChestTextures(ChestBlock[] blocks) {
         Identifier[] textures = new Identifier[blocks.length * CursedChestType.values().length];
         int index = 0;
@@ -222,43 +179,6 @@ public final class Common {
                     Utils.id("entity/" + blockId.getPath() + "/front"),
                     Utils.id("entity/" + blockId.getPath() + "/back"));
         }
-    }
-
-    private static boolean tryUpgradeBlockToChest(ItemUsageContext context, Identifier from, Identifier to) {
-        World world = context.getWorld();
-        BlockPos pos = context.getBlockPos();
-        BlockState state = world.getBlockState(pos);
-        PlayerEntity player = context.getPlayer();
-        ItemStack handStack = context.getStack();
-        if (state.getBlock() instanceof ChestBlock) {
-            if (ChestBlock.getBlockType(state) == DoubleBlockProperties.Type.SINGLE) {
-                Common.upgradeSingleBlockToChest(world, state, pos, from, to);
-                handStack.decrement(1);
-                return true;
-            } else if (handStack.getCount() > 1 || (player != null && player.isCreative())) {
-                BlockPos otherPos = pos.offset(ChestBlock.getDirectionToAttached(state));
-                BlockState otherState = world.getBlockState(otherPos);
-                Common.upgradeSingleBlockToChest(world, state, pos, from, to);
-                Common.upgradeSingleBlockToChest(world, otherState, otherPos, from, to);
-                handStack.decrement(2);
-                return true;
-            }
-        } else {
-            if (net.minecraft.block.ChestBlock.getDoubleBlockType(state) == DoubleBlockProperties.Type.SINGLE) {
-                Common.upgradeSingleBlockToChest(world, state, pos, from, to);
-                handStack.decrement(1);
-                return true;
-            } else if (handStack.getCount() > 1 || (player != null && player.isCreative())) {
-                BlockPos otherPos = pos.offset(net.minecraft.block.ChestBlock.getFacing(state));
-                BlockState otherState = world.getBlockState(otherPos);
-                Common.upgradeSingleBlockToChest(world, state, pos, from, to);
-                Common.upgradeSingleBlockToChest(world, otherState, otherPos, from, to);
-                handStack.decrement(2);
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private static void upgradeSingleBlockToChest(World world, BlockState state, BlockPos pos, Identifier from, Identifier to) {
@@ -304,27 +224,6 @@ public final class Common {
                 }
             }
         }
-    }
-
-    private static boolean tryUpgradeBlockToOldChest(ItemUsageContext context, Identifier from, Identifier to) {
-        World world = context.getWorld();
-        BlockPos pos = context.getBlockPos();
-        BlockState state = world.getBlockState(pos);
-        PlayerEntity player = context.getPlayer();
-        ItemStack handStack = context.getStack();
-        if (AbstractChestBlock.getBlockType(state) == DoubleBlockProperties.Type.SINGLE) {
-            Common.upgradeSingleBlockToOldChest(world, state, pos, from, to);
-            handStack.decrement(1);
-            return true;
-        } else if (handStack.getCount() > 1 || (player != null && player.isCreative())) {
-            BlockPos otherPos = pos.offset(AbstractChestBlock.getDirectionToAttached(state));
-            BlockState otherState = world.getBlockState(otherPos);
-            Common.upgradeSingleBlockToOldChest(world, state, pos, from, to);
-            Common.upgradeSingleBlockToOldChest(world, otherState, otherPos, from, to);
-            handStack.decrement(2);
-            return true;
-        }
-        return false;
     }
 
     private static void upgradeSingleBlockToOldChest(World world, BlockState state, BlockPos pos, Identifier from, Identifier to) {
@@ -438,10 +337,10 @@ public final class Common {
 
         //<editor-fold desc="-- Base Content">
         //noinspection unchecked
-        Pair<Identifier, Item>[] items = new Pair[16];
-        items[0] = new Pair<>(Utils.id("chest_mutator"), new StorageMutator(new Item.Settings().maxCount(1).group(group)));
-        Common.defineTierUpgradePath(items, manuallyWrapTooltips, group, woodTier, ironTier, goldTier, diamondTier, obsidianTier, netheriteTier);
-        baseRegistration.accept(items);
+        Pair<Identifier, Item>[] baseContent = new Pair[16];
+        baseContent[0] = new Pair<>(Utils.id("chest_mutator"), new StorageMutator(new Item.Settings().maxCount(1).group(group)));
+        Common.defineTierUpgradePath(baseContent, manuallyWrapTooltips, group, woodTier, ironTier, goldTier, diamondTier, obsidianTier, netheriteTier);
+        baseRegistration.accept(baseContent);
         //</editor-fold>
         //<editor-fold desc="-- Chest Content">
         // Init block settings
@@ -475,7 +374,42 @@ public final class Common {
         chestRegistration.accept(chestContent, Common.chestBlockEntityType);
         // Register chest upgrade behaviours
         Predicate<Block> isUpgradableChestBlock = (block) -> block instanceof ChestBlock || block instanceof net.minecraft.block.ChestBlock || chestTag.contains(block);
-        Common.defineBlockUpgradeBehaviour(isUpgradableChestBlock, Common::tryUpgradeBlockToChest);
+        Common.defineBlockUpgradeBehaviour(isUpgradableChestBlock, (context, from1, to1) -> {
+            World world = context.getWorld();
+            BlockPos pos = context.getBlockPos();
+            BlockState state = world.getBlockState(pos);
+            PlayerEntity player = context.getPlayer();
+            ItemStack handStack = context.getStack();
+            if (state.getBlock() instanceof ChestBlock) {
+                if (ChestBlock.getBlockType(state) == DoubleBlockProperties.Type.SINGLE) {
+                    Common.upgradeSingleBlockToChest(world, state, pos, from1, to1);
+                    handStack.decrement(1);
+                    return true;
+                } else if (handStack.getCount() > 1 || (player != null && player.isCreative())) {
+                    BlockPos otherPos = pos.offset(ChestBlock.getDirectionToAttached(state));
+                    BlockState otherState = world.getBlockState(otherPos);
+                    Common.upgradeSingleBlockToChest(world, state, pos, from1, to1);
+                    Common.upgradeSingleBlockToChest(world, otherState, otherPos, from1, to1);
+                    handStack.decrement(2);
+                    return true;
+                }
+            } else {
+                if (net.minecraft.block.ChestBlock.getDoubleBlockType(state) == DoubleBlockProperties.Type.SINGLE) {
+                    Common.upgradeSingleBlockToChest(world, state, pos, from1, to1);
+                    handStack.decrement(1);
+                    return true;
+                } else if (handStack.getCount() > 1 || (player != null && player.isCreative())) {
+                    BlockPos otherPos = pos.offset(net.minecraft.block.ChestBlock.getFacing(state));
+                    BlockState otherState = world.getBlockState(otherPos);
+                    Common.upgradeSingleBlockToChest(world, state, pos, from1, to1);
+                    Common.upgradeSingleBlockToChest(world, otherState, otherPos, from1, to1);
+                    handStack.decrement(2);
+                    return true;
+                }
+            }
+
+            return false;
+        });
         //</editor-fold>
         //<editor-fold desc="-- Old Chest Content">
         // Init content
@@ -492,7 +426,26 @@ public final class Common {
         oldChestRegistration.accept(oldChestContent, Common.oldChestBlockEntityType);
         // Register upgrade behaviours
         Predicate<Block> isUpgradableOldChestBlock = (block) -> block.getClass() == AbstractChestBlock.class;
-        Common.defineBlockUpgradeBehaviour(isUpgradableOldChestBlock, Common::tryUpgradeBlockToOldChest);
+        Common.defineBlockUpgradeBehaviour(isUpgradableOldChestBlock, (context, from, to) -> {
+            World world = context.getWorld();
+            BlockPos pos = context.getBlockPos();
+            BlockState state = world.getBlockState(pos);
+            PlayerEntity player = context.getPlayer();
+            ItemStack handStack = context.getStack();
+            if (AbstractChestBlock.getBlockType(state) == DoubleBlockProperties.Type.SINGLE) {
+                Common.upgradeSingleBlockToOldChest(world, state, pos, from, to);
+                handStack.decrement(1);
+                return true;
+            } else if (handStack.getCount() > 1 || (player != null && player.isCreative())) {
+                BlockPos otherPos = pos.offset(AbstractChestBlock.getDirectionToAttached(state));
+                BlockState otherState = world.getBlockState(otherPos);
+                Common.upgradeSingleBlockToOldChest(world, state, pos, from, to);
+                Common.upgradeSingleBlockToOldChest(world, otherState, otherPos, from, to);
+                handStack.decrement(2);
+                return true;
+            }
+            return false;
+        });
         //</editor-fold>
         //<editor-fold desc="-- Barrel Content">
         // Init block settings
@@ -514,7 +467,47 @@ public final class Common {
         barrelRegistration.accept(barrelContent, Common.barrelBlockEntityType);
         // Register upgrade behaviours
         Predicate<Block> isUpgradableBarrelBlock = (block) -> block instanceof BarrelBlock || block instanceof net.minecraft.block.BarrelBlock || barrelTag.contains(block);
-        Common.defineBlockUpgradeBehaviour(isUpgradableBarrelBlock, Common::tryUpgradeBlockToBarrel);
+        Common.defineBlockUpgradeBehaviour(isUpgradableBarrelBlock, (context, from, to) -> {
+            World world = context.getWorld();
+            BlockPos pos = context.getBlockPos();
+            BlockState state = world.getBlockState(pos);
+            Block block = state.getBlock();
+            boolean isExpandedStorageBarrel = block instanceof BarrelBlock;
+            int inventorySize = !isExpandedStorageBarrel ? Utils.WOOD_STACK_COUNT : Common.getTieredBlock(Common.BARREL_BLOCK_TYPE, ((BarrelBlock) block).getBlockTier()).getSlotCount();
+            if (isExpandedStorageBarrel && ((BarrelBlock) block).getBlockTier() == from || !isExpandedStorageBarrel && from == Utils.WOOD_TIER_ID) {
+                BlockEntity blockEntity = world.getBlockEntity(pos);
+                //noinspection ConstantConditions
+                NbtCompound tag = blockEntity.writeNbt(new NbtCompound());
+                boolean verifiedSize = blockEntity instanceof Inventory inventory && inventory.size() == inventorySize;
+                if (!verifiedSize) { // Cannot verify inventory size, we'll let it upgrade if it has or has less than 27 items
+                    if (tag.contains("Items", NbtElement.LIST_TYPE)) {
+                        NbtList items = tag.getList("Items", NbtElement.COMPOUND_TYPE);
+                        if (items.size() <= inventorySize) {
+                            verifiedSize = true;
+                        }
+                    }
+                }
+                if (verifiedSize) {
+                    OpenableBlock toBlock = Common.getTieredBlock(Common.BARREL_BLOCK_TYPE, to);
+                    DefaultedList<ItemStack> inventory = DefaultedList.ofSize(toBlock.getSlotCount(), ItemStack.EMPTY);
+                    ContainerLock code = ContainerLock.fromNbt(tag);
+                    Inventories.readNbt(tag, inventory);
+                    world.removeBlockEntity(pos);
+                    BlockState newState = toBlock.getDefaultState().with(Properties.FACING, state.get(Properties.FACING));
+                    if (world.setBlockState(pos, newState)) {
+                        BlockEntity newEntity = world.getBlockEntity(pos);
+                        //noinspection ConstantConditions
+                        NbtCompound newTag = newEntity.writeNbt(new NbtCompound());
+                        Inventories.writeNbt(newTag, inventory);
+                        code.writeNbt(newTag);
+                        newEntity.readNbt(newTag);
+                        context.getStack().decrement(1);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        });
         //</editor-fold>
         //<editor-fold desc="-- Mini Chest Content">
         // Init and register opening stats

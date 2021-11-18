@@ -57,7 +57,6 @@ public final class StorageConversionKit extends Item {
         World world = context.getWorld();
         PlayerEntity player = context.getPlayer();
         if (player != null) {
-            player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
             if (player.isSneaking()) {
                 Block block = world.getBlockState(context.getBlockPos()).getBlock();
                 BlockUpgradeBehaviour behaviour = Common.getBlockUpgradeBehaviour(block);
@@ -67,6 +66,7 @@ public final class StorageConversionKit extends Item {
                     } else if (behaviour.tryUpgradeBlock(context, from, to)) {
                         return ActionResult.SUCCESS;
                     }
+                    player.getItemCooldownManager().set(this, Utils.QUARTER_SECOND);
                 }
             }
         }

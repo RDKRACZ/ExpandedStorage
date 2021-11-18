@@ -658,7 +658,7 @@ public final class Common {
             List<Block> blocks;
             if (nameHash.equals("4c88924788f419b562d50acfddc3a781")) {
                 blocks = miniChestSecretCycle.values();
-            } else if (nameHash.equals("")) {
+            } else if (nameHash.equals("ef5a30521df4c0dc7568844eefe7e7e3")) {
                 blocks = miniChestSecretCycle2.values();
             } else {
                 blocks = miniChestCycle.values();

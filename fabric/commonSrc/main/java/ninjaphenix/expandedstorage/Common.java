@@ -249,6 +249,8 @@ public final class Common {
 
     public static Identifier stat(String stat) {
         Identifier statId = Utils.id(stat);
+        // todo: revert this at some point, just use local vars
+        if (Registry.CUSTOM_STAT.containsId(statId)) return statId;
         Registry.register(Registry.CUSTOM_STAT, statId, statId); // Forge doesn't provide custom registries for stats
         Stats.CUSTOM.getOrCreateStat(statId);
         return statId;
@@ -529,7 +531,16 @@ public final class Common {
                 Common.miniChestBlock(Utils.id("candy_cane_mini_present"), Common.stat("open_candy_cane_mini_present"), woodTier, candyCanePresentSettings, group),
                 Common.miniChestBlock(Utils.id("green_mini_present"), Common.stat("open_green_mini_present"), woodTier, greenPresentSettings, group),
                 Common.miniChestBlock(Utils.id("lavender_mini_present"), Common.stat("open_lavender_mini_present"), woodTier, lavenderPresentSettings, group),
-                Common.miniChestBlock(Utils.id("pink_amethyst_mini_present"), Common.stat("open_pink_amethyst_mini_present"), woodTier, pinkAmethystPresentSettings, group)
+                Common.miniChestBlock(Utils.id("pink_amethyst_mini_present"), Common.stat("open_pink_amethyst_mini_present"), woodTier, pinkAmethystPresentSettings, group),
+                Common.miniChestBlock(Utils.id("vanilla_wood_mini_chest_with_sparrow"), woodOpenStat, woodTier, woodSettings, group),
+                Common.miniChestBlock(Utils.id("wood_mini_chest_with_sparrow"),woodOpenStat, woodTier, woodSettings, group),
+                Common.miniChestBlock(Utils.id("pumpkin_mini_chest_with_sparrow"),Common.stat("open_pumpkin_mini_chest"), woodTier, pumpkinSettings, group),
+                Common.miniChestBlock(Utils.id("red_mini_present_with_sparrow"),Common.stat("open_red_mini_present"), woodTier, redPresentSettings, group),
+                Common.miniChestBlock(Utils.id("white_mini_present_with_sparrow"),Common.stat("open_white_mini_present"), woodTier, whitePresentSettings, group),
+                Common.miniChestBlock(Utils.id("candy_cane_mini_present_with_sparrow"),Common.stat("open_candy_cane_mini_present"), woodTier, candyCanePresentSettings, group),
+                Common.miniChestBlock(Utils.id("green_mini_present_with_sparrow"),Common.stat("open_green_mini_present"), woodTier, greenPresentSettings, group),
+                Common.miniChestBlock(Utils.id("lavender_mini_present_with_sparrow"),Common.stat("open_lavender_mini_present"), woodTier, lavenderPresentSettings, group),
+                Common.miniChestBlock(Utils.id("pink_amethyst_mini_present_with_sparrow"),Common.stat("open_pink_amethyst_mini_present"), woodTier, pinkAmethystPresentSettings, group)
         );
         // Init block entity type
         Common.miniChestBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new MiniChestBlockEntity(Common.getMiniChestBlockEntityType(), pos, state, ((MiniChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable), miniChestContent.getBlocks()).build(null);
@@ -599,16 +610,16 @@ public final class Common {
             if (!world.isClient()) {
                 CursedChestType chestType = state.get(AbstractChestBlock.CURSED_CHEST_TYPE);
                 if (chestType == CursedChestType.SINGLE) {
-                    world.setBlockState(pos, state.rotate(BlockRotation.CLOCKWISE_90));
+                    world.setBlockState(pos, state.with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING).rotateYClockwise()));
                 } else {
                     BlockPos otherPos = pos.offset(AbstractChestBlock.getDirectionToAttached(state));
                     BlockState otherState = world.getBlockState(otherPos);
                     if (chestType == CursedChestType.TOP || chestType == CursedChestType.BOTTOM) {
-                        world.setBlockState(pos, state.rotate(BlockRotation.CLOCKWISE_90));
-                        world.setBlockState(otherPos, otherState.rotate(BlockRotation.CLOCKWISE_90));
+                        world.setBlockState(pos, state.with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING).rotateYClockwise()));
+                        world.setBlockState(otherPos, otherState.with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING).rotateYClockwise()));
                     } else {
-                        world.setBlockState(pos, state.rotate(BlockRotation.CLOCKWISE_180).with(AbstractChestBlock.CURSED_CHEST_TYPE, state.get(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
-                        world.setBlockState(otherPos, otherState.rotate(BlockRotation.CLOCKWISE_180).with(AbstractChestBlock.CURSED_CHEST_TYPE, otherState.get(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
+                        world.setBlockState(pos, state.with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING).getOpposite()).with(AbstractChestBlock.CURSED_CHEST_TYPE, state.get(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
+                        world.setBlockState(otherPos, otherState.with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING).getOpposite()).with(AbstractChestBlock.CURSED_CHEST_TYPE, otherState.get(AbstractChestBlock.CURSED_CHEST_TYPE).getOpposite()));
                     }
                 }
             }
@@ -626,7 +637,7 @@ public final class Common {
                     world.setBlockState(otherPos, next.getDefaultState()
                                                       .with(Properties.HORIZONTAL_FACING, otherState.get(Properties.HORIZONTAL_FACING))
                                                       .with(Properties.WATERLOGGED, otherState.get(Properties.WATERLOGGED))
-                            .with(AbstractChestBlock.CURSED_CHEST_TYPE, chestType.getOpposite()), Block.SKIP_LIGHTING_UPDATES | Block.NOTIFY_LISTENERS);
+                                                      .with(AbstractChestBlock.CURSED_CHEST_TYPE, chestType.getOpposite()), Block.SKIP_LIGHTING_UPDATES | Block.NOTIFY_LISTENERS);
                 }
                 world.setBlockState(pos, next.getDefaultState()
                                              .with(Properties.HORIZONTAL_FACING, state.get(Properties.HORIZONTAL_FACING))

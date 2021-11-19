@@ -237,7 +237,10 @@ public class AbstractChestBlock extends OpenableBlock implements InventoryProvid
     @Override
     @SuppressWarnings("deprecation")
     public BlockState rotate(BlockState state, BlockRotation rotation) {
-        return state.with(Properties.HORIZONTAL_FACING, rotation.rotate(state.get(Properties.HORIZONTAL_FACING)));
+        if (state.get(AbstractChestBlock.CURSED_CHEST_TYPE) == CursedChestType.SINGLE) {
+            return state.with(Properties.HORIZONTAL_FACING, rotation.rotate(state.get(Properties.HORIZONTAL_FACING)));
+        }
+        return super.rotate(state, rotation);
     }
 
     @Override

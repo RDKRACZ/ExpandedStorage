@@ -15,6 +15,8 @@
  */
 package ninjaphenix.expandedstorage;
 
+import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
+import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -37,6 +39,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.property.Properties;
@@ -63,6 +66,7 @@ import ninjaphenix.expandedstorage.block.entity.extendable.OpenableBlockEntity;
 import ninjaphenix.expandedstorage.block.misc.CursedChestType;
 import ninjaphenix.expandedstorage.block.strategies.ItemAccess;
 import ninjaphenix.expandedstorage.block.strategies.Lockable;
+import ninjaphenix.expandedstorage.client.MiniChestScreen;
 import ninjaphenix.expandedstorage.client.TextureCollection;
 import ninjaphenix.expandedstorage.item.BlockUpgradeBehaviour;
 import ninjaphenix.expandedstorage.item.MutationMode;
@@ -102,6 +106,7 @@ public final class Common {
 
     private static Function<OpenableBlockEntity, ItemAccess> itemAccess;
     private static Function<OpenableBlockEntity, Lockable> lockable;
+    private static ScreenHandlerType<MiniChestScreenHandler> miniChestScreenHandler;
 
     public static BlockEntityType<ChestBlockEntity> getChestBlockEntityType() {
         return chestBlockEntityType;
@@ -542,6 +547,8 @@ public final class Common {
                 Common.miniChestBlock(Utils.id("lavender_mini_present_with_sparrow"),Common.stat("open_lavender_mini_present"), woodTier, lavenderPresentSettings, group),
                 Common.miniChestBlock(Utils.id("pink_amethyst_mini_present_with_sparrow"),Common.stat("open_pink_amethyst_mini_present"), woodTier, pinkAmethystPresentSettings, group)
         );
+        Common.miniChestScreenHandler = ScreenHandlerRegistry.registerSimple(Utils.id("minichest_handler"), MiniChestScreenHandler::createClientMenu);
+        if (isClient) ScreenRegistry.register(Common.getMiniChestScreenHandlerType(), MiniChestScreen::new);
         // Init block entity type
         Common.miniChestBlockEntityType = BlockEntityType.Builder.create((pos, state) -> new MiniChestBlockEntity(Common.getMiniChestBlockEntityType(), pos, state, ((MiniChestBlock) state.getBlock()).getBlockId(), Common.itemAccess, Common.lockable), miniChestContent.getBlocks()).build(null);
         miniChestRegistration.accept(miniChestContent, Common.miniChestBlockEntityType);
@@ -683,5 +690,9 @@ public final class Common {
             return ActionResult.FAIL;
         });
         //</editor-fold>
+    }
+
+    public static ScreenHandlerType<MiniChestScreenHandler> getMiniChestScreenHandlerType() {
+        return miniChestScreenHandler;
     }
 }

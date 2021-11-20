@@ -139,7 +139,7 @@ public final class MiniChestBlock extends OpenableBlock implements Waterloggable
                 if (!inventory.canBeUsedBy(serverPlayer)) {
                     player.sendMessage(new TranslatableText("container.isLocked", title), true);
                     player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0F, 1.0F);
-                    return ActionResult.CONSUME; // todo: tbf this should be fail same with ncl code path tbh
+                    return ActionResult.CONSUME;
                 }
 
                 this.onInitialOpen(serverPlayer);
@@ -156,6 +156,5 @@ public final class MiniChestBlock extends OpenableBlock implements Waterloggable
             }
         }
         return ActionResult.CONSUME;
-
     }
 }

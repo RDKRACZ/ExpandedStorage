@@ -77,7 +77,7 @@ public abstract class OpenableBlock extends Block implements OpenableBlockEntity
             }
             super.onStateReplaced(state, world, pos, newState, bl);
         } else {
-            if (world.getBlockEntity(pos) instanceof OpenableBlockEntity entity) {
+            if (state.getBlock() != newState.getBlock() && world.getBlockEntity(pos) instanceof OpenableBlockEntity entity) {
                 NbtCompound tag = entity.writeNbt(new NbtCompound());
                 world.removeBlockEntity(pos);
                 if (world.getBlockEntity(pos) instanceof OpenableBlockEntity newEntity) {

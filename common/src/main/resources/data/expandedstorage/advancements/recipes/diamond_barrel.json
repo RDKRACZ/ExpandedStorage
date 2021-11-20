@@ -1,9 +1,7 @@
 {
   "parent": "minecraft:recipes/root",
   "rewards": {
-    "recipes": [
-      "expandedstorage:diamond_barrel"
-    ]
+    "recipes": ["expandedstorage:diamond_barrel"]
   },
   "criteria": {
     "has_previous_barrel": {
@@ -11,9 +9,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "expandedstorage:gold_barrel"
-            ]
+            "items": ["expandedstorage:gold_barrel"]
           }
         ]
       }
@@ -26,9 +22,6 @@
     }
   },
   "requirements": [
-    [
-      "has_previous_barrel",
-      "has_the_recipe"
-    ]
+    ["has_previous_barrel", "has_the_recipe"]
   ]
 }

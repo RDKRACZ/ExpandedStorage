@@ -2,22 +2,21 @@
   "schemaVersion": 1,
   "accessWidener": "expandedstorage.accessWidener",
   "depends": {
-    "fabric": ">=0.39.0",
+    "fabric": ">=0.42.1",
     "fabricloader": ">=0.11.7",
     "minecraft": "~1.17.1",
-    "ninjaphenix_container_lib": ">=1.1.0"
+    "ninjaphenix_container_lib": ">=1.2.5"
   },
   "entrypoints": {
-    "main": [
-      "ninjaphenix.expandedstorage.Main"
-    ]
+    "main": ["ninjaphenix.expandedstorage.Main"]
   },
   "environment": "*",
+  "authors": ["NinjaPhenix"],
   "mixins": [
-    "expandedstorage.mixins.json"
-  ],
-  "authors": [
-    "NinjaPhenix"
+    {
+      "config": "expandedstorage.mixin.json",
+      "environment": "*"
+    }
   ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/expanded-storage-fabric/",

@@ -1,19 +1,15 @@
 {
   "parent": "minecraft:recipes/root",
   "rewards": {
-    "recipes": [
-      "expandedstorage:gold_to_netherite_conversion_kit"
-    ]
+    "recipes": ["expandedstorage:gold_to_netherite_conversion_kit"]
   },
   "criteria": {
-    "has_netherite": {
+    "has_previous_kit": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "items": [
-              "minecraft:netherite_ingot"
-            ]
+            "items": ["expandedstorage:gold_to_obsidian_conversion_kit"]
           }
         ]
       }
@@ -26,9 +22,6 @@
     }
   },
   "requirements": [
-    [
-      "has_netherite",
-      "has_the_recipe"
-    ]
+    ["has_previous_kit", "has_the_recipe"]
   ]
 }

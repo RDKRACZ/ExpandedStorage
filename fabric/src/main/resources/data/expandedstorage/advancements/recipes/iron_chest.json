@@ -1,12 +1,10 @@
 {
   "parent": "minecraft:recipes/root",
   "rewards": {
-    "recipes": [
-      "expandedstorage:iron_chest"
-    ]
+    "recipes": ["expandedstorage:iron_chest"]
   },
   "criteria": {
-    "has_chest": {
+    "has_previous_chest": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -24,9 +22,6 @@
     }
   },
   "requirements": [
-    [
-      "has_chest",
-      "has_the_recipe"
-    ]
+    ["has_previous_chest", "has_the_recipe"]
   ]
 }

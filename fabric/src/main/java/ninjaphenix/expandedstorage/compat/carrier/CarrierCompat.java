@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2021 NinjaPhenix
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 package ninjaphenix.expandedstorage.compat.carrier;
 
 import me.steven.carrier.api.CarriableRegistry;
+import ninjaphenix.expandedstorage.block.AbstractChestBlock;
 import ninjaphenix.expandedstorage.block.ChestBlock;
-import ninjaphenix.expandedstorage.block.OldChestBlock;
 
-public class CarrierCompat {
+public final class CarrierCompat {
     public static void registerChestBlock(ChestBlock block) {
         CarriableRegistry.INSTANCE.register(block.getBlockId(), new CarriableChest(block.getBlockId(), block));
     }
 
-    public static void registerOldChestBlock(OldChestBlock block) {
+    public static void registerOldChestBlock(AbstractChestBlock block) {
         CarriableRegistry.INSTANCE.register(block.getBlockId(), new CarriableOldChest(block.getBlockId(), block));
     }
 }

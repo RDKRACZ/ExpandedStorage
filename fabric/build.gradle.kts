@@ -10,8 +10,6 @@ loom {
     runs {
         named("client") {
             ideConfigGenerated(false)
-            // Todo: remove and release when carrier is updated.
-            property("fabric.debug.loadLate", "expandedstorage")
         }
         named("server") {
             ideConfigGenerated(false)
@@ -57,13 +55,13 @@ val excludeFabric: (ModuleDependency) -> Unit = {
 }
 
 dependencies {
-    minecraft(group = "com.mojang", name = "minecraft", version = "1.17.1")
-    mappings(group = "net.fabricmc", name = "yarn", version = "1.17.1+build.61")
+    minecraft(group = "com.mojang", name = "minecraft", version = properties["minecraft_version"] as String)
+    mappings(group = "net.fabricmc", name = "yarn", version = "${properties["minecraft_version"]}+build.${properties["yarn_version"]}", classifier = "v2")
 
     modImplementation(group = "net.fabricmc", name = "fabric-loader", version = properties["fabric_loader_version"] as String)
     implementation(group = "org.jetbrains", name = "annotations", version = properties["jetbrains_annotations_version"] as String)
     modImplementation(group = "net.fabricmc.fabric-api", name = "fabric-api", version = properties["fabric_api_version"] as String)
-    modImplementation(group = "ninjaphenix", name = "container_library", version = "1.2.2+1.17.1", classifier = "fabric") {
+    modImplementation(group = "ninjaphenix", name = "container_library", version = "${properties["container_library_version"]}+${properties["container_library_minecraft_version"]}", classifier = "fabric") {
         isTransitive = false
     }
 
@@ -74,7 +72,7 @@ dependencies {
     modCompileOnly(group = "curse.maven", name = "towelette-309338", version = "3398761") {
         also(excludeFabric)
     }
-    modImplementation(group = "curse.maven", name = "carrier-409184", version = "3327390") {
+    modImplementation(group = "curse.maven", name = "carrier-409184", version = "3504375") {
         also(excludeFabric)
     }
     modImplementation(group = "io.github.onyxstudios.Cardinal-Components-API", name = "cardinal-components-base", version = properties["cardinal_version"] as String)
@@ -93,15 +91,10 @@ tasks.withType<ProcessResources> {
     }
 }
 
-tasks.register<net.fabricmc.loom.task.MigrateMappingsTask>("updateForgeSources") {
-    setInputDir(rootDir.toPath().resolve("common/fabricSrc/main/java").toString())
-    setOutputDir(rootDir.toPath().resolve("common/forgeSrc/main/java").toString())
-    setMappings("net.minecraft:mappings:${properties["minecraft_version"]}")
-}
 if (hasProperty("yv")) {
     val updateCommonSources = tasks.register<net.fabricmc.loom.task.MigrateMappingsTask>("updateCommonSources") {
-        setInputDir(rootDir.toPath().resolve("common/fabricSrc/main/java").toString())
-        setOutputDir(rootDir.toPath().resolve("common/fabricSrc/main/java").toString())
+        setInputDir(rootDir.toPath().resolve("fabric/commonSrc/main/java").toString())
+        setOutputDir(rootDir.toPath().resolve("fabric/commonSrc/main/java").toString())
         setMappings("net.fabricmc:yarn:" + findProperty("yv") as String)
     }
 
